@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>お問い合わせ | TripType トリップタイピング</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Noto+Sans+JP:wght@400;700;900&family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --navy:    #0A0F2E;
+  --navy2:   #0D1B3E;
+  --navy3:   #112250;
+  --teal:    #00C9B1;
+  --teal2:   #00E5CF;
+  --orange:  #FF7F3F;
+  --gold:    #C8A84B;
+  --text:    #E8F0FF;
+  --muted:   #6888AA;
+  --card-bg: rgba(13,27,62,0.85);
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  background: var(--navy);
+  color: var(--text);
+  font-family: 'Noto Sans JP', 'Outfit', sans-serif;
+  min-height: 100vh;
+  overflow-x: hidden;
+  line-height: 1.8;
+}
+
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image:
+    repeating-linear-gradient(0deg, transparent, transparent 49px, rgba(0,201,177,0.04) 49px, rgba(0,201,177,0.04) 50px),
+    repeating-linear-gradient(90deg, transparent, transparent 49px, rgba(0,201,177,0.04) 49px, rgba(0,201,177,0.04) 50px);
+  pointer-events: none;
+  z-index: 0;
+}
+
+#hdr {
+  position: relative;
+  z-index: 10;
+  padding: 18px 32px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid rgba(0,201,177,0.15);
+  background: rgba(10,15,46,0.92);
+  backdrop-filter: blur(12px);
+}
+
+.logo {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  text-decoration: none;
+}
+.logo-main {
+  font-family: 'Bebas Neue', cursive;
+  font-size: 32px;
+  letter-spacing: 4px;
+  background: linear-gradient(135deg, var(--teal), var(--gold));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.logo-jp {
+  font-size: 11px;
+  color: var(--muted);
+  letter-spacing: 2px;
+}
+
+.back-btn {
+  background: transparent;
+  border: 1px solid rgba(0,201,177,0.3);
+  color: var(--teal);
+  font-family: 'Noto Sans JP', sans-serif;
+  font-size: 11px;
+  padding: 6px 16px;
+  border-radius: 20px;
+  cursor: pointer;
+  text-decoration: none;
+  display: inline-block;
+  transition: all .2s;
+  letter-spacing: 1px;
+}
+.back-btn:hover {
+  background: rgba(0,201,177,0.1);
+  border-color: var(--teal);
+}
+
+#main {
+  position: relative;
+  z-index: 1;
+  max-width: 700px;
+  margin: 0 auto;
+  padding: 60px 24px 80px;
+}
+
+.page-title {
+  font-family: 'Bebas Neue', cursive;
+  font-size: 48px;
+  letter-spacing: 4px;
+  background: linear-gradient(135deg, var(--teal), var(--gold));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 8px;
+}
+.page-title-jp {
+  font-size: 13px;
+  color: var(--muted);
+  letter-spacing: 3px;
+  margin-bottom: 48px;
+  padding-bottom: 24px;
+  border-bottom: 1px solid rgba(0,201,177,0.1);
+}
+
+.contact-card {
+  background: var(--card-bg);
+  border: 1px solid rgba(0,201,177,0.2);
+  border-radius: 12px;
+  padding: 40px 36px;
+  margin-bottom: 32px;
+  text-align: center;
+}
+
+.contact-icon {
+  font-size: 48px;
+  margin-bottom: 16px;
+  display: block;
+  filter: drop-shadow(0 0 16px rgba(0,201,177,0.3));
+}
+
+.contact-card h2 {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--teal);
+  letter-spacing: 2px;
+  margin-bottom: 12px;
+}
+
+.contact-card p {
+  font-size: 13px;
+  color: rgba(232,240,255,0.7);
+  margin-bottom: 24px;
+  line-height: 1.9;
+}
+
+.mail-btn {
+  display: inline-block;
+  background: rgba(0,201,177,0.1);
+  border: 1px solid rgba(0,201,177,0.4);
+  color: var(--teal);
+  font-family: 'Noto Sans JP', sans-serif;
+  font-size: 14px;
+  font-weight: 700;
+  padding: 14px 32px;
+  border-radius: 30px;
+  text-decoration: none;
+  letter-spacing: 1px;
+  transition: all .2s;
+}
+.mail-btn:hover {
+  background: rgba(0,201,177,0.2);
+  border-color: var(--teal);
+  box-shadow: 0 0 20px rgba(0,201,177,0.2);
+}
+
+.mail-address {
+  font-size: 13px;
+  color: var(--muted);
+  margin-top: 14px;
+  letter-spacing: 1px;
+}
+
+.notes {
+  background: rgba(255,255,255,0.02);
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: 8px;
+  padding: 24px 28px;
+}
+.notes h3 {
+  font-size: 12px;
+  color: var(--muted);
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  margin-bottom: 14px;
+}
+.notes ul {
+  font-size: 13px;
+  color: rgba(232,240,255,0.6);
+  padding-left: 18px;
+}
+.notes ul li {
+  margin-bottom: 8px;
+}
+
+#ftr {
+  position: relative;
+  z-index: 1;
+  border-top: 1px solid rgba(255,255,255,0.06);
+  padding: 28px 32px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+  background: rgba(10,15,46,0.8);
+}
+.ftr-left { font-size: 11px; color: var(--muted); }
+.ftr-left span { color: var(--teal); font-weight: 700; }
+.ftr-links { display: flex; gap: 16px; }
+.ftr-link {
+  font-size: 10px;
+  color: var(--muted);
+  text-decoration: none;
+  letter-spacing: 1px;
+  transition: color .2s;
+}
+.ftr-link:hover { color: var(--teal); }
+.ftr-right { font-size: 10px; color: rgba(255,255,255,0.2); letter-spacing: 1px; }
+
+@media (max-width: 600px) {
+  #hdr { padding: 14px 16px; }
+  .logo-main { font-size: 24px; }
+  .page-title { font-size: 36px; }
+  .contact-card { padding: 28px 20px; }
+  #ftr { flex-direction: column; text-align: center; }
+  .ftr-links { justify-content: center; flex-wrap: wrap; }
+}
+</style>
+</head>
+<body>
+
+<header id="hdr">
+  <a href="/" class="logo">
+    <span class="logo-main">TripType</span>
+    <span class="logo-jp">トリップタイピング</span>
+  </a>
+  <a href="/" class="back-btn">← トップへ戻る</a>
+</header>
+
+<main id="main">
+  <div class="page-title">CONTACT</div>
+  <div class="page-title-jp">お問い合わせ</div>
+
+  <div class="contact-card">
+    <span class="contact-icon">✉️</span>
+    <h2>メールでお問い合わせ</h2>
+    <p>
+      サービスに関するご質問・ご要望・スポンサーのご相談など、<br>
+      お気軽にメールにてご連絡ください。<br>
+      通常2〜3営業日以内にご返信いたします。
+    </p>
+    <a href="mailto:shinozaki@meolabo.com" class="mail-btn">メールを送る</a>
+    <div class="mail-address">shinozaki@meolabo.com</div>
+  </div>
+
+  <div class="notes">
+    <h3>注意事項</h3>
+    <ul>
+      <li>スパムや広告目的のメールはお断りしています</li>
+      <li>お問い合わせ内容によっては返信できない場合もあります</li>
+      <li>スポンサー・掲載のご相談も同メールアドレスで受け付けています</li>
+    </ul>
+  </div>
+</main>
+
+<footer id="ftr">
+  <div class="ftr-left">
+    運営：<span>篠崎友寿</span> / 株式会社LAM COMPANY
+  </div>
+  <div class="ftr-links">
+    <a href="/privacy/" class="ftr-link">プライバシーポリシー</a>
+    <a href="/contact/" class="ftr-link">お問い合わせ</a>
+    <a href="/about/" class="ftr-link">運営者情報</a>
+  </div>
+  <div class="ftr-right">© 2026 TripType / トリップタイピング</div>
+</footer>
+
+</body>
+</html>

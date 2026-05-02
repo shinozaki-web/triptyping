@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>運営者情報 | TripType トリップタイピング</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Noto+Sans+JP:wght@400;700;900&family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --navy:    #0A0F2E;
+  --navy2:   #0D1B3E;
+  --navy3:   #112250;
+  --teal:    #00C9B1;
+  --teal2:   #00E5CF;
+  --orange:  #FF7F3F;
+  --gold:    #C8A84B;
+  --text:    #E8F0FF;
+  --muted:   #6888AA;
+  --card-bg: rgba(13,27,62,0.85);
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  background: var(--navy);
+  color: var(--text);
+  font-family: 'Noto Sans JP', 'Outfit', sans-serif;
+  min-height: 100vh;
+  overflow-x: hidden;
+  line-height: 1.8;
+}
+
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image:
+    repeating-linear-gradient(0deg, transparent, transparent 49px, rgba(0,201,177,0.04) 49px, rgba(0,201,177,0.04) 50px),
+    repeating-linear-gradient(90deg, transparent, transparent 49px, rgba(0,201,177,0.04) 49px, rgba(0,201,177,0.04) 50px);
+  pointer-events: none;
+  z-index: 0;
+}
+
+#hdr {
+  position: relative;
+  z-index: 10;
+  padding: 18px 32px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid rgba(0,201,177,0.15);
+  background: rgba(10,15,46,0.92);
+  backdrop-filter: blur(12px);
+}
+
+.logo {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  text-decoration: none;
+}
+.logo-main {
+  font-family: 'Bebas Neue', cursive;
+  font-size: 32px;
+  letter-spacing: 4px;
+  background: linear-gradient(135deg, var(--teal), var(--gold));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.logo-jp {
+  font-size: 11px;
+  color: var(--muted);
+  letter-spacing: 2px;
+}
+
+.back-btn {
+  background: transparent;
+  border: 1px solid rgba(0,201,177,0.3);
+  color: var(--teal);
+  font-family: 'Noto Sans JP', sans-serif;
+  font-size: 11px;
+  padding: 6px 16px;
+  border-radius: 20px;
+  cursor: pointer;
+  text-decoration: none;
+  display: inline-block;
+  transition: all .2s;
+  letter-spacing: 1px;
+}
+.back-btn:hover {
+  background: rgba(0,201,177,0.1);
+  border-color: var(--teal);
+}
+
+#main {
+  position: relative;
+  z-index: 1;
+  max-width: 700px;
+  margin: 0 auto;
+  padding: 60px 24px 80px;
+}
+
+.page-title {
+  font-family: 'Bebas Neue', cursive;
+  font-size: 48px;
+  letter-spacing: 4px;
+  background: linear-gradient(135deg, var(--teal), var(--gold));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 8px;
+}
+.page-title-jp {
+  font-size: 13px;
+  color: var(--muted);
+  letter-spacing: 3px;
+  margin-bottom: 48px;
+  padding-bottom: 24px;
+  border-bottom: 1px solid rgba(0,201,177,0.1);
+}
+
+.info-card {
+  background: var(--card-bg);
+  border: 1px solid rgba(0,201,177,0.2);
+  border-radius: 12px;
+  padding: 36px;
+  margin-bottom: 24px;
+}
+
+.info-card h2 {
+  font-size: 12px;
+  color: var(--teal);
+  letter-spacing: 4px;
+  text-transform: uppercase;
+  margin-bottom: 24px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.info-card h2::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: rgba(0,201,177,0.2);
+}
+
+.info-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+.info-table tr {
+  border-bottom: 1px solid rgba(255,255,255,0.04);
+}
+.info-table tr:last-child {
+  border-bottom: none;
+}
+.info-table th {
+  font-size: 11px;
+  color: var(--muted);
+  letter-spacing: 1px;
+  font-weight: 400;
+  text-align: left;
+  padding: 12px 0;
+  width: 120px;
+  vertical-align: top;
+}
+.info-table td {
+  font-size: 13px;
+  color: var(--text);
+  padding: 12px 0;
+}
+.info-table td a {
+  color: var(--teal);
+  text-decoration: none;
+}
+.info-table td a:hover { text-decoration: underline; }
+
+.service-card {
+  background: rgba(0,201,177,0.04);
+  border: 1px solid rgba(0,201,177,0.12);
+  border-radius: 12px;
+  padding: 36px;
+  margin-bottom: 24px;
+}
+
+.service-card h2 {
+  font-size: 12px;
+  color: var(--teal);
+  letter-spacing: 4px;
+  text-transform: uppercase;
+  margin-bottom: 24px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.service-card h2::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: rgba(0,201,177,0.2);
+}
+
+.service-desc {
+  font-size: 13px;
+  color: rgba(232,240,255,0.75);
+  margin-bottom: 16px;
+  line-height: 1.9;
+}
+
+.app-list {
+  list-style: none;
+  padding: 0;
+}
+.app-list li {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 0;
+  border-bottom: 1px solid rgba(255,255,255,0.04);
+  font-size: 13px;
+  color: var(--text);
+}
+.app-list li:last-child { border-bottom: none; }
+.app-list .app-emoji { font-size: 22px; }
+.app-list .app-name { font-weight: 700; }
+.app-list .app-sub { font-size: 11px; color: var(--muted); margin-top: 1px; }
+
+#ftr {
+  position: relative;
+  z-index: 1;
+  border-top: 1px solid rgba(255,255,255,0.06);
+  padding: 28px 32px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+  background: rgba(10,15,46,0.8);
+}
+.ftr-left { font-size: 11px; color: var(--muted); }
+.ftr-left span { color: var(--teal); font-weight: 700; }
+.ftr-links { display: flex; gap: 16px; }
+.ftr-link {
+  font-size: 10px;
+  color: var(--muted);
+  text-decoration: none;
+  letter-spacing: 1px;
+  transition: color .2s;
+}
+.ftr-link:hover { color: var(--teal); }
+.ftr-right { font-size: 10px; color: rgba(255,255,255,0.2); letter-spacing: 1px; }
+
+@media (max-width: 600px) {
+  #hdr { padding: 14px 16px; }
+  .logo-main { font-size: 24px; }
+  .page-title { font-size: 36px; }
+  .info-card, .service-card { padding: 24px 18px; }
+  .info-table th { width: 90px; font-size: 10px; }
+  #ftr { flex-direction: column; text-align: center; }
+  .ftr-links { justify-content: center; flex-wrap: wrap; }
+}
+</style>
+</head>
+<body>
+
+<header id="hdr">
+  <a href="/" class="logo">
+    <span class="logo-main">TripType</span>
+    <span class="logo-jp">トリップタイピング</span>
+  </a>
+  <a href="/" class="back-btn">← トップへ戻る</a>
+</header>
+
+<main id="main">
+  <div class="page-title">ABOUT</div>
+  <div class="page-title-jp">運営者情報</div>
+
+  <div class="info-card">
+    <h2>運営者</h2>
+    <table class="info-table">
+      <tr>
+        <th>運営者</th>
+        <td>篠崎友寿</td>
+      </tr>
+      <tr>
+        <th>運営会社</th>
+        <td>株式会社LAM COMPANY</td>
+      </tr>
+      <tr>
+        <th>所在地</th>
+        <td>北九州市門司区</td>
+      </tr>
+      <tr>
+        <th>メール</th>
+        <td><a href="mailto:shinozaki@meolabo.com">shinozaki@meolabo.com</a></td>
+      </tr>
+      <tr>
+        <th>サイトURL</th>
+        <td><a href="https://triptyping.jp">triptyping.jp</a></td>
+      </tr>
+    </table>
+  </div>
+
+  <div class="service-card">
+    <h2>サービス概要</h2>
+    <p class="service-desc">
+      トリップタイピングは、「旅するように、楽しく学ぶ。」をコンセプトとした、タイピング学習ゲームポータルサイトです。日本各地の地名・名産品・文化をテーマにしたタイピングゲームを無料で提供しています。
+    </p>
+    <ul class="app-list">
+      <li>
+        <span class="app-emoji">🍣</span>
+        <div>
+          <div class="app-name">鮨撃 KITAKYUSHU</div>
+          <div class="app-sub">北九州の寿司ネタでタイピング練習</div>
+        </div>
+      </li>
+      <li>
+        <span class="app-emoji">🗾</span>
+        <div>
+          <div class="app-name">日本地図タイピング</div>
+          <div class="app-sub">都道府県名をタイピングして日本を制覇</div>
+        </div>
+      </li>
+    </ul>
+  </div>
+</main>
+
+<footer id="ftr">
+  <div class="ftr-left">
+    運営：<span>篠崎友寿</span> / 株式会社LAM COMPANY
+  </div>
+  <div class="ftr-links">
+    <a href="/privacy/" class="ftr-link">プライバシーポリシー</a>
+    <a href="/contact/" class="ftr-link">お問い合わせ</a>
+    <a href="/about/" class="ftr-link">運営者情報</a>
+  </div>
+  <div class="ftr-right">© 2026 TripType / トリップタイピング</div>
+</footer>
+
+</body>
+</html>

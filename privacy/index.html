@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>プライバシーポリシー | TripType トリップタイピング</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Noto+Sans+JP:wght@400;700;900&family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --navy:    #0A0F2E;
+  --navy2:   #0D1B3E;
+  --navy3:   #112250;
+  --teal:    #00C9B1;
+  --teal2:   #00E5CF;
+  --orange:  #FF7F3F;
+  --gold:    #C8A84B;
+  --text:    #E8F0FF;
+  --muted:   #6888AA;
+  --card-bg: rgba(13,27,62,0.85);
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  background: var(--navy);
+  color: var(--text);
+  font-family: 'Noto Sans JP', 'Outfit', sans-serif;
+  min-height: 100vh;
+  overflow-x: hidden;
+  line-height: 1.8;
+}
+
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image:
+    repeating-linear-gradient(0deg, transparent, transparent 49px, rgba(0,201,177,0.04) 49px, rgba(0,201,177,0.04) 50px),
+    repeating-linear-gradient(90deg, transparent, transparent 49px, rgba(0,201,177,0.04) 49px, rgba(0,201,177,0.04) 50px);
+  pointer-events: none;
+  z-index: 0;
+}
+
+#hdr {
+  position: relative;
+  z-index: 10;
+  padding: 18px 32px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid rgba(0,201,177,0.15);
+  background: rgba(10,15,46,0.92);
+  backdrop-filter: blur(12px);
+}
+
+.logo {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  text-decoration: none;
+}
+.logo-main {
+  font-family: 'Bebas Neue', cursive;
+  font-size: 32px;
+  letter-spacing: 4px;
+  background: linear-gradient(135deg, var(--teal), var(--gold));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.logo-jp {
+  font-size: 11px;
+  color: var(--muted);
+  letter-spacing: 2px;
+}
+
+.back-btn {
+  background: transparent;
+  border: 1px solid rgba(0,201,177,0.3);
+  color: var(--teal);
+  font-family: 'Noto Sans JP', sans-serif;
+  font-size: 11px;
+  padding: 6px 16px;
+  border-radius: 20px;
+  cursor: pointer;
+  text-decoration: none;
+  display: inline-block;
+  transition: all .2s;
+  letter-spacing: 1px;
+}
+.back-btn:hover {
+  background: rgba(0,201,177,0.1);
+  border-color: var(--teal);
+}
+
+#main {
+  position: relative;
+  z-index: 1;
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 60px 24px 80px;
+}
+
+.page-title {
+  font-family: 'Bebas Neue', cursive;
+  font-size: 48px;
+  letter-spacing: 4px;
+  background: linear-gradient(135deg, var(--teal), var(--gold));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 8px;
+}
+.page-title-jp {
+  font-size: 13px;
+  color: var(--muted);
+  letter-spacing: 3px;
+  margin-bottom: 40px;
+}
+
+.updated {
+  font-size: 11px;
+  color: var(--muted);
+  margin-bottom: 40px;
+  padding-bottom: 24px;
+  border-bottom: 1px solid rgba(0,201,177,0.1);
+}
+
+.section {
+  margin-bottom: 40px;
+}
+
+.section h2 {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--teal);
+  letter-spacing: 1px;
+  margin-bottom: 14px;
+  padding-left: 12px;
+  border-left: 2px solid var(--teal);
+}
+
+.section p {
+  font-size: 13px;
+  color: rgba(232,240,255,0.8);
+  margin-bottom: 12px;
+}
+
+.section ul {
+  font-size: 13px;
+  color: rgba(232,240,255,0.8);
+  padding-left: 20px;
+  margin-bottom: 12px;
+}
+.section ul li {
+  margin-bottom: 6px;
+}
+
+.highlight-box {
+  background: rgba(0,201,177,0.06);
+  border: 1px solid rgba(0,201,177,0.2);
+  border-radius: 8px;
+  padding: 18px 20px;
+  font-size: 13px;
+  color: rgba(232,240,255,0.8);
+  margin-bottom: 12px;
+}
+.highlight-box strong {
+  color: var(--teal);
+}
+
+#ftr {
+  position: relative;
+  z-index: 1;
+  border-top: 1px solid rgba(255,255,255,0.06);
+  padding: 28px 32px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+  background: rgba(10,15,46,0.8);
+}
+.ftr-left { font-size: 11px; color: var(--muted); }
+.ftr-left span { color: var(--teal); font-weight: 700; }
+.ftr-links { display: flex; gap: 16px; }
+.ftr-link {
+  font-size: 10px;
+  color: var(--muted);
+  text-decoration: none;
+  letter-spacing: 1px;
+  transition: color .2s;
+}
+.ftr-link:hover { color: var(--teal); }
+.ftr-right { font-size: 10px; color: rgba(255,255,255,0.2); letter-spacing: 1px; }
+
+@media (max-width: 600px) {
+  #hdr { padding: 14px 16px; }
+  .logo-main { font-size: 24px; }
+  .page-title { font-size: 36px; }
+  #ftr { flex-direction: column; text-align: center; }
+  .ftr-links { justify-content: center; flex-wrap: wrap; }
+}
+</style>
+</head>
+<body>
+
+<header id="hdr">
+  <a href="/" class="logo">
+    <span class="logo-main">TripType</span>
+    <span class="logo-jp">トリップタイピング</span>
+  </a>
+  <a href="/" class="back-btn">← トップへ戻る</a>
+</header>
+
+<main id="main">
+  <div class="page-title">PRIVACY</div>
+  <div class="page-title-jp">プライバシーポリシー</div>
+  <div class="updated">制定日：2026年5月2日</div>
+
+  <div class="section">
+    <h2>基本方針</h2>
+    <p>株式会社LAM COMPANY（以下「当社」）が運営するタイピング学習ゲームポータル「トリップタイピング（triptyping.jp）」は、利用者の個人情報の保護を重要な責務と考え、以下のとおりプライバシーポリシーを定めます。</p>
+  </div>
+
+  <div class="section">
+    <h2>収集する情報</h2>
+    <p>本サービスでは、以下の情報を収集することがあります。</p>
+    <ul>
+      <li>アクセスログ（IPアドレス、ブラウザ種別、参照元URL、アクセス日時）</li>
+      <li>Cookie および類似技術を通じた利用状況データ</li>
+      <li>Google Analytics による匿名の行動データ</li>
+      <li>お問い合わせ時にご提供いただいた情報（氏名・メールアドレス等）</li>
+    </ul>
+  </div>
+
+  <div class="section">
+    <h2>Cookieの利用について</h2>
+    <p>本サービスでは、利便性向上および広告配信のためにCookieを使用しています。</p>
+    <div class="highlight-box">
+      <strong>使用しているCookie・技術：</strong><br>
+      ・Google Analytics（アクセス解析）<br>
+      ・Google AdSense（広告配信）<br>
+      ・ゲームスコア・設定の保存（ローカルストレージ）
+    </div>
+    <p>ブラウザの設定からCookieを無効化できますが、一部機能が正常に動作しない場合があります。</p>
+  </div>
+
+  <div class="section">
+    <h2>Google AdSenseについて</h2>
+    <p>本サービスでは、Google LLC が提供する広告配信サービス「Google AdSense」を利用しています。Google AdSense は、ユーザーの興味に基づいた広告を表示するためにCookieを使用します。</p>
+    <p>Google のプライバシーポリシーについては、<a href="https://policies.google.com/privacy" style="color:var(--teal);">Google プライバシーポリシー</a>をご確認ください。</p>
+    <p>Google AdSense における広告のパーソナライズをオプトアウトするには、<a href="https://www.google.com/settings/ads" style="color:var(--teal);">Google 広告設定</a>をご利用ください。</p>
+  </div>
+
+  <div class="section">
+    <h2>情報の利用目的</h2>
+    <ul>
+      <li>サービスの品質向上・機能改善</li>
+      <li>アクセス解析・利用状況の把握</li>
+      <li>お問い合わせへの対応</li>
+      <li>スパム・不正アクセスの防止</li>
+    </ul>
+  </div>
+
+  <div class="section">
+    <h2>第三者提供</h2>
+    <p>収集した個人情報は、法令に基づく場合または本人の同意がある場合を除き、第三者に提供することはありません。</p>
+  </div>
+
+  <div class="section">
+    <h2>外部リンク・外部サービス</h2>
+    <p>本サービスには外部サイトへのリンクが含まれる場合があります。リンク先のプライバシー保護については、各サイトのプライバシーポリシーをご確認ください。</p>
+  </div>
+
+  <div class="section">
+    <h2>免責事項</h2>
+    <p>本サービスのコンテンツは可能な限り正確な情報を提供するよう努めていますが、その内容の正確性・完全性を保証するものではありません。本サービスの利用により生じた損害については、当社は一切の責任を負いかねます。</p>
+  </div>
+
+  <div class="section">
+    <h2>プライバシーポリシーの変更</h2>
+    <p>本ポリシーの内容は、法令変更やサービス内容の変更に伴い、予告なく改定することがあります。変更後のポリシーは、本ページへの掲載をもって効力を生じるものとします。</p>
+  </div>
+
+  <div class="section">
+    <h2>運営者情報・お問い合わせ</h2>
+    <div class="highlight-box">
+      <strong>運営者：</strong>篠崎友寿<br>
+      <strong>運営会社：</strong>株式会社LAM COMPANY<br>
+      <strong>サービス名：</strong>トリップタイピング（triptyping.jp）<br>
+      <strong>お問い合わせ：</strong><a href="mailto:shinozaki@meolabo.com" style="color:var(--teal);">shinozaki@meolabo.com</a>
+    </div>
+  </div>
+</main>
+
+<footer id="ftr">
+  <div class="ftr-left">
+    運営：<span>篠崎友寿</span> / 株式会社LAM COMPANY
+  </div>
+  <div class="ftr-links">
+    <a href="/privacy/" class="ftr-link">プライバシーポリシー</a>
+    <a href="/contact/" class="ftr-link">お問い合わせ</a>
+    <a href="/about/" class="ftr-link">運営者情報</a>
+  </div>
+  <div class="ftr-right">© 2026 TripType / トリップタイピング</div>
+</footer>
+
+</body>
+</html>
