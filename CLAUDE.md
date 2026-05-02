@@ -562,4 +562,57 @@ AdSense収益    掲載料収益
 
 ---
 
-*最終更新: 2025年5月 / 作成: 門司港BONGO 篠崎友寿*
+---
+
+## 🚀 新アプリ追加の標準手順（必ず守る）
+
+「〇〇タイピングアプリ作って」と言われたら、確認なしに以下を一気に実行する。
+
+### Step 1: アプリ本体を作る
+```
+/[アプリ名]/index.html を作成
+```
+- このガイドのデザイン・ゲームシステムに従って実装
+- AdSenseコードを必ず `<head>` 内に入れる（ca-pub-7742559704304574）
+- アプリ内フッターに「← トリップタイピングトップへ」リンクを入れる
+
+### Step 2: ポータルTOPにカードを追加
+```
+/index.html の apps-grid にカードを追加
+```
+- 最初は必ず `coming soon`（disabled）カードとして追加
+- アプリが完成したら `live` に切り替える
+- カードのアクセントカラーは既存と被らないものを選ぶ
+
+### Step 3: git add・commit・push
+```bash
+git add [アプリ名]/index.html index.html
+git commit -m "add [アプリ名]: coming soon"
+git push origin main
+```
+
+### カードのcoming soonテンプレート
+```html
+<a class="app-card disabled" href="/[アプリ名]/">
+  <div class="card-accent [色]"></div>
+  <span class="card-emoji">[絵文字]</span>
+  <div class="card-title">[英語タイトル]</div>
+  <div class="card-title-jp">[日本語サブタイトル]</div>
+  <div class="card-desc">[説明文]</div>
+  <span class="card-status coming"><span class="dot"></span>COMING SOON</span>
+</a>
+```
+
+### liveに切り替える時
+```html
+<!-- disabled を外し、card-status を live に変更 -->
+<a class="app-card" href="/[アプリ名]/">
+  ...
+  <span class="card-status live"><span class="dot"></span>LIVE — プレイ中</span>
+  <span class="card-arrow">→</span>
+</a>
+```
+
+---
+
+*最終更新: 2026年5月 / 作成: 門司港BONGO 篠崎友寿*
