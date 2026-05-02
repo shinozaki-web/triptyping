@@ -1,0 +1,712 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TripType | トリップタイピング — 旅するように、楽しく学ぶ。</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Noto+Sans+JP:wght@400;700;900&family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --navy:    #0A0F2E;
+  --navy2:   #0D1B3E;
+  --navy3:   #112250;
+  --teal:    #00C9B1;
+  --teal2:   #00E5CF;
+  --orange:  #FF7F3F;
+  --orange2: #FF9A5C;
+  --gold:    #C8A84B;
+  --gold2:   #E0C060;
+  --text:    #E8F0FF;
+  --muted:   #6888AA;
+  --card-bg: rgba(13,27,62,0.85);
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  background: var(--navy);
+  color: var(--text);
+  font-family: 'Noto Sans JP', 'Outfit', sans-serif;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* ===== 星空背景 ===== */
+#stars-canvas {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+}
+
+/* ===== 世界地図グリッド ===== */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image:
+    repeating-linear-gradient(0deg, transparent, transparent 49px, rgba(0,201,177,0.04) 49px, rgba(0,201,177,0.04) 50px),
+    repeating-linear-gradient(90deg, transparent, transparent 49px, rgba(0,201,177,0.04) 49px, rgba(0,201,177,0.04) 50px);
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* ===== 光のオーブ ===== */
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background:
+    radial-gradient(ellipse at 20% 20%, rgba(0,201,177,0.08) 0%, transparent 50%),
+    radial-gradient(ellipse at 80% 80%, rgba(255,127,63,0.08) 0%, transparent 50%),
+    radial-gradient(ellipse at 50% 50%, rgba(200,168,75,0.05) 0%, transparent 60%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* ===== HEADER ===== */
+#hdr {
+  position: relative;
+  z-index: 10;
+  padding: 18px 32px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid rgba(0,201,177,0.15);
+  background: rgba(10,15,46,0.92);
+  backdrop-filter: blur(12px);
+}
+
+.logo {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+}
+.logo-main {
+  font-family: 'Bebas Neue', cursive;
+  font-size: 32px;
+  letter-spacing: 4px;
+  background: linear-gradient(135deg, var(--teal), var(--gold));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.logo-jp {
+  font-size: 11px;
+  color: var(--muted);
+  letter-spacing: 2px;
+}
+
+nav {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+.nav-btn {
+  background: transparent;
+  border: 1px solid rgba(255,255,255,0.1);
+  color: var(--muted);
+  font-family: 'Noto Sans JP', sans-serif;
+  font-size: 11px;
+  padding: 6px 14px;
+  border-radius: 20px;
+  cursor: pointer;
+  transition: all .2s;
+  text-decoration: none;
+  display: inline-block;
+}
+.nav-btn:hover { border-color: var(--teal); color: var(--teal); }
+.nav-btn.sponsor {
+  border-color: rgba(200,168,75,0.4);
+  color: var(--gold);
+}
+.nav-btn.sponsor:hover {
+  background: rgba(200,168,75,0.1);
+  border-color: var(--gold);
+}
+
+/* ===== HERO ===== */
+#hero {
+  position: relative;
+  z-index: 1;
+  text-align: center;
+  padding: 80px 24px 60px;
+}
+
+.hero-badge {
+  display: inline-block;
+  background: rgba(0,201,177,0.1);
+  border: 1px solid rgba(0,201,177,0.3);
+  color: var(--teal);
+  font-size: 10px;
+  letter-spacing: 3px;
+  padding: 5px 16px;
+  border-radius: 20px;
+  margin-bottom: 20px;
+  text-transform: uppercase;
+}
+
+.hero-title {
+  font-family: 'Bebas Neue', cursive;
+  font-size: clamp(52px, 10vw, 96px);
+  letter-spacing: 6px;
+  line-height: 1;
+  margin-bottom: 16px;
+  background: linear-gradient(135deg, #fff 0%, var(--teal) 50%, var(--gold) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.hero-sub {
+  font-size: clamp(14px, 2.5vw, 18px);
+  color: var(--muted);
+  letter-spacing: 3px;
+  margin-bottom: 10px;
+}
+
+.hero-desc {
+  font-size: 13px;
+  color: rgba(255,255,255,0.35);
+  letter-spacing: 1px;
+}
+
+/* コンパスアイコン */
+.compass {
+  width: 60px;
+  height: 60px;
+  margin: 0 auto 24px;
+  animation: compassSpin 8s linear infinite;
+}
+@keyframes compassSpin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* ===== AD TOP ===== */
+#ad-top {
+  position: relative;
+  z-index: 1;
+  max-width: 728px;
+  margin: 0 auto 40px;
+  min-height: 90px;
+  background: rgba(255,255,255,0.02);
+  border: 1px dashed rgba(255,255,255,0.06);
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+  color: rgba(255,255,255,0.1);
+  letter-spacing: 2px;
+}
+
+/* ===== APPS ===== */
+#apps {
+  position: relative;
+  z-index: 1;
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 0 24px 80px;
+}
+
+.section-label {
+  font-size: 10px;
+  letter-spacing: 4px;
+  color: var(--teal);
+  text-transform: uppercase;
+  text-align: center;
+  margin-bottom: 32px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  justify-content: center;
+}
+.section-label::before,
+.section-label::after {
+  content: '';
+  flex: 1;
+  max-width: 120px;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(0,201,177,0.3));
+}
+.section-label::after {
+  background: linear-gradient(90deg, rgba(0,201,177,0.3), transparent);
+}
+
+.apps-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 20px;
+}
+
+/* ===== APP CARD ===== */
+.app-card {
+  background: var(--card-bg);
+  border: 1px solid rgba(0,201,177,0.15);
+  border-radius: 12px;
+  padding: 28px 24px;
+  text-decoration: none;
+  color: var(--text);
+  display: block;
+  position: relative;
+  overflow: hidden;
+  transition: all .3s cubic-bezier(0.34,1.56,0.64,1);
+  cursor: pointer;
+}
+.app-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(0,201,177,0.05) 0%, transparent 60%);
+  opacity: 0;
+  transition: opacity .3s;
+}
+.app-card:hover {
+  transform: translateY(-6px);
+  border-color: rgba(0,201,177,0.4);
+  box-shadow: 0 20px 60px rgba(0,0,0,0.4), 0 0 30px rgba(0,201,177,0.1);
+}
+.app-card:hover::before { opacity: 1; }
+
+.app-card.disabled {
+  opacity: 0.5;
+  cursor: default;
+  pointer-events: none;
+  filter: grayscale(60%);
+}
+
+.card-emoji {
+  font-size: 48px;
+  margin-bottom: 14px;
+  display: block;
+  filter: drop-shadow(0 0 12px rgba(0,201,177,0.3));
+}
+.card-title {
+  font-family: 'Bebas Neue', cursive;
+  font-size: 26px;
+  letter-spacing: 3px;
+  color: var(--text);
+  margin-bottom: 4px;
+}
+.card-title-jp {
+  font-size: 11px;
+  color: var(--muted);
+  letter-spacing: 2px;
+  margin-bottom: 12px;
+}
+.card-desc {
+  font-size: 13px;
+  color: rgba(255,255,255,0.6);
+  line-height: 1.7;
+  margin-bottom: 18px;
+}
+.card-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 10px;
+  letter-spacing: 2px;
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-weight: 700;
+}
+.card-status.live {
+  background: rgba(0,201,177,0.15);
+  border: 1px solid rgba(0,201,177,0.4);
+  color: var(--teal);
+}
+.card-status.coming {
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.1);
+  color: var(--muted);
+}
+.card-status .dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: currentColor;
+  animation: dotBlink 1.2s ease-in-out infinite;
+}
+.card-status.coming .dot { animation: none; }
+@keyframes dotBlink {
+  0%,100% { opacity: 1; }
+  50% { opacity: 0.2; }
+}
+
+.card-arrow {
+  position: absolute;
+  right: 20px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 20px;
+  color: rgba(0,201,177,0.3);
+  transition: all .3s;
+}
+.app-card:hover .card-arrow {
+  color: var(--teal);
+  transform: translateY(-50%) translateX(4px);
+}
+
+/* カードのアクセントライン */
+.card-accent {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  border-radius: 12px 12px 0 0;
+}
+.card-accent.teal { background: linear-gradient(90deg, var(--teal), transparent); }
+.card-accent.orange { background: linear-gradient(90deg, var(--orange), transparent); }
+
+/* ===== SPONSOR BANNER ===== */
+#sponsor-banner {
+  position: relative;
+  z-index: 1;
+  max-width: 900px;
+  margin: 0 auto 40px;
+  padding: 0 24px;
+}
+
+.sponsor-inner {
+  background: rgba(200,168,75,0.06);
+  border: 1px solid rgba(200,168,75,0.25);
+  border-radius: 8px;
+  padding: 18px 28px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+.sponsor-text { flex: 1; }
+.sponsor-title {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--gold);
+  margin-bottom: 3px;
+}
+.sponsor-desc {
+  font-size: 11px;
+  color: var(--muted);
+}
+.sponsor-btn {
+  background: rgba(200,168,75,0.15);
+  border: 1px solid rgba(200,168,75,0.4);
+  color: var(--gold);
+  font-size: 11px;
+  font-weight: 700;
+  padding: 8px 20px;
+  border-radius: 20px;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all .2s;
+  text-decoration: none;
+  display: inline-block;
+}
+.sponsor-btn:hover {
+  background: rgba(200,168,75,0.25);
+  border-color: var(--gold);
+}
+
+/* ===== STATS ===== */
+#stats {
+  position: relative;
+  z-index: 1;
+  max-width: 900px;
+  margin: 0 auto 60px;
+  padding: 0 24px;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+}
+.stat-box {
+  background: rgba(255,255,255,0.02);
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: 8px;
+  padding: 16px;
+  text-align: center;
+}
+.stat-num {
+  font-family: 'Bebas Neue', cursive;
+  font-size: 32px;
+  letter-spacing: 2px;
+  color: var(--teal);
+}
+.stat-label {
+  font-size: 9px;
+  color: var(--muted);
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  margin-top: 2px;
+}
+
+/* ===== AD BOTTOM ===== */
+#ad-bottom {
+  position: relative;
+  z-index: 1;
+  max-width: 728px;
+  margin: 0 auto 60px;
+  min-height: 90px;
+  background: rgba(255,255,255,0.02);
+  border: 1px dashed rgba(255,255,255,0.06);
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+  color: rgba(255,255,255,0.1);
+  letter-spacing: 2px;
+}
+
+/* ===== FOOTER ===== */
+#ftr {
+  position: relative;
+  z-index: 1;
+  border-top: 1px solid rgba(255,255,255,0.06);
+  padding: 28px 32px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+  background: rgba(10,15,46,0.8);
+}
+.ftr-left {
+  font-size: 11px;
+  color: var(--muted);
+}
+.ftr-left span {
+  color: var(--teal);
+  font-weight: 700;
+}
+.ftr-right {
+  font-size: 10px;
+  color: rgba(255,255,255,0.2);
+  letter-spacing: 1px;
+}
+.ftr-links {
+  display: flex;
+  gap: 16px;
+}
+.ftr-link {
+  font-size: 10px;
+  color: var(--muted);
+  text-decoration: none;
+  letter-spacing: 1px;
+  transition: color .2s;
+}
+.ftr-link:hover { color: var(--teal); }
+
+@media (max-width: 600px) {
+  #hdr { padding: 14px 16px; }
+  .logo-main { font-size: 24px; }
+  nav { gap: 4px; }
+  .nav-btn { padding: 5px 10px; font-size: 10px; }
+  #hero { padding: 50px 16px 40px; }
+  #stats { grid-template-columns: repeat(3,1fr); gap: 8px; }
+  .stat-num { font-size: 24px; }
+  .sponsor-inner { flex-direction: column; text-align: center; }
+  #ftr { flex-direction: column; text-align: center; }
+  .ftr-links { justify-content: center; }
+}
+</style>
+</head>
+<body>
+
+<!-- 星空キャンバス -->
+<canvas id="stars-canvas"></canvas>
+
+<!-- HEADER -->
+<header id="hdr">
+  <div class="logo">
+    <span class="logo-main">TripType</span>
+    <span class="logo-jp">トリップタイピング</span>
+  </div>
+  <nav>
+    <a href="#apps" class="nav-btn">アプリ一覧</a>
+    <a href="#sponsor-banner" class="nav-btn sponsor">★ スポンサー募集</a>
+  </nav>
+</header>
+
+<!-- HERO -->
+<section id="hero">
+  <!-- コンパスSVG -->
+  <svg class="compass" viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg">
+    <circle cx="30" cy="30" r="28" fill="none" stroke="rgba(0,201,177,0.3)" stroke-width="1.5"/>
+    <circle cx="30" cy="30" r="22" fill="none" stroke="rgba(0,201,177,0.15)" stroke-width="1"/>
+    <polygon points="30,8 33,30 30,32 27,30" fill="#00C9B1" opacity="0.9"/>
+    <polygon points="30,52 33,30 30,28 27,30" fill="#FF7F3F" opacity="0.9"/>
+    <circle cx="30" cy="30" r="3" fill="rgba(200,168,75,0.8)"/>
+    <text x="30" y="6" text-anchor="middle" fill="rgba(0,201,177,0.6)" font-size="5" font-family="sans-serif">N</text>
+    <text x="30" y="57" text-anchor="middle" fill="rgba(255,127,63,0.6)" font-size="5" font-family="sans-serif">S</text>
+    <text x="4" y="31.5" text-anchor="middle" fill="rgba(0,201,177,0.4)" font-size="5" font-family="sans-serif">W</text>
+    <text x="56" y="31.5" text-anchor="middle" fill="rgba(0,201,177,0.4)" font-size="5" font-family="sans-serif">E</text>
+  </svg>
+
+  <div class="hero-badge">✦ Typing × Learning × Journey</div>
+  <h1 class="hero-title">TRIPTYPE</h1>
+  <p class="hero-sub">旅するように、楽しく学ぶ。</p>
+  <p class="hero-desc">タイピングで日本中・世界中を旅しよう</p>
+</section>
+
+<!-- AD TOP -->
+<div id="ad-top">AD</div>
+
+<!-- APPS -->
+<section id="apps">
+  <div class="section-label">✦ APPS ✦</div>
+  <div class="apps-grid">
+
+    <!-- 鮨撃 -->
+    <a href="/sushigeki/" class="app-card">
+      <div class="card-accent teal"></div>
+      <span class="card-emoji">🍣</span>
+      <div class="card-title">鮨撃</div>
+      <div class="card-title-jp">SUSHIGEKI KITAKYUSHU</div>
+      <div class="card-desc">北九州の寿司ネタでタイピング練習！回転レーンを流れるネタを仕留めよう。</div>
+      <span class="card-status live"><span class="dot"></span>LIVE — プレイ中</span>
+      <span class="card-arrow">→</span>
+    </a>
+
+    <!-- 日本地図タイピング -->
+    <div class="app-card disabled">
+      <div class="card-accent orange"></div>
+      <span class="card-emoji">🗾</span>
+      <div class="card-title">日本地図</div>
+      <div class="card-title-jp">JAPAN MAP TYPING</div>
+      <div class="card-desc">都道府県名をタイピングして日本を制覇しよう。全国の地名・名所が登場！</div>
+      <span class="card-status coming"><span class="dot"></span>COMING SOON</span>
+    </div>
+
+  </div>
+</section>
+
+<!-- SPONSOR BANNER -->
+<div id="sponsor-banner">
+  <div class="sponsor-inner">
+    <div class="sponsor-text">
+      <div class="sponsor-title">★ スポンサー・掲載企業募集中</div>
+      <div class="sponsor-desc">アプリ内にお題として企業名・キャッチコピーを掲載。子どもたちが楽しみながら覚えるデジタル広告です。</div>
+    </div>
+    <a href="mailto:info@triptyping.jp" class="sponsor-btn">お問い合わせ →</a>
+  </div>
+</div>
+
+<!-- STATS -->
+<div id="stats">
+  <div class="stat-box">
+    <div class="stat-num">2</div>
+    <div class="stat-label">Apps</div>
+  </div>
+  <div class="stat-box">
+    <div class="stat-num">100+</div>
+    <div class="stat-label">お題数</div>
+  </div>
+  <div class="stat-box">
+    <div class="stat-num">FREE</div>
+    <div class="stat-label">完全無料</div>
+  </div>
+</div>
+
+<!-- AD BOTTOM -->
+<div id="ad-bottom">AD</div>
+
+<!-- FOOTER -->
+<footer id="ftr">
+  <div class="ftr-left">
+    運営：<span>門司港BONGO</span> / 株式会社LAM COMPANY
+  </div>
+  <div class="ftr-links">
+    <a href="mailto:info@triptyping.jp" class="ftr-link">お問い合わせ</a>
+    <a href="#sponsor-banner" class="ftr-link">スポンサー募集</a>
+  </div>
+  <div class="ftr-right">© 2025 TripType / トリップタイピング</div>
+</footer>
+
+<script>
+// ===== 星空アニメーション =====
+const canvas = document.getElementById('stars-canvas');
+const ctx = canvas.getContext('2d');
+let stars = [];
+
+function resize() {
+  canvas.width  = window.innerWidth;
+  canvas.height = window.innerHeight;
+}
+
+function initStars() {
+  stars = [];
+  const count = Math.floor((canvas.width * canvas.height) / 6000);
+  for (let i = 0; i < count; i++) {
+    stars.push({
+      x: Math.random() * canvas.width,
+      y: Math.random() * canvas.height,
+      r: Math.random() * 1.5 + 0.2,
+      alpha: Math.random(),
+      speed: Math.random() * 0.008 + 0.002,
+      phase: Math.random() * Math.PI * 2,
+    });
+  }
+}
+
+function drawStars(t) {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  stars.forEach(s => {
+    const a = 0.3 + 0.7 * (0.5 + 0.5 * Math.sin(t * s.speed + s.phase));
+    ctx.beginPath();
+    ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+    ctx.fillStyle = `rgba(200,220,255,${a * 0.85})`;
+    ctx.fill();
+  });
+  // 流れ星（ランダム）
+  if (Math.random() < 0.003) {
+    const sx = Math.random() * canvas.width;
+    const sy = Math.random() * canvas.height * 0.5;
+    const len = 80 + Math.random() * 120;
+    const grad = ctx.createLinearGradient(sx, sy, sx + len, sy + len * 0.4);
+    grad.addColorStop(0, 'rgba(0,201,177,0.8)');
+    grad.addColorStop(1, 'rgba(0,201,177,0)');
+    ctx.beginPath();
+    ctx.moveTo(sx, sy);
+    ctx.lineTo(sx + len, sy + len * 0.4);
+    ctx.strokeStyle = grad;
+    ctx.lineWidth = 1.5;
+    ctx.stroke();
+  }
+}
+
+let t = 0;
+function animate() {
+  t++;
+  drawStars(t);
+  requestAnimationFrame(animate);
+}
+
+window.addEventListener('resize', () => { resize(); initStars(); });
+resize();
+initStars();
+animate();
+
+// ===== カードホバーエフェクト =====
+document.querySelectorAll('.app-card:not(.disabled)').forEach(card => {
+  card.addEventListener('mousemove', e => {
+    const rect = card.getBoundingClientRect();
+    const x = ((e.clientX - rect.left) / rect.width - 0.5) * 10;
+    const y = ((e.clientY - rect.top)  / rect.height - 0.5) * 10;
+    card.style.transform = `translateY(-6px) rotateX(${-y}deg) rotateY(${x}deg)`;
+  });
+  card.addEventListener('mouseleave', () => {
+    card.style.transform = '';
+  });
+});
+
+// ===== スムーズスクロール =====
+document.querySelectorAll('a[href^="#"]').forEach(a => {
+  a.addEventListener('click', e => {
+    const target = document.querySelector(a.getAttribute('href'));
+    if (target) { e.preventDefault(); target.scrollIntoView({ behavior: 'smooth' }); }
+  });
+});
+</script>
+</body>
+</html>
