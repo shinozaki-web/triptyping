@@ -1,0 +1,940 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>鮨撃 KITAKYUSHU — 冒険モード</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700;900&family=Bebas+Neue&family=IBM+Plex+Mono:wght@400;700&family=Shippori+Mincho+B1:wght@700;800&display=swap" rel="stylesheet">
+<style>
+/* ===== DESIGN TOKENS (sushigeki.html 継承) ===== */
+:root {
+  --red:#A03020; --red2:#C03C28;
+  --gold:#C89020; --gold2:#DBA828;
+  --dark:#08101E; --dark2:#0E1A30; --dark3:#142240; --dark4:#1C2E50;
+  --text:#EDE8DA; --muted:#6888A8;
+  --green:#27AE60; --green2:#2ECC71;
+  --cyan:#1A78A8; --wood:#5A3018;
+  --sea:#0A1830; --brick:#6A2010;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{
+  background:linear-gradient(160deg,#08101E 0%,#0C1828 35%,#0A1430 65%,#060E20 100%);
+  color:var(--text);font-family:'Noto Sans JP',sans-serif;min-height:100vh;overflow-x:hidden;
+}
+body::before{content:'';position:fixed;inset:0;
+  background-image:repeating-linear-gradient(0deg,transparent,transparent 59px,rgba(14,60,120,0.13) 59px,rgba(14,60,120,0.13) 60px),
+  repeating-linear-gradient(176deg,transparent,transparent 179px,rgba(14,60,120,0.07) 179px,rgba(14,60,120,0.07) 180px);
+  pointer-events:none;z-index:0;}
+body::after{content:'';position:fixed;inset:0;
+  background:radial-gradient(ellipse at 15% 92%,rgba(200,110,30,0.12) 0%,transparent 30%),
+  radial-gradient(ellipse at 82% 88%,rgba(20,90,180,0.1) 0%,transparent 30%);
+  pointer-events:none;z-index:0;}
+
+/* ===== HEADER ===== */
+#hdr{position:relative;z-index:10;padding:13px 24px;display:flex;align-items:center;justify-content:space-between;
+  border-bottom:1px solid rgba(192,136,24,0.18);
+  background:linear-gradient(90deg,rgba(5,7,13,0.97) 0%,rgba(8,11,20,0.97) 50%,rgba(5,7,13,0.97) 100%);}
+.logo-main{font-family:'Shippori Mincho B1',serif;font-size:26px;font-weight:800;letter-spacing:4px;color:var(--text);}
+.logo-sub{font-family:'Bebas Neue',cursive;font-size:12px;color:var(--gold);letter-spacing:4px;margin-left:8px;}
+.logo-badge{background:var(--red);color:#fff;font-size:9px;font-weight:700;padding:2px 7px;border-radius:2px;margin-left:6px;letter-spacing:1px;vertical-align:middle;}
+.adv-badge{background:linear-gradient(135deg,var(--gold),#E67E22);color:var(--dark);font-size:10px;font-weight:900;padding:3px 10px;border-radius:3px;letter-spacing:2px;margin-left:8px;vertical-align:middle;}
+.back-btn{background:transparent;border:1px solid rgba(255,255,255,0.1);color:var(--muted);font-size:11px;padding:5px 14px;border-radius:2px;cursor:pointer;transition:all .2s;}
+.back-btn:hover{border-color:rgba(255,255,255,.3);color:var(--text);}
+
+/* ===== MAIN ===== */
+#main{position:relative;z-index:1;max-width:860px;margin:0 auto;padding:14px 16px 48px;}
+
+/* ===== STAGE BANNER ===== */
+#stage-banner{
+  background:linear-gradient(90deg,rgba(160,48,32,0.12),rgba(200,144,32,0.08),rgba(160,48,32,0.12));
+  border:1px solid rgba(200,144,32,0.2);border-radius:4px;
+  padding:9px 18px;margin-bottom:12px;display:flex;align-items:center;justify-content:space-between;
+}
+.stage-chapter{font-family:'Shippori Mincho B1',serif;font-size:13px;color:var(--gold2);letter-spacing:3px;}
+.stage-progress{font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--muted);}
+.stage-progress b{color:var(--gold);}
+
+/* ===== BATTLE AREA ===== */
+#battle-area{display:grid;grid-template-columns:1fr 70px 1fr;gap:10px;margin-bottom:10px;align-items:start;}
+
+.combatant-card{background:var(--dark2);border:1px solid rgba(10,50,100,0.35);border-radius:6px;padding:14px;position:relative;overflow:hidden;}
+.combatant-card.player-card{border-color:rgba(39,174,96,0.25);}
+.combatant-card.enemy-card{border-color:rgba(192,57,43,0.3);}
+.combatant-card.enemy-card.boss-mode{border-color:rgba(200,144,32,0.45);box-shadow:0 0 20px rgba(200,144,32,0.08);}
+
+.card-label{font-size:9px;font-weight:700;letter-spacing:2px;color:var(--muted);margin-bottom:8px;text-transform:uppercase;}
+.card-emoji{font-size:52px;text-align:center;display:block;line-height:1;margin:4px 0 10px;}
+.card-emoji.shake{animation:cShake .3s ease;}
+.card-emoji.hit-flash{animation:cFlash .2s ease;}
+@keyframes cShake{0%,100%{transform:translateX(0)}20%{transform:translateX(-7px)}50%{transform:translateX(7px)}80%{transform:translateX(-4px)}}
+@keyframes cFlash{0%,100%{filter:none}50%{filter:brightness(3) saturate(0)}}
+
+/* HP Bar */
+.hp-row{display:flex;align-items:center;gap:6px;margin-bottom:5px;}
+.hp-label{font-size:10px;color:var(--muted);font-family:'IBM Plex Mono',monospace;}
+.hp-bar-wrap{flex:1;height:9px;background:rgba(255,255,255,0.05);border-radius:5px;overflow:hidden;}
+.hp-bar-fill{height:100%;border-radius:5px;transition:width .35s ease;}
+.hp-bar-fill.player-fill{background:linear-gradient(90deg,var(--green),var(--green2));}
+.hp-bar-fill.player-fill.low{background:linear-gradient(90deg,#C0392B,var(--red2));animation:hpUrgent 1s ease infinite;}
+.hp-bar-fill.enemy-fill{background:linear-gradient(90deg,#C0392B,var(--red2));}
+.hp-bar-fill.boss-fill{background:linear-gradient(90deg,#8E44AD,#E74C3C);}
+@keyframes hpUrgent{0%,100%{opacity:1}50%{opacity:.55}}
+.hp-nums{font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--text);white-space:nowrap;}
+
+/* ATK timer */
+.atk-timer-wrap{margin-top:10px;}
+.atk-bar-label{font-size:9px;color:var(--muted);letter-spacing:1px;margin-bottom:3px;}
+.atk-bar-outer{height:5px;background:rgba(255,255,255,0.05);border-radius:3px;overflow:hidden;}
+.atk-bar-inner{height:100%;border-radius:3px;background:linear-gradient(90deg,rgba(255,180,0,.8),rgba(255,60,0,.9));transition:width .08s linear;}
+.atk-bar-inner.danger{background:linear-gradient(90deg,var(--red2),#FF2200);}
+
+/* Skill gauge */
+.skill-wrap{margin-top:10px;}
+.skill-header{display:flex;justify-content:space-between;font-size:9px;color:var(--muted);letter-spacing:1.5px;margin-bottom:4px;}
+.skill-pct{color:var(--gold);font-family:'IBM Plex Mono',monospace;}
+.skill-gauge-outer{height:7px;background:rgba(255,255,255,0.05);border-radius:4px;overflow:hidden;margin-bottom:8px;}
+.skill-gauge-inner{height:100%;border-radius:4px;background:linear-gradient(90deg,var(--gold),var(--gold2));transition:width .3s ease;}
+#skill-btn{
+  width:100%;background:rgba(192,136,24,0.1);border:1px solid rgba(192,136,24,0.25);
+  color:var(--muted);font-family:'Bebas Neue',cursive;font-size:16px;letter-spacing:3px;
+  padding:7px;border-radius:4px;cursor:not-allowed;transition:all .3s;
+}
+#skill-btn.ready{
+  background:linear-gradient(135deg,rgba(192,136,24,0.25),rgba(219,168,40,0.15));
+  border-color:var(--gold);color:var(--gold);cursor:pointer;
+  animation:skillPulse .7s ease-in-out infinite alternate;
+}
+#skill-btn.ready:hover{background:linear-gradient(135deg,rgba(192,136,24,0.45),rgba(219,168,40,0.3));}
+@keyframes skillPulse{0%{box-shadow:0 0 0 rgba(200,144,32,0)}100%{box-shadow:0 0 14px rgba(200,144,32,0.5)}}
+
+/* VS zone */
+#vs-zone{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;padding:8px 0;}
+.vs-label{font-family:'Bebas Neue',cursive;font-size:20px;color:rgba(104,136,168,0.5);letter-spacing:4px;}
+#dmg-pop-area{position:relative;width:60px;height:60px;}
+.dmg-pop{
+  position:absolute;top:0;left:50%;transform:translateX(-50%);
+  font-family:'Bebas Neue',cursive;pointer-events:none;white-space:nowrap;
+  animation:dmgUp .8s ease-out forwards;
+}
+.dmg-pop.p{color:var(--red2);font-size:18px;}
+.dmg-pop.e{color:var(--gold2);font-size:20px;}
+.dmg-pop.s{color:var(--gold);font-size:26px;text-shadow:0 0 10px rgba(200,144,32,.6);}
+@keyframes dmgUp{0%{opacity:1;transform:translateX(-50%) translateY(0)}100%{opacity:0;transform:translateX(-50%) translateY(-48px)}}
+
+/* ===== BATTLE LOG ===== */
+#battle-log{
+  background:var(--dark2);border:1px solid rgba(10,50,100,0.22);
+  border-radius:4px;padding:7px 14px;margin-bottom:8px;height:56px;overflow:hidden;
+}
+.log-line{font-size:11px;line-height:1.65;color:var(--muted);}
+.log-line.latest{color:var(--text);}
+.log-line.hit{color:var(--gold2);}
+.log-line.dmg{color:#E87070;}
+.log-line.skill{color:var(--gold);}
+
+/* ===== WORD TIMER ===== */
+#word-timer-wrap{height:3px;background:rgba(255,255,255,0.05);border-radius:2px;margin-bottom:8px;overflow:hidden;}
+#word-timer-fill{height:100%;border-radius:2px;background:var(--cyan);}
+#word-timer-fill.urgent{background:var(--red2);}
+
+/* ===== TYPING ZONE ===== */
+#typing-zone{background:var(--dark2);border:1px solid rgba(10,50,100,0.3);border-radius:6px;padding:14px 18px;}
+.tgt-row{display:flex;align-items:center;gap:14px;margin-bottom:10px;padding-bottom:10px;border-bottom:1px solid rgba(255,255,255,0.05);}
+#tgt-emoji{font-size:36px;flex-shrink:0;}
+#tgt-info{flex:1;}
+#tgt-name{font-size:20px;font-weight:700;}
+#tgt-yomi{font-size:11px;color:var(--gold);margin-top:2px;letter-spacing:2px;}
+#tgt-hint{font-size:11px;color:var(--muted);margin-top:2px;}
+#tgt-dmg{font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--gold2);text-align:right;flex-shrink:0;}
+
+.char-row{display:flex;gap:3px;justify-content:center;min-height:48px;align-items:center;flex-wrap:wrap;margin-bottom:10px;}
+.ch{width:32px;height:42px;display:flex;align-items:center;justify-content:center;position:relative;
+  font-family:'IBM Plex Mono',monospace;font-size:19px;font-weight:700;
+  border-radius:4px;border:1.5px solid rgba(255,255,255,0.08);background:var(--dark3);color:var(--muted);flex-shrink:0;}
+.ch.ok{background:rgba(39,174,96,.15);border-color:var(--green);color:var(--green2);}
+.ch.ng{background:rgba(192,57,43,.2);border-color:var(--red2);color:var(--red2);animation:chShake .2s ease;}
+.ch.cur{background:rgba(243,156,18,.1);border-color:var(--gold);color:var(--text);box-shadow:0 0 8px rgba(243,156,18,.25);}
+.ch.cur::after{content:'';position:absolute;bottom:4px;left:50%;transform:translateX(-50%);width:13px;height:2px;background:var(--gold);animation:blink .8s step-end infinite;}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:0}}
+@keyframes chShake{0%,100%{transform:translateX(0)}30%{transform:translateX(-4px)}70%{transform:translateX(4px)}}
+
+#type-input{width:100%;background:var(--dark3);border:1.5px solid rgba(255,255,255,0.12);
+  color:var(--text);font-family:'IBM Plex Mono',monospace;font-size:17px;font-weight:700;
+  padding:9px 14px;border-radius:4px;outline:none;text-align:center;letter-spacing:3px;caret-color:var(--gold);}
+#type-input:focus{border-color:var(--gold);}
+#type-input.cfx{border-color:var(--green);animation:cfx .3s ease;}
+@keyframes cfx{0%{box-shadow:0 0 0 0 rgba(39,174,96,.5)}100%{box-shadow:0 0 0 12px rgba(39,174,96,0)}}
+#combo-line{text-align:center;font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--muted);margin-top:7px;height:16px;}
+
+/* ===== TITLE SCREEN ===== */
+#title-screen{
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  min-height:100vh;position:relative;z-index:5;padding:40px 20px;text-align:center;
+}
+.t-main{font-family:'Shippori Mincho B1',serif;font-size:52px;font-weight:800;letter-spacing:8px;color:var(--text);margin-bottom:6px;text-shadow:0 0 40px rgba(192,136,24,0.25);}
+.t-sub{font-family:'Bebas Neue',cursive;font-size:18px;color:var(--gold);letter-spacing:6px;margin-bottom:4px;}
+.t-mode{display:inline-block;background:linear-gradient(135deg,var(--gold),#E67E22);color:var(--dark);font-family:'Bebas Neue',cursive;font-size:13px;font-weight:900;padding:4px 16px;border-radius:3px;letter-spacing:3px;margin-bottom:30px;}
+.chapter-card{background:var(--dark2);border:1px solid rgba(200,144,32,0.2);border-radius:8px;padding:22px 28px;max-width:430px;width:92vw;margin-bottom:26px;}
+.ch-num{font-family:'Bebas Neue',cursive;font-size:13px;color:var(--gold);letter-spacing:4px;margin-bottom:6px;}
+.ch-name{font-family:'Shippori Mincho B1',serif;font-size:22px;font-weight:800;color:var(--text);margin-bottom:10px;}
+.ch-desc{font-size:12px;color:var(--muted);line-height:1.75;}
+.enemies-preview{display:flex;gap:10px;justify-content:center;margin-top:14px;flex-wrap:wrap;}
+.ep-item{background:var(--dark3);border:1px solid rgba(255,255,255,0.07);border-radius:6px;padding:9px 13px;text-align:center;font-size:22px;}
+.ep-item span{display:block;font-size:9px;color:var(--muted);margin-top:3px;letter-spacing:1px;}
+.ep-boss{border-color:rgba(200,144,32,0.3);}
+.ep-boss span{color:var(--gold2);}
+.btn-start-adv{
+  background:linear-gradient(135deg,var(--red),var(--brick));border:none;
+  color:#fff;font-family:'Bebas Neue',cursive;font-size:23px;letter-spacing:4px;
+  padding:13px 48px;border-radius:6px;cursor:pointer;transition:all .2s;
+  box-shadow:0 4px 20px rgba(160,48,32,0.4);
+}
+.btn-start-adv:hover{transform:translateY(-2px);box-shadow:0 6px 26px rgba(160,48,32,0.55);}
+
+/* ===== OVERLAYS ===== */
+.overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.87);z-index:200;align-items:center;justify-content:center;backdrop-filter:blur(4px);}
+.overlay.show{display:flex;}
+@keyframes slideUp{from{transform:translateY(38px);opacity:0}to{transform:translateY(0);opacity:1}}
+
+/* Enemy enter */
+.enter-card{background:var(--dark2);border:1px solid rgba(255,255,255,.08);border-radius:8px;padding:38px;text-align:center;max-width:340px;width:90vw;animation:slideUp .4s cubic-bezier(.34,1.56,.64,1);}
+.enter-card.boss{border-color:rgba(200,144,32,0.4);box-shadow:0 0 40px rgba(200,144,32,0.12);}
+.enter-type{font-size:9px;letter-spacing:3px;color:var(--muted);margin-bottom:10px;}
+.enter-type.boss{color:var(--gold);}
+.enter-emoji{font-size:72px;line-height:1;margin:6px 0 14px;display:block;}
+.enter-name{font-family:'Shippori Mincho B1',serif;font-size:22px;font-weight:800;color:var(--text);margin-bottom:6px;}
+.enter-name.boss{color:var(--gold);}
+.enter-hp{font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--muted);margin-bottom:18px;}
+.enter-hp b{color:var(--red2);}
+.enter-btn{background:var(--red);border:none;color:#fff;font-family:'Bebas Neue',cursive;font-size:17px;letter-spacing:3px;padding:10px 32px;border-radius:4px;cursor:pointer;transition:all .2s;}
+.enter-btn:hover{background:var(--red2);}
+.enter-btn.boss{background:linear-gradient(135deg,var(--gold),#E67E22);color:var(--dark);font-weight:900;}
+
+/* Enemy die */
+.die-card{background:var(--dark2);border:1px solid rgba(39,174,96,0.3);border-radius:8px;padding:34px;text-align:center;max-width:320px;width:90vw;animation:slideUp .4s cubic-bezier(.34,1.56,.64,1);}
+.die-card.boss{border-color:var(--gold);box-shadow:0 0 40px rgba(200,144,32,0.15);}
+.die-emoji{font-size:52px;display:block;margin-bottom:10px;animation:dieFloat 1.2s ease-in-out infinite alternate;}
+@keyframes dieFloat{0%{transform:translateY(0) rotate(-4deg)}100%{transform:translateY(-8px) rotate(4deg)}}
+.die-title{font-family:'Bebas Neue',cursive;font-size:40px;letter-spacing:4px;color:var(--green2);margin-bottom:6px;}
+.die-title.boss{color:var(--gold);}
+.die-sub{font-size:12px;color:var(--muted);margin-bottom:14px;}
+.die-btn{background:var(--dark3);border:1px solid var(--green);color:var(--green2);font-family:'Bebas Neue',cursive;font-size:15px;letter-spacing:2px;padding:8px 26px;border-radius:4px;cursor:pointer;transition:all .2s;}
+.die-btn:hover{background:rgba(39,174,96,.15);}
+.die-btn.boss{border-color:var(--gold);color:var(--gold);}
+
+/* Game Over */
+.go-card{background:var(--dark2);border:1px solid rgba(255,255,255,.08);border-radius:8px;padding:38px 42px;text-align:center;max-width:400px;width:90vw;animation:slideUp .4s cubic-bezier(.34,1.56,.64,1);}
+.go-title{font-family:'Bebas Neue',cursive;font-size:50px;letter-spacing:4px;color:var(--red2);margin-bottom:4px;}
+.go-sub{font-size:12px;color:var(--muted);margin-bottom:20px;}
+.go-stats{display:grid;grid-template-columns:repeat(2,1fr);gap:9px;margin-bottom:20px;}
+.go-stat{background:var(--dark3);border-radius:4px;padding:11px;}
+.go-stat-label{font-size:9px;letter-spacing:1.5px;color:var(--muted);text-transform:uppercase;margin-bottom:3px;}
+.go-stat-val{font-family:'IBM Plex Mono',monospace;font-size:24px;font-weight:700;color:var(--text);}
+.go-btn{width:100%;background:var(--red);border:none;color:#fff;font-family:'Bebas Neue',cursive;font-size:19px;letter-spacing:3px;padding:12px;border-radius:4px;cursor:pointer;transition:all .2s;}
+.go-btn:hover{background:var(--red2);}
+
+/* Stage Clear */
+.sc-card{background:var(--dark2);border:1px solid rgba(200,144,32,0.3);border-radius:8px;padding:38px;text-align:center;max-width:420px;width:90vw;animation:slideUp .4s cubic-bezier(.34,1.56,.64,1);box-shadow:0 0 40px rgba(200,144,32,0.08);}
+.sc-title{font-family:'Bebas Neue',cursive;font-size:46px;letter-spacing:4px;color:var(--gold);margin-bottom:4px;}
+.sc-sub{font-size:13px;color:var(--muted);margin-bottom:18px;}
+.sc-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:18px;}
+.sc-stat{background:var(--dark3);border-radius:4px;padding:10px;}
+.sc-stat-label{font-size:9px;color:var(--muted);letter-spacing:1px;text-transform:uppercase;margin-bottom:2px;}
+.sc-stat-val{font-family:'IBM Plex Mono',monospace;font-size:20px;font-weight:700;color:var(--text);}
+.sc-next-msg{font-size:11px;color:rgba(243,156,18,.6);background:rgba(243,156,18,.05);border:1px solid rgba(243,156,18,.18);border-radius:4px;padding:9px 11px;margin-bottom:14px;}
+.sc-btn{width:100%;background:linear-gradient(135deg,var(--gold),#E67E22);border:none;color:var(--dark);font-family:'Bebas Neue',cursive;font-size:19px;letter-spacing:3px;padding:12px;border-radius:4px;cursor:pointer;transition:all .2s;font-weight:900;}
+.sc-btn:hover{transform:translateY(-2px);box-shadow:0 4px 20px rgba(200,144,32,0.3);}
+
+/* ===== FX ===== */
+#skill-fx{position:fixed;inset:0;pointer-events:none;z-index:150;display:none;align-items:center;justify-content:center;}
+#skill-fx.show{display:flex;}
+.skill-fx-text{font-family:'Bebas Neue',cursive;font-size:78px;letter-spacing:6px;color:var(--gold);text-shadow:0 0 40px rgba(200,144,32,.9),0 0 80px rgba(200,144,32,.4);animation:sfxAnim .9s ease-out forwards;}
+@keyframes sfxAnim{0%{opacity:1;transform:scale(.4)}35%{opacity:1;transform:scale(1.15)}100%{opacity:0;transform:scale(.85)}}
+
+#combo-fx{position:fixed;top:38%;left:50%;transform:translate(-50%,-50%) scale(0);font-family:'Bebas Neue',cursive;font-size:54px;color:var(--gold);text-shadow:0 0 24px rgba(243,156,18,.7);pointer-events:none;z-index:100;letter-spacing:5px;}
+#combo-fx.show{animation:comboFxAnim .8s ease-out forwards;}
+@keyframes comboFxAnim{0%{transform:translate(-50%,-50%) scale(.4);opacity:1}40%{transform:translate(-50%,-60%) scale(1.1);opacity:1}100%{transform:translate(-50%,-80%) scale(.8);opacity:0}}
+
+#screen-flash{position:fixed;inset:0;pointer-events:none;z-index:140;opacity:0;}
+#screen-flash.hit{animation:flashHit .15s ease-out forwards;background:rgba(160,48,32,.35);}
+#screen-flash.skill{animation:flashHit .35s ease-out forwards;background:rgba(200,144,32,.25);}
+@keyframes flashHit{0%{opacity:1}100%{opacity:0}}
+
+@media(max-width:600px){
+  #battle-area{grid-template-columns:1fr 44px 1fr;}
+  .card-emoji{font-size:38px;}
+  .t-main{font-size:38px;}
+}
+</style>
+</head>
+<body>
+
+<div id="screen-flash"></div>
+<div id="skill-fx"><div class="skill-fx-text">鮨　撃！</div></div>
+<div id="combo-fx"></div>
+
+<!-- ===== TITLE SCREEN ===== -->
+<div id="title-screen">
+  <div class="t-main">鮨撃</div>
+  <div class="t-sub">KITAKYUSHU</div>
+  <div class="t-mode">冒険モード ADVENTURE</div>
+  <div class="chapter-card">
+    <div class="ch-num">CHAPTER 1</div>
+    <div class="ch-name">門司港の夜明け</div>
+    <div class="ch-desc">夜明け前の門司港。波静かな海に緊張が漂う。<br>腕を磨いた寿司職人たちが待ち受ける。<br>タイピングの力でボスを撃破せよ！</div>
+    <div class="enemies-preview">
+      <div class="ep-item">🧑‍🍳<span>見習い</span></div>
+      <div class="ep-item">🔪<span>助手板前</span></div>
+      <div class="ep-item">🐟<span>古参職人</span></div>
+      <div class="ep-item ep-boss">👨‍🍳<span>BOSS</span></div>
+    </div>
+  </div>
+  <button class="btn-start-adv" onclick="startAdventure()">▶ 冒険を始める</button>
+</div>
+
+<!-- ===== GAME SCREEN ===== -->
+<div id="game-screen" style="display:none;">
+<div id="hdr">
+  <div style="display:flex;align-items:baseline;gap:4px;">
+    <span class="logo-main">鮨撃</span>
+    <span class="logo-badge">BETA</span>
+    <span class="logo-sub">KITAKYUSHU</span>
+    <span class="adv-badge">冒険モード</span>
+  </div>
+  <button class="back-btn" onclick="backToTitle()">← タイトルへ</button>
+</div>
+<div id="main">
+
+  <div id="stage-banner">
+    <div class="stage-chapter" id="stage-chapter-text">第1章：門司港の夜明け</div>
+    <div class="stage-progress">戦闘 <b id="battle-num">1</b> / <b id="battle-total">4</b></div>
+  </div>
+
+  <div id="battle-area">
+    <!-- Player -->
+    <div class="combatant-card player-card">
+      <div class="card-label">🧑‍💻 プレイヤー</div>
+      <div class="card-emoji" id="player-emoji">🧑‍🍳</div>
+      <div class="hp-row">
+        <div class="hp-label">HP</div>
+        <div class="hp-bar-wrap"><div class="hp-bar-fill player-fill" id="player-hp-fill" style="width:100%"></div></div>
+        <div class="hp-nums" id="player-hp-nums">100/100</div>
+      </div>
+      <div class="skill-wrap">
+        <div class="skill-header">
+          <span>スキルゲージ</span><span class="skill-pct" id="skill-pct">0%</span>
+        </div>
+        <div class="skill-gauge-outer"><div class="skill-gauge-inner" id="skill-gauge-fill" style="width:0%"></div></div>
+        <button id="skill-btn" onclick="activateSkill()" disabled>⚡ 鮨撃！</button>
+      </div>
+    </div>
+
+    <!-- VS -->
+    <div id="vs-zone">
+      <div class="vs-label">VS</div>
+      <div id="dmg-pop-area"></div>
+    </div>
+
+    <!-- Enemy -->
+    <div class="combatant-card enemy-card" id="enemy-card">
+      <div class="card-label" id="enemy-label">— ENEMY —</div>
+      <div class="card-emoji" id="enemy-emoji">❓</div>
+      <div class="hp-row">
+        <div class="hp-label">HP</div>
+        <div class="hp-bar-wrap"><div class="hp-bar-fill enemy-fill" id="enemy-hp-fill" style="width:100%"></div></div>
+        <div class="hp-nums" id="enemy-hp-nums">—/—</div>
+      </div>
+      <div class="atk-timer-wrap">
+        <div class="atk-bar-label">⚠ 攻撃まで</div>
+        <div class="atk-bar-outer"><div class="atk-bar-inner" id="atk-bar-inner" style="width:100%"></div></div>
+      </div>
+    </div>
+  </div>
+
+  <div id="battle-log">
+    <div class="log-line latest" id="log-0">— 冒険開始！ —</div>
+    <div class="log-line" id="log-1"></div>
+    <div class="log-line" id="log-2"></div>
+  </div>
+
+  <div id="word-timer-wrap"><div id="word-timer-fill"></div></div>
+
+  <div id="typing-zone">
+    <div class="tgt-row">
+      <div id="tgt-emoji">🍣</div>
+      <div id="tgt-info">
+        <div id="tgt-name">—</div>
+        <div id="tgt-yomi"></div>
+        <div id="tgt-hint"></div>
+      </div>
+      <div id="tgt-dmg">— dmg</div>
+    </div>
+    <div class="char-row" id="char-row"></div>
+    <input type="text" id="type-input" placeholder="— タイプして攻撃 —"
+      autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" disabled/>
+    <div id="combo-line">COMBO: 0</div>
+  </div>
+
+</div>
+</div><!-- /game-screen -->
+
+<!-- Enemy Enter Overlay -->
+<div class="overlay" id="overlay-enter">
+  <div class="enter-card" id="enter-card">
+    <div class="enter-type" id="enter-type">ENEMY</div>
+    <span class="enter-emoji" id="enter-emoji">❓</span>
+    <div class="enter-name" id="enter-name">—</div>
+    <div class="enter-hp">HP <b id="enter-hp-val">—</b></div>
+    <button class="enter-btn" id="enter-btn" onclick="closeEnterOverlay()">戦　闘　開　始</button>
+  </div>
+</div>
+
+<!-- Enemy Die Overlay -->
+<div class="overlay" id="overlay-die">
+  <div class="die-card" id="die-card">
+    <span class="die-emoji" id="die-emoji">⭐</span>
+    <div class="die-title" id="die-title">撃破！</div>
+    <div class="die-sub" id="die-sub"></div>
+    <button class="die-btn" id="die-btn" onclick="onDieNext()">次へ ▶</button>
+  </div>
+</div>
+
+<!-- Game Over Overlay -->
+<div class="overlay" id="overlay-go">
+  <div class="go-card">
+    <div class="go-title">全滅…</div>
+    <div class="go-sub">北九州の寿司の都への道は険しい</div>
+    <div class="go-stats">
+      <div class="go-stat"><div class="go-stat-label">撃破数</div><div class="go-stat-val" id="go-kills">0</div></div>
+      <div class="go-stat"><div class="go-stat-label">最大コンボ</div><div class="go-stat-val" id="go-combo">0</div></div>
+      <div class="go-stat"><div class="go-stat-label">与ダメージ</div><div class="go-stat-val" id="go-dmg">0</div></div>
+      <div class="go-stat"><div class="go-stat-label">打鍵数</div><div class="go-stat-val" id="go-keys">0</div></div>
+    </div>
+    <button class="go-btn" onclick="restartGame()">もう一度挑戦</button>
+  </div>
+</div>
+
+<!-- Stage Clear Overlay -->
+<div class="overlay" id="overlay-sc">
+  <div class="sc-card">
+    <div style="font-size:9px;letter-spacing:3px;color:var(--gold);margin-bottom:8px;">STAGE CLEAR</div>
+    <div class="sc-title">完全制覇！</div>
+    <div class="sc-sub">第1章「門司港の夜明け」クリア！</div>
+    <div class="sc-stats">
+      <div class="sc-stat"><div class="sc-stat-label">撃破数</div><div class="sc-stat-val" id="sc-kills">4</div></div>
+      <div class="sc-stat"><div class="sc-stat-label">最大コンボ</div><div class="sc-stat-val" id="sc-combo">0</div></div>
+      <div class="sc-stat"><div class="sc-stat-label">与ダメージ</div><div class="sc-stat-val" id="sc-dmg">0</div></div>
+    </div>
+    <div class="sc-next-msg">★ 第2章「小倉城の攻防」は近日公開予定</div>
+    <button class="sc-btn" onclick="restartGame()">▶ もう一度プレイ</button>
+  </div>
+</div>
+
+<script>
+// ============================================================
+// GAME DATA
+// ============================================================
+const WORDS_EASY = [
+  {e:'🍣',n:'マグロ',  yomi:'まぐろ',  r:'maguro',      h:'鮪。赤身の王様'},
+  {e:'🦑',n:'イカ',    yomi:'いか',    r:'ika',         h:'烏賊。コリコリ食感'},
+  {e:'🦐',n:'エビ',    yomi:'えび',    r:'ebi',         h:'海老。甘くてプリプリ'},
+  {e:'🐙',n:'タコ',    yomi:'たこ',    r:'tako',        h:'蛸。噛むほど旨い'},
+  {e:'🐠',n:'アジ',    yomi:'あじ',    r:'aji',         h:'鯵。光物の代表'},
+  {e:'🐟',n:'ブリ',    yomi:'ぶり',    r:'buri',        h:'鰤。冬が旬の王者'},
+  {e:'🐟',n:'タイ',    yomi:'たい',    r:'tai',         h:'鯛。めでたい魚'},
+  {e:'🐟',n:'サバ',    yomi:'さば',    r:'saba',        h:'鯖。しめ鯖で絶品'},
+  {e:'🦀',n:'カニ',    yomi:'かに',    r:'kani',        h:'蟹。贅沢な一皿'},
+  {e:'🐡',n:'フグ',    yomi:'ふぐ',    r:'fugu',        h:'河豚。下関直送'},
+  {e:'🐟',n:'トロ',    yomi:'とろ',    r:'toro',        h:'大トロ。とろける旨さ'},
+  {e:'🥚',n:'玉子',    yomi:'たまご',  r:'tamago',      h:'だし巻き。甘くふわふわ'},
+  {e:'🍜',n:'焼きうどん',yomi:'やきうどん',r:'yakiudon', h:'北九州発祥のソウルフード'},
+  {e:'🏯',n:'小倉城',  yomi:'こくらじょう',r:'kokurajo', h:'北九州のシンボル'},
+  {e:'🌉',n:'関門橋',  yomi:'かんもんきょう',r:'kanmonkyou',h:'本州と九州をつなぐ橋'},
+];
+
+const WORDS_NORMAL = [
+  ...WORDS_EASY,
+  {e:'🐟',n:'サーモン',yomi:'さーもん', r:'samon',       h:'鮭。とろける脂'},
+  {e:'🥚',n:'イクラ',  yomi:'いくら',  r:'ikura',       h:'プチプチ食感'},
+  {e:'🐚',n:'ホタテ',  yomi:'ほたて',  r:'hotate',      h:'帆立。甘みが絶品'},
+  {e:'🦔',n:'ウニ',    yomi:'うに',    r:'uni',         h:'雲丹。濃厚クリーミー'},
+  {e:'🐟',n:'カツオ',  yomi:'かつお',  r:'katsuo',      h:'鰹。たたきも絶品'},
+  {e:'🌉',n:'門司港レトロ',yomi:'もじこうれとろ',r:'mojikoretoro',h:'大正ロマンあふれる港町'},
+  {e:'🍱',n:'かしわめし',yomi:'かしわめし',r:'kashiwameshi',h:'折尾駅の名物駅弁'},
+  {e:'🚢',n:'関門海峡',yomi:'かんもんかいきょう',r:'kanmonkaikyo',h:'本州と九州を分かつ海峡'},
+];
+
+const STAGE = {
+  chapter: '第1章：門司港の夜明け',
+  enemies: [
+    {name:'皿洗い見習い', sub:'DISHWASHER', emoji:'🧑‍🍳', hp:45,  atk:8,  atkMs:5500, pool:'easy',   isBoss:false},
+    {name:'助手板前',     sub:'ASSISTANT',  emoji:'🔪',   hp:65,  atk:12, atkMs:4800, pool:'easy',   isBoss:false},
+    {name:'古参職人',     sub:'VETERAN',    emoji:'🐟',   hp:90,  atk:15, atkMs:4200, pool:'normal', isBoss:false},
+  ],
+  boss:{name:'総料理長・魚市場の親父', sub:'BOSS', emoji:'👨‍🍳', hp:200, atk:22, atkMs:3500, pool:'normal', isBoss:true},
+};
+
+// ============================================================
+// STATE
+// ============================================================
+const S = {
+  phase:'title',
+  battleIdx:0,
+  enemy:null,
+  playerHP:100, playerMaxHP:100,
+  enemyHP:0,    enemyMaxHP:0,
+  skillGauge:0,
+  combo:0, maxCombo:0,
+  totalDmg:0, totalKeys:0, kills:0,
+  word:null, typed:'', wordStartTime:0,
+  paused:true,
+  atkRafHandle:null, wordRafHandle:null,
+  enemyAtkIntv:null,
+};
+
+// ============================================================
+// HELPERS
+// ============================================================
+function norm(s){ return s.replace(/ /g,'').toLowerCase(); }
+function shuffle(a){ const b=[...a]; for(let i=b.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[b[i],b[j]]=[b[j],b[i]];} return b; }
+function qs(id){ return document.getElementById(id); }
+
+// ============================================================
+// AUDIO
+// ============================================================
+let audioCtx=null;
+function ac(){ if(!audioCtx) audioCtx=new(window.AudioContext||window.webkitAudioContext)(); return audioCtx; }
+function tone(freq,dur,type='sine',vol=0.12){
+  try{
+    const ctx=ac(),o=ctx.createOscillator(),g=ctx.createGain();
+    o.connect(g);g.connect(ctx.destination);
+    o.type=type;o.frequency.value=freq;
+    g.gain.setValueAtTime(vol,ctx.currentTime);
+    g.gain.exponentialRampToValueAtTime(0.001,ctx.currentTime+dur);
+    o.start();o.stop(ctx.currentTime+dur);
+  }catch(e){}
+}
+function sndHit(){ tone(440,.08,'square',.1); setTimeout(()=>tone(660,.12,'sine',.1),30); }
+function sndMiss(){ tone(180,.15,'sawtooth',.08); }
+function sndDamage(){ tone(110,.25,'sawtooth',.15); }
+function sndSkill(){
+  [880,1100,1320,1760].forEach((f,i)=>setTimeout(()=>tone(f,.15,'sine',.2),i*70));
+}
+function sndVictory(){
+  [523,659,784,1047].forEach((f,i)=>setTimeout(()=>tone(f,.3,'sine',.18),i*110));
+}
+function sndDeath(){
+  [300,240,180,120].forEach((f,i)=>setTimeout(()=>tone(f,.3,'sawtooth',.14),i*100));
+}
+
+// ============================================================
+// LOG
+// ============================================================
+let logBuf=['','',''];
+function addLog(msg,cls=''){
+  logBuf=[msg,logBuf[0],logBuf[1]];
+  [0,1,2].forEach(i=>{
+    const el=qs('log-'+i); if(!el) return;
+    el.textContent=logBuf[i]||'';
+    el.className='log-line'+(i===0?' latest '+(cls||''):'');
+  });
+}
+
+// ============================================================
+// DAMAGE POPUP
+// ============================================================
+function dmgPop(txt,cls){
+  const area=qs('dmg-pop-area');
+  const d=document.createElement('div');
+  d.className='dmg-pop '+cls; d.textContent=txt;
+  area.appendChild(d);
+  setTimeout(()=>d.remove(),850);
+}
+
+// ============================================================
+// SCREEN FLASH
+// ============================================================
+function flash(type){
+  const el=qs('screen-flash');
+  el.className=''; void el.offsetWidth; el.className=type;
+}
+
+// ============================================================
+// UI UPDATES
+// ============================================================
+function updatePlayerHP(){
+  const pct=Math.max(0,S.playerHP/S.playerMaxHP*100);
+  const fill=qs('player-hp-fill');
+  fill.style.width=pct+'%';
+  fill.className='hp-bar-fill player-fill'+(pct<30?' low':'');
+  qs('player-hp-nums').textContent=Math.max(0,S.playerHP)+'/'+S.playerMaxHP;
+}
+
+function updateEnemyHP(){
+  const pct=Math.max(0,S.enemyHP/S.enemyMaxHP*100);
+  qs('enemy-hp-fill').style.width=pct+'%';
+  qs('enemy-hp-nums').textContent=Math.max(0,S.enemyHP)+'/'+S.enemyMaxHP;
+}
+
+function updateSkillGauge(){
+  const pct=Math.min(100,S.skillGauge);
+  qs('skill-gauge-fill').style.width=pct+'%';
+  qs('skill-pct').textContent=Math.floor(pct)+'%';
+  const btn=qs('skill-btn');
+  if(pct>=100){ btn.className=''; btn.classList.add('ready'); btn.disabled=false; }
+  else { btn.className=''; btn.disabled=true; }
+}
+
+function updateCombo(){
+  const el=qs('combo-line');
+  el.textContent='COMBO: '+S.combo;
+  el.style.color=S.combo>=3?'var(--gold2)':'var(--muted)';
+  el.style.fontWeight=S.combo>=3?'700':'400';
+}
+
+// ============================================================
+// CHAR BOXES
+// ============================================================
+function renderChars(typed,word){
+  const row=qs('char-row'); row.innerHTML='';
+  for(let i=0;i<word.length;i++){
+    const b=document.createElement('div');
+    b.className='ch'; b.style.position='relative'; b.textContent=word[i];
+    if(i<typed.length) b.classList.add(typed[i]===word[i]?'ok':'ng');
+    else if(i===typed.length) b.classList.add('cur');
+    row.appendChild(b);
+  }
+}
+
+// ============================================================
+// ADVENTURE FLOW
+// ============================================================
+function startAdventure(){
+  qs('title-screen').style.display='none';
+  qs('game-screen').style.display='';
+  resetState();
+  qs('battle-total').textContent = STAGE.enemies.length + 1;
+  beginBattle(STAGE.enemies[0], 0);
+}
+
+function backToTitle(){
+  stopTimers();
+  qs('game-screen').style.display='none';
+  qs('title-screen').style.display='';
+  hideAllOverlays();
+}
+
+function resetState(){
+  Object.assign(S,{
+    phase:'fighting', battleIdx:0, enemy:null,
+    playerHP:100, playerMaxHP:100, enemyHP:0, enemyMaxHP:0,
+    skillGauge:0, combo:0, maxCombo:0,
+    totalDmg:0, totalKeys:0, kills:0,
+    word:null, typed:'', paused:true,
+  });
+  updatePlayerHP(); updateSkillGauge(); updateCombo();
+  logBuf=['','','']; addLog('— 冒険開始！ —');
+}
+
+function beginBattle(enemy, idx){
+  S.enemy=enemy; S.enemyHP=enemy.hp; S.enemyMaxHP=enemy.hp; S.paused=true;
+  S.battleIdx=idx;
+  qs('battle-num').textContent=idx+1;
+
+  // Enemy card UI
+  const card=qs('enemy-card');
+  card.className='combatant-card enemy-card'+(enemy.isBoss?' boss-mode':'');
+  qs('enemy-label').textContent=(enemy.isBoss?'⚔ BOSS':'ENEMY '+(idx+1))+' — '+enemy.sub;
+  qs('enemy-emoji').textContent=enemy.emoji;
+  const fill=qs('enemy-hp-fill');
+  fill.className='hp-bar-fill enemy-fill'+(enemy.isBoss?' boss-fill':'');
+  updateEnemyHP();
+
+  // Enter overlay
+  const ec=qs('enter-card'); ec.className='enter-card'+(enemy.isBoss?' boss':'');
+  const et=qs('enter-type'); et.textContent=enemy.isBoss?'⚔ BOSS BATTLE':'ENEMY '+(idx+1); et.className='enter-type'+(enemy.isBoss?' boss':'');
+  qs('enter-emoji').textContent=enemy.emoji;
+  const en=qs('enter-name'); en.textContent=enemy.name; en.className='enter-name'+(enemy.isBoss?' boss':'');
+  qs('enter-hp-val').textContent=enemy.hp;
+  const eb=qs('enter-btn'); eb.className='enter-btn'+(enemy.isBoss?' boss':'');
+
+  showOv('overlay-enter');
+}
+
+function closeEnterOverlay(){
+  hideOv('overlay-enter');
+  S.paused=false;
+  startEnemyAtkTimer();
+  nextWord();
+  addLog('⚔ '+S.enemy.name+' が現れた！');
+  const inp=qs('type-input'); inp.disabled=false; inp.value=''; inp.focus();
+}
+
+// ============================================================
+// ENEMY ATTACK TIMER
+// ============================================================
+function startEnemyAtkTimer(){
+  stopTimers();
+  const enemy=S.enemy;
+  let start=Date.now();
+
+  function animAtk(){
+    if(!S.enemy||S.paused){ S.atkRafHandle=requestAnimationFrame(animAtk); return; }
+    const elapsed=Date.now()-start;
+    const pct=Math.max(0,1-elapsed/enemy.atkMs)*100;
+    const fill=qs('atk-bar-inner');
+    fill.style.width=pct+'%';
+    fill.className='atk-bar-inner'+(pct<25?' danger':'');
+    if(pct>0){ S.atkRafHandle=requestAnimationFrame(animAtk); }
+  }
+  S.atkRafHandle=requestAnimationFrame(animAtk);
+
+  S.enemyAtkIntv=setInterval(()=>{
+    if(S.paused) return;
+    doEnemyAttack();
+    start=Date.now();
+    if(S.atkRafHandle) cancelAnimationFrame(S.atkRafHandle);
+    S.atkRafHandle=requestAnimationFrame(animAtk);
+  }, enemy.atkMs);
+}
+
+function doEnemyAttack(){
+  if(S.phase!=='fighting') return;
+  const dmg=S.enemy.atk+Math.floor(Math.random()*6);
+  S.playerHP=Math.max(0,S.playerHP-dmg);
+  S.combo=0; updateCombo(); updatePlayerHP();
+  dmgPop('-'+dmg,'p');
+  const em=qs('player-emoji'); em.classList.remove('shake'); void em.offsetWidth; em.classList.add('shake');
+  flash('hit');
+  sndDamage();
+  addLog('💥 '+S.enemy.name+' の攻撃！ -'+dmg+'HP','dmg');
+  if(S.playerHP<=0) gameOver();
+}
+
+// ============================================================
+// WORD SYSTEM
+// ============================================================
+const WORD_MS=4500;
+let wordPool=[];
+
+function nextWord(){
+  if(S.paused||!S.enemy) return;
+  cancelAnimationFrame(S.wordRafHandle);
+  if(!wordPool.length) wordPool=shuffle(S.enemy.pool==='normal'?WORDS_NORMAL:WORDS_EASY);
+  const w=wordPool.pop();
+  S.word=w; S.typed=''; S.wordStartTime=Date.now();
+
+  qs('tgt-emoji').textContent=w.e;
+  qs('tgt-name').textContent=w.n;
+  qs('tgt-yomi').textContent='（'+w.yomi+'）';
+  qs('tgt-hint').textContent=w.h;
+  qs('tgt-dmg').textContent='⚔ ~'+calcDmg(norm(w.r).length,S.combo)+' dmg';
+  renderChars('',norm(w.r));
+  qs('type-input').value=''; S.typed='';
+
+  // Word timer animation
+  const fill=qs('word-timer-fill');
+  fill.style.width='100%'; fill.className=''; void fill.offsetWidth;
+  function animWord(){
+    if(S.paused){ S.wordRafHandle=requestAnimationFrame(animWord); return; }
+    const elapsed=Date.now()-S.wordStartTime;
+    const pct=Math.max(0,1-elapsed/WORD_MS)*100;
+    fill.style.width=pct+'%';
+    fill.className=pct<30?'urgent':'';
+    if(pct>0){ S.wordRafHandle=requestAnimationFrame(animWord); return; }
+    wordTimeout();
+  }
+  S.wordRafHandle=requestAnimationFrame(animWord);
+}
+
+function wordTimeout(){
+  if(S.paused||S.phase!=='fighting') return;
+  const dmg=Math.floor(S.enemy.atk*0.7+4);
+  S.playerHP=Math.max(0,S.playerHP-dmg);
+  S.combo=0; updateCombo(); updatePlayerHP();
+  dmgPop('-'+dmg,'p');
+  const em=qs('player-emoji'); em.classList.remove('shake'); void em.offsetWidth; em.classList.add('shake');
+  sndDamage(); flash('hit');
+  addLog('⏱ 時間切れ！ -'+dmg+'HP','dmg');
+  if(S.playerHP<=0){ gameOver(); return; }
+  nextWord();
+}
+
+// ============================================================
+// DAMAGE CALC
+// ============================================================
+function calcDmg(len, combo){
+  const base=len*10;
+  const mult=combo>=10?3.0:combo>=7?2.5:combo>=5?2.0:combo>=3?1.5:1.0;
+  return Math.round(base*mult);
+}
+
+// ============================================================
+// TYPING HANDLER
+// ============================================================
+qs('type-input').addEventListener('input', function(e){
+  if(S.paused||!S.word){ e.target.value=''; return; }
+  const word=norm(S.word.r);
+  let typed=norm(e.target.value);
+  if(typed.length>word.length){ typed=typed.slice(0,word.length); e.target.value=typed; }
+
+  // Miskey check
+  if(typed.length>S.typed.length){
+    const pos=typed.length-1;
+    if(typed[pos]!==word[pos]){
+      typed=typed.slice(0,pos); e.target.value=typed;
+      S.totalKeys++;
+      S.combo=0; updateCombo();
+      renderChars(typed,word); S.typed=typed;
+      sndMiss();
+      // Minor penalty for miskey
+      S.playerHP=Math.max(0,S.playerHP-3); updatePlayerHP();
+      dmgPop('-3','p');
+      if(S.playerHP<=0){ gameOver(); return; }
+      return;
+    }
+    S.totalKeys++;
+    sndHit();
+  }
+
+  S.typed=typed; e.target.value=typed;
+  renderChars(typed,word);
+
+  // Word complete
+  if(typed===word){
+    this.classList.add('cfx'); setTimeout(()=>this.classList.remove('cfx'),300);
+    cancelAnimationFrame(S.wordRafHandle);
+    qs('word-timer-fill').style.width='0%';
+    onWordComplete();
+  }
+});
+
+function onWordComplete(){
+  S.combo++;
+  if(S.combo>S.maxCombo) S.maxCombo=S.combo;
+  updateCombo();
+
+  // Combo FX
+  if(S.combo>=3){
+    const el=qs('combo-fx'); el.textContent=S.combo+' COMBO!';
+    el.className=''; void el.offsetWidth; el.className='show';
+  }
+
+  // Skill gauge
+  if(S.combo%3===0) S.skillGauge=Math.min(100,S.skillGauge+25);
+  if(S.combo>=5&&S.combo%5===0) S.skillGauge=Math.min(100,S.skillGauge+10);
+  updateSkillGauge();
+
+  // Deal damage
+  const dmg=calcDmg(norm(S.word.r).length,S.combo);
+  S.totalDmg+=dmg; S.enemyHP=Math.max(0,S.enemyHP-dmg);
+  dmgPop('-'+dmg,'e');
+  const em=qs('enemy-emoji'); em.classList.remove('hit-flash'); void em.offsetWidth; em.classList.add('hit-flash');
+  sndHit(); updateEnemyHP();
+
+  const cTxt=S.combo>=3?' ('+S.combo+'コンボ！)':'';
+  addLog('✅ '+S.word.n+' → '+dmg+' ダメージ！'+cTxt,'hit');
+
+  if(S.enemyHP<=0){ onEnemyDie(); return; }
+
+  // Update dmg preview for next word before nextWord() runs
+  setTimeout(()=>nextWord(),150);
+}
+
+// ============================================================
+// ENEMY DIE
+// ============================================================
+function onEnemyDie(){
+  stopTimers(); S.paused=true; S.kills++;
+  sndVictory();
+
+  const isBoss=S.enemy.isBoss;
+  const dc=qs('die-card'); dc.className='die-card'+(isBoss?' boss':'');
+  qs('die-emoji').textContent=S.enemy.emoji;
+  const dt=qs('die-title'); dt.textContent=isBoss?'撃破！！！':'撃破！'; dt.className='die-title'+(isBoss?' boss':'');
+  qs('die-sub').textContent=S.enemy.name+'を倒した！ 与ダメージ計: '+S.totalDmg;
+  const db=qs('die-btn'); db.className='die-btn'+(isBoss?' boss':'');
+  db.textContent=isBoss?'🏆 ステージクリア！':'次の敵へ ▶';
+  showOv('overlay-die');
+}
+
+function onDieNext(){
+  hideOv('overlay-die');
+  if(S.enemy.isBoss){ stageClear(); return; }
+  S.battleIdx++;
+  const next=S.battleIdx>=STAGE.enemies.length?STAGE.boss:STAGE.enemies[S.battleIdx];
+  // Reset word pool for new enemy
+  wordPool=[];
+  beginBattle(next,S.battleIdx);
+}
+
+// ============================================================
+// SKILL
+// ============================================================
+function activateSkill(){
+  if(S.skillGauge<100||S.paused||S.phase!=='fighting') return;
+  S.skillGauge=0; updateSkillGauge();
+
+  const fx=qs('skill-fx'); fx.className='show'; setTimeout(()=>{ fx.className=''; },900);
+  flash('skill'); sndSkill();
+
+  const dmg=80+Math.floor(Math.random()*41);
+  S.enemyHP=Math.max(0,S.enemyHP-dmg); S.totalDmg+=dmg;
+  dmgPop('💥-'+dmg+'!!','s');
+  const em=qs('enemy-emoji'); em.classList.remove('hit-flash'); void em.offsetWidth; em.classList.add('hit-flash');
+  updateEnemyHP();
+  addLog('⚡ 鮨撃！ '+dmg+' の大ダメージ！！','skill');
+  if(S.enemyHP<=0){ setTimeout(()=>onEnemyDie(),250); }
+}
+
+// Spacebar = skill (when not typing)
+document.addEventListener('keydown',e=>{
+  if(e.code==='Space'&&document.activeElement!==qs('type-input')){ e.preventDefault(); activateSkill(); }
+  if(e.code==='Escape') backToTitle();
+});
+
+// ============================================================
+// GAME OVER / STAGE CLEAR
+// ============================================================
+function gameOver(){
+  stopTimers(); S.paused=true; S.phase='dead';
+  sndDeath();
+  qs('go-kills').textContent=S.kills;
+  qs('go-combo').textContent=S.maxCombo;
+  qs('go-dmg').textContent=S.totalDmg;
+  qs('go-keys').textContent=S.totalKeys;
+  showOv('overlay-go');
+}
+
+function stageClear(){
+  stopTimers(); S.paused=true;
+  qs('sc-kills').textContent=S.kills;
+  qs('sc-combo').textContent=S.maxCombo;
+  qs('sc-dmg').textContent=S.totalDmg;
+  showOv('overlay-sc');
+}
+
+function restartGame(){
+  hideAllOverlays();
+  wordPool=[];
+  qs('type-input').value='';
+  resetState();
+  beginBattle(STAGE.enemies[0],0);
+}
+
+// ============================================================
+// CLEANUP / OVERLAY HELPERS
+// ============================================================
+function stopTimers(){
+  cancelAnimationFrame(S.atkRafHandle);
+  cancelAnimationFrame(S.wordRafHandle);
+  clearInterval(S.enemyAtkIntv);
+}
+function showOv(id){ qs(id).classList.add('show'); }
+function hideOv(id){ qs(id).classList.remove('show'); }
+function hideAllOverlays(){
+  ['overlay-enter','overlay-die','overlay-go','overlay-sc'].forEach(hideOv);
+}
+</script>
+</body>
+</html>

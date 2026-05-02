@@ -1,0 +1,3032 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>鮨撃 KITAKYUSHU</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700;900&family=Bebas+Neue&family=IBM+Plex+Mono:wght@400;700&family=Shippori+Mincho+B1:wght@700;800&display=swap" rel="stylesheet">
+<style>
+:root {
+  --red:#A03020; --red2:#C03C28;
+  --gold:#C89020; --gold2:#DBA828;
+  --dark:#08101E; --dark2:#0E1A30; --dark3:#142240; --dark4:#1C2E50;
+  --text:#EDE8DA; --muted:#6888A8;
+  --green:#27AE60; --green2:#2ECC71;
+  --cyan:#1A78A8; --wood:#5A3018;
+  --sea:#0A1830; --brick:#6A2010;
+  --lane-h:100px;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+/* 深夜の関門海峡 — 深い藍色の夜 */
+body{background:linear-gradient(160deg,#08101E 0%,#0C1828 35%,#0A1430 65%,#060E20 100%);color:var(--text);font-family:'Noto Sans JP',sans-serif;min-height:100vh;overflow-x:hidden;}
+/* 海面の波紋と夜靄 */
+body::before{content:'';position:fixed;inset:0;background-image:repeating-linear-gradient(0deg,transparent,transparent 59px,rgba(14,60,120,0.13) 59px,rgba(14,60,120,0.13) 60px),repeating-linear-gradient(176deg,transparent,transparent 179px,rgba(14,60,120,0.07) 179px,rgba(14,60,120,0.07) 180px);pointer-events:none;z-index:0;}
+/* 遠くの港灯 */
+body::after{content:'';position:fixed;inset:0;background:radial-gradient(ellipse at 15% 92%,rgba(200,110,30,0.12) 0%,transparent 30%),radial-gradient(ellipse at 82% 88%,rgba(20,90,180,0.1) 0%,transparent 30%),radial-gradient(ellipse at 50% 100%,rgba(200,144,32,0.08) 0%,transparent 45%);pointer-events:none;z-index:0;}
+
+/* HEADER */
+#hdr{position:relative;z-index:10;padding:16px 24px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid rgba(192,136,24,0.18);background:linear-gradient(90deg,rgba(5,7,13,0.97) 0%,rgba(8,11,20,0.97) 50%,rgba(5,7,13,0.97) 100%);}
+/* 明朝体で格調ある港のロゴ */
+.logo-main{font-family:'Shippori Mincho B1','Noto Sans JP',serif;font-size:30px;font-weight:800;letter-spacing:4px;color:var(--text);text-shadow:0 0 20px rgba(192,136,24,0.25);}
+.logo-sub{font-family:'Bebas Neue',cursive;font-size:13px;color:var(--gold);letter-spacing:4px;margin-left:10px;opacity:0.85;}
+.logo-badge{background:var(--red);color:#fff;font-size:9px;font-weight:700;padding:2px 7px;border-radius:2px;margin-left:6px;vertical-align:middle;letter-spacing:1px;}
+.nav-btn{background:transparent;border:1px solid rgba(192,136,24,0.18);color:var(--muted);font-family:'Noto Sans JP',sans-serif;font-size:11px;padding:5px 12px;border-radius:2px;cursor:pointer;transition:all .2s;}
+.nav-btn:hover{border-color:var(--gold);color:var(--gold);}
+.nav-btn.act{background:var(--brick);border-color:rgba(158,46,28,0.6);color:#fff;}
+#hdr-right{display:flex;gap:6px;align-items:center;}
+
+/* MAIN */
+#main{position:relative;z-index:1;max-width:860px;margin:0 auto;padding:16px 16px 48px;}
+
+/* TOP CONTROLS */
+.ctrl-row{display:flex;gap:6px;margin-bottom:12px;flex-wrap:wrap;align-items:center;}
+.mode-btn{background:var(--dark2);border:1px solid rgba(255,255,255,0.08);color:var(--muted);font-family:'Noto Sans JP',sans-serif;font-size:12px;padding:6px 14px;border-radius:3px;cursor:pointer;transition:all .2s;}
+.mode-btn:hover{border-color:rgba(255,255,255,0.2);color:var(--text);}
+.mode-btn.act{background:var(--dark3);border-color:var(--gold);color:var(--gold);font-weight:700;}
+
+/* STATS */
+.stats-row{display:grid;grid-template-columns:repeat(5,1fr);gap:7px;margin-bottom:12px;}
+.stat{background:var(--dark2);border:1px solid rgba(10,50,100,0.3);border-radius:3px;padding:9px 10px;text-align:center;}
+.stat-label{font-size:9px;color:var(--muted);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:3px;}
+.stat-val{font-family:'IBM Plex Mono',monospace;font-size:22px;font-weight:700;color:var(--text);transition:color .3s;}
+.stat-val.flash{color:var(--gold);}
+#sv-timer{color:var(--gold2);}
+#sv-timer.urg{color:var(--red2);animation:pulse .5s infinite;}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+
+/* POWERUP BAR */
+#powerup-bar{height:36px;background:var(--dark2);border:1px solid rgba(10,50,100,0.25);border-radius:3px;margin-bottom:10px;display:flex;align-items:center;padding:0 12px;gap:10px;font-size:12px;color:var(--muted);overflow:hidden;}
+#powerup-bar.active{border-color:var(--gold);color:var(--gold);box-shadow:0 0 12px rgba(192,136,24,0.15);}
+#pu-icon{font-size:18px;}
+#pu-label{flex:1;font-weight:700;}
+#pu-timer-bar{height:4px;background:rgba(255,255,255,0.08);border-radius:2px;width:160px;overflow:hidden;}
+#pu-timer-fill{height:100%;background:var(--gold);border-radius:2px;transition:width .2s linear;}
+
+/* LANES */
+/* 赤レンガの倉庫をイメージ */
+#lanes-wrap{background:var(--dark2);border:1px solid rgba(106,32,16,0.35);border-radius:3px;overflow:hidden;margin-bottom:10px;box-shadow:0 0 30px rgba(0,0,0,0.5),inset 0 0 60px rgba(8,20,40,0.3);}
+.lane-header{background:linear-gradient(90deg,#4A1208 0%,#6A1E10 30%,#6A1E10 70%,#4A1208 100%);padding:7px 14px;display:flex;justify-content:space-between;font-size:10px;letter-spacing:2px;color:rgba(255,215,170,.75);text-transform:uppercase;border-bottom:2px solid rgba(140,50,20,0.5);}
+#lanes{position:relative;}
+.lane{height:var(--lane-h);border-bottom:1px solid rgba(10,40,80,0.4);position:relative;overflow:hidden;}
+.lane:last-child{border-bottom:none;}
+
+/* 関門海峡の流れをイメージしたベルト */
+.lane::before{content:'';position:absolute;inset:0;background:repeating-linear-gradient(90deg,transparent,transparent 48px,rgba(10,50,100,0.1) 48px,rgba(10,50,100,0.1) 50px);animation:belt 1.2s linear infinite;}
+@keyframes belt{0%{background-position:0 0}100%{background-position:50px 0}}
+
+/* score zones */
+.lane::after{content:'';position:absolute;top:0;bottom:0;left:0;width:33%;background:rgba(192,136,24,0.04);border-right:1px dashed rgba(192,136,24,0.12);}
+
+.zone-label{position:absolute;top:3px;left:2px;font-size:8px;color:rgba(192,136,24,0.4);letter-spacing:1px;z-index:2;pointer-events:none;}
+
+/* PLATE */
+.plate{position:absolute;top:50%;transform:translateY(-50%);display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer;transition:left .016s linear;z-index:3;}
+.plate-dish:not(.active):not(.done):not(.miss):hover{border-color:rgba(255,255,255,.45);box-shadow:0 0 10px 2px rgba(255,255,255,.12);}
+.plate-dish{width:70px;height:70px;border-radius:50%;display:flex;flex-direction:column;align-items:center;justify-content:center;border:2px solid;position:relative;}
+.plate-dish.active{animation:glow .6s ease-in-out infinite alternate;}
+/* 複数候補のうちロック前の皿：うっすら光る */
+.plate-dish.semi-active{box-shadow:0 0 6px 2px rgba(243,156,18,.18);border-color:rgba(243,156,18,.35);}
+@keyframes glow{0%{box-shadow:0 0 0 0 rgba(243,156,18,0)}100%{box-shadow:0 0 14px 4px rgba(243,156,18,.4)}}
+.plate-dish.done{opacity:.3;filter:grayscale(80%);}
+.plate-dish.miss{opacity:.2;filter:grayscale(100%);}
+.plate-emoji{font-size:26px;line-height:1;}
+.plate-word{font-family:'IBM Plex Mono',monospace;font-size:8px;font-weight:700;color:rgba(255,255,255,.45);max-width:66px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.plate-name{font-size:8px;color:rgba(255,255,255,.35);white-space:nowrap;}
+.pc-red{background:rgba(192,57,43,.15);border-color:rgba(192,57,43,.5);}
+.pc-gold{background:rgba(243,156,18,.12);border-color:rgba(243,156,18,.45);}
+.pc-teal{background:rgba(26,188,156,.12);border-color:rgba(26,188,156,.4);}
+.pc-blue{background:rgba(52,152,219,.12);border-color:rgba(52,152,219,.4);}
+.pc-purple{background:rgba(142,68,173,.15);border-color:rgba(142,68,173,.5);}
+.pc-sponsor{background:rgba(243,156,18,.18);border-color:var(--gold);animation:sponsorPulse 1s ease-in-out infinite alternate;}
+@keyframes sponsorPulse{0%{box-shadow:0 0 4px 0 rgba(243,156,18,.3)}100%{box-shadow:0 0 16px 6px rgba(243,156,18,.6)}}
+
+/* miss splash */
+.miss-splash{position:absolute;font-size:20px;font-weight:900;color:var(--red2);pointer-events:none;animation:splashAnim .7s ease-out forwards;z-index:10;}
+@keyframes splashAnim{0%{opacity:1;transform:translateY(0) scale(1)}100%{opacity:0;transform:translateY(-30px) scale(1.4)}}
+
+/* score pop */
+.score-pop{position:absolute;font-family:'Bebas Neue',cursive;font-size:22px;letter-spacing:2px;pointer-events:none;animation:popAnim .7s ease-out forwards;z-index:10;}
+@keyframes popAnim{0%{opacity:1;transform:translateY(0)}100%{opacity:0;transform:translateY(-40px)}}
+
+/* じーも */
+#jimo-overlay{position:fixed;inset:0;pointer-events:none;z-index:999;}
+
+/* 全画面登場（右からスライド） */
+#jimo-fullscreen{
+  position:fixed;inset:0;
+  background:linear-gradient(120deg,rgba(0,0,30,0.92) 0%,rgba(10,0,40,0.96) 100%);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  z-index:1000;pointer-events:all;
+  clip-path:inset(0 100% 0 0);
+  transition:clip-path 0.5s cubic-bezier(0.22,1,0.36,1);
+}
+#jimo-fullscreen.show{clip-path:inset(0 0% 0 0);}
+#jimo-fullscreen img{width:300px;animation:jimoSlideChar 0.6s 0.3s cubic-bezier(0.34,1.56,0.64,1) both;}
+#jimo-fullscreen .jimo-msg{
+  color:#FFD700;font-size:36px;font-weight:900;margin-top:24px;
+  letter-spacing:6px;text-shadow:0 0 30px rgba(255,215,0,1),0 0 60px rgba(255,150,0,0.6);
+  animation:jimoMsgPop 0.6s 0.6s cubic-bezier(0.34,1.56,0.64,1) both;
+}
+#jimo-fullscreen .jimo-sub{
+  color:rgba(255,255,255,0.7);font-size:16px;margin-top:10px;letter-spacing:3px;
+  animation:jimoMsgPop 0.6s 0.8s ease both;
+}
+.jimo-sparks{position:absolute;inset:0;pointer-events:none;overflow:hidden;}
+.spark{position:absolute;width:8px;height:8px;border-radius:50%;animation:sparkFly 1s ease-out forwards;}
+@keyframes jimoSlideChar{0%{opacity:0;transform:translateX(200px) scale(0.5);}100%{opacity:1;transform:translateX(0) scale(1);}}
+@keyframes jimoMsgPop{0%{opacity:0;transform:translateY(30px) scale(0.8);}100%{opacity:1;transform:translateY(0) scale(1);}}
+@keyframes sparkFly{0%{opacity:1;transform:translate(0,0) scale(1);}100%{opacity:0;transform:translate(var(--sx),var(--sy)) scale(0);}}
+
+/* 小じーも（捕まえるフェーズ） */
+#jimo-char{
+  position:absolute;width:72px;cursor:pointer;pointer-events:all;
+  filter:drop-shadow(0 0 14px rgba(255,220,50,1)) drop-shadow(0 0 28px rgba(255,150,0,0.6));
+  animation:jimoSmallAppear 0.5s cubic-bezier(0.34,1.56,0.64,1);
+  transition:left 0.35s cubic-bezier(0.34,1.56,0.64,1), top 0.35s cubic-bezier(0.34,1.56,0.64,1), transform .15s;
+}
+#jimo-char:hover{transform:scale(1.15) rotate(5deg);}
+@keyframes jimoSmallAppear{0%{opacity:0;transform:scale(0) rotate(-20deg);}100%{opacity:1;transform:scale(1) rotate(0deg);}}
+#jimo-label{
+  position:absolute;background:rgba(0,0,0,0.9);color:#FFD700;
+  font-size:13px;font-weight:900;padding:5px 14px;border-radius:20px;
+  white-space:nowrap;pointer-events:none;
+  border:2px solid #FFD700;box-shadow:0 0 12px rgba(255,215,0,0.6);
+  animation:labelBlink 0.5s ease-in-out infinite alternate;
+}
+@keyframes labelBlink{0%{opacity:1;box-shadow:0 0 12px rgba(255,215,0,0.6);}100%{opacity:0.5;box-shadow:0 0 4px rgba(255,215,0,0.2);}}
+
+/* 全画面お祝い */
+#jimo-celebrate{
+  position:fixed;inset:0;
+  background:linear-gradient(135deg,#0a0020,#200a00,#0a1500);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  z-index:1000;pointer-events:all;
+  clip-path:inset(0 0 100% 0);
+  transition:clip-path 0.5s cubic-bezier(0.22,1,0.36,1);
+  overflow:hidden;
+}
+#jimo-celebrate.show{clip-path:inset(0 0 0% 0);}
+#jimo-celebrate img{width:220px;animation:jimoDance 0.4s ease-in-out infinite alternate;}
+#jimo-celebrate .cel-title{
+  color:#FFD700;font-family:'Bebas Neue',cursive;font-size:72px;letter-spacing:8px;
+  text-shadow:0 0 20px rgba(255,215,0,1),0 0 60px rgba(255,150,0,0.8);
+  margin-top:16px;animation:celTitlePop 0.6s 0.2s cubic-bezier(0.34,1.56,0.64,1) both;
+}
+#jimo-celebrate .cel-bonus{
+  color:#fff;font-size:26px;font-weight:900;margin-top:8px;
+  text-shadow:0 0 20px rgba(255,255,255,0.5);
+  animation:celTitlePop 0.6s 0.4s cubic-bezier(0.34,1.56,0.64,1) both;
+}
+#jimo-celebrate .cel-stars{font-size:48px;margin-top:16px;animation:starSpin 0.8s 0.5s ease-out both;}
+.confetti{position:absolute;width:10px;height:10px;animation:confettiFall linear forwards;}
+@keyframes jimoDance{0%{transform:rotate(-10deg) scale(1);}100%{transform:rotate(10deg) scale(1.08);}}
+@keyframes celTitlePop{0%{opacity:0;transform:scale(0.5);}100%{opacity:1;transform:scale(1);}}
+@keyframes starSpin{0%{opacity:0;transform:scale(0) rotate(-360deg);}100%{opacity:1;transform:scale(1) rotate(0deg);}}
+@keyframes confettiFall{0%{opacity:1;transform:translateY(-20px) rotate(0deg);}100%{opacity:0;transform:translateY(100vh) rotate(720deg);}}
+
+/* TYPING ZONE */
+#typing-zone{background:var(--dark2);border:1px solid rgba(10,50,100,0.3);border-radius:3px;padding:16px 20px;margin-bottom:10px;position:relative;}
+#typing-zone.sponsor-active{border-color:var(--gold);animation:sponsorZone 1s ease-in-out infinite alternate;}
+@keyframes sponsorZone{0%{box-shadow:0 0 4px rgba(243,156,18,.2)}100%{box-shadow:0 0 20px rgba(243,156,18,.5)}}
+
+.target-row{display:flex;align-items:center;gap:16px;margin-bottom:12px;padding-bottom:12px;border-bottom:1px solid rgba(255,255,255,0.05);}
+#tgt-emoji{font-size:40px;flex-shrink:0;}
+#tgt-info{flex:1;}
+#tgt-name{font-size:20px;font-weight:700;}
+#tgt-yomi{font-size:12px;color:var(--gold);margin-top:2px;letter-spacing:2px;}
+#tgt-en{font-size:12px;color:var(--cyan);margin-top:2px;font-style:italic;}
+#tgt-hint{font-size:11px;color:var(--muted);margin-top:3px;}
+.tgt-tags{display:flex;flex-direction:column;align-items:flex-end;gap:5px;}
+#tgt-price{background:var(--red);color:#fff;font-family:'IBM Plex Mono',monospace;font-size:12px;font-weight:700;padding:3px 10px;border-radius:3px;}
+#tgt-sponsor-badge{background:linear-gradient(135deg,#F39C12,#E67E22);color:#fff;font-size:9px;font-weight:700;padding:3px 10px;border-radius:3px;letter-spacing:1px;animation:badgePop .4s cubic-bezier(.34,1.56,.64,1);}
+@keyframes badgePop{0%{transform:scale(.5);opacity:0}100%{transform:scale(1);opacity:1}}
+
+.char-row{display:flex;gap:3px;justify-content:center;min-height:50px;align-items:center;flex-wrap:wrap;margin-bottom:12px;}
+.ch{width:34px;height:44px;display:flex;align-items:center;justify-content:center;font-family:'IBM Plex Mono',monospace;font-size:20px;font-weight:700;border-radius:4px;border:1.5px solid rgba(255,255,255,0.08);background:var(--dark3);color:var(--muted);flex-shrink:0;}
+.ch.ok{background:rgba(39,174,96,.15);border-color:var(--green);color:var(--green2);}
+.ch.ng{background:rgba(192,57,43,.2);border-color:var(--red2);color:var(--red2);animation:shake .2s ease;}
+.ch.cur{background:rgba(243,156,18,.1);border-color:var(--gold);color:var(--text);box-shadow:0 0 8px rgba(243,156,18,.25);}
+.ch.cur::after{content:'';position:absolute;bottom:4px;left:50%;transform:translateX(-50%);width:14px;height:2px;background:var(--gold);animation:blink .8s step-end infinite;}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:0}}
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-4px)}75%{transform:translateX(4px)}}
+
+#type-input{width:100%;background:var(--dark3);border:1.5px solid rgba(255,255,255,0.12);color:var(--text);font-family:'IBM Plex Mono',monospace;font-size:18px;font-weight:700;padding:10px 14px;border-radius:4px;outline:none;text-align:center;letter-spacing:3px;caret-color:var(--gold);}
+#type-input:focus{border-color:var(--gold);}
+#type-input.cfx{border-color:var(--green);animation:cfxAnim .3s ease;}
+@keyframes cfxAnim{0%{box-shadow:0 0 0 0 rgba(39,174,96,.5)}100%{box-shadow:0 0 0 12px rgba(39,174,96,0)}}
+
+/* ACTION */
+.action-row{display:flex;gap:8px;margin-bottom:16px;}
+.btn-start{flex:2;background:var(--red);border:none;color:#fff;font-family:'Bebas Neue',cursive;font-size:20px;letter-spacing:3px;padding:13px;border-radius:4px;cursor:pointer;transition:all .2s;}
+.btn-start:hover{background:var(--red2);transform:translateY(-1px);}
+.btn-sec{flex:1;background:var(--dark2);border:1px solid rgba(255,255,255,0.12);color:var(--muted);font-family:'Noto Sans JP',sans-serif;font-size:12px;padding:13px;border-radius:4px;cursor:pointer;transition:all .2s;}
+.btn-sec:hover{border-color:rgba(255,255,255,.3);color:var(--text);}
+
+/* COMBO FX */
+#combo-fx{position:fixed;top:38%;left:50%;transform:translate(-50%,-50%) scale(0);font-family:'Bebas Neue',cursive;font-size:64px;color:var(--gold);text-shadow:0 0 24px rgba(243,156,18,.7);pointer-events:none;z-index:100;letter-spacing:5px;}
+#combo-fx.show{animation:comboAnim .8s ease-out forwards;}
+@keyframes comboAnim{0%{transform:translate(-50%,-50%) scale(.5);opacity:1}40%{transform:translate(-50%,-60%) scale(1.1);opacity:1}100%{transform:translate(-50%,-80%) scale(.8);opacity:0}}
+
+/* QUIZ OVERLAY */
+#quiz-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.88);z-index:200;align-items:center;justify-content:center;backdrop-filter:blur(4px);}
+#quiz-overlay.show{display:flex;}
+.quiz-card{background:var(--dark2);border:1px solid rgba(255,255,255,.12);border-radius:8px;padding:36px 40px;max-width:500px;width:92vw;animation:slideUp .4s cubic-bezier(.34,1.56,.64,1);}
+@keyframes slideUp{from{transform:translateY(40px);opacity:0}to{transform:translateY(0);opacity:1}}
+.quiz-badge{display:inline-block;background:var(--red);color:#fff;font-size:10px;font-weight:700;padding:3px 10px;border-radius:2px;letter-spacing:2px;margin-bottom:12px;}
+.quiz-q{font-size:18px;font-weight:700;color:var(--text);margin-bottom:8px;line-height:1.5;}
+.quiz-hint{font-size:12px;color:var(--muted);margin-bottom:20px;}
+.quiz-input{width:100%;background:var(--dark3);border:1.5px solid rgba(255,255,255,.15);color:var(--text);font-family:'IBM Plex Mono',monospace;font-size:18px;padding:10px 14px;border-radius:4px;outline:none;text-align:center;letter-spacing:3px;caret-color:var(--gold);margin-bottom:14px;}
+.quiz-input:focus{border-color:var(--gold);}
+.quiz-submit{width:100%;background:var(--red);border:none;color:#fff;font-family:'Bebas Neue',cursive;font-size:20px;letter-spacing:3px;padding:12px;border-radius:4px;cursor:pointer;transition:all .2s;margin-bottom:8px;}
+.quiz-submit:hover{background:var(--red2);}
+.quiz-skip{width:100%;background:transparent;border:1px solid rgba(255,255,255,.12);color:var(--muted);font-size:12px;padding:8px;border-radius:4px;cursor:pointer;}
+.quiz-result{text-align:center;padding:16px 0;}
+.quiz-result-icon{font-size:48px;margin-bottom:8px;}
+.quiz-result-title{font-family:'Bebas Neue',cursive;font-size:32px;letter-spacing:3px;margin-bottom:6px;}
+.quiz-result-desc{font-size:13px;color:var(--muted);}
+.pu-cards{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:16px 0;}
+.pu-card{background:var(--dark3);border:1px solid rgba(255,255,255,.08);border-radius:6px;padding:14px 12px;text-align:center;cursor:pointer;transition:all .2s;}
+.pu-card:hover{border-color:var(--gold);background:rgba(243,156,18,.08);}
+.pu-card-icon{font-size:28px;margin-bottom:6px;}
+.pu-card-name{font-size:13px;font-weight:700;color:var(--text);margin-bottom:3px;}
+.pu-card-desc{font-size:11px;color:var(--muted);}
+
+/* GAME OVER */
+#go-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:200;align-items:center;justify-content:center;backdrop-filter:blur(4px);}
+#go-overlay.show{display:flex;}
+.go-card{background:var(--dark2);border:1px solid rgba(255,255,255,.1);border-radius:8px;padding:36px 44px;text-align:center;max-width:460px;width:90%;animation:slideUp .4s cubic-bezier(.34,1.56,.64,1);}
+.go-title{font-family:'Bebas Neue',cursive;font-size:44px;letter-spacing:4px;color:var(--gold);margin-bottom:6px;}
+.go-sub{font-size:12px;color:var(--muted);margin-bottom:24px;}
+.go-stats{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:22px;}
+.go-stat{background:var(--dark3);border-radius:4px;padding:12px;}
+.go-stat-label{font-size:9px;letter-spacing:1.5px;color:var(--muted);text-transform:uppercase;margin-bottom:3px;}
+.go-stat-val{font-family:'IBM Plex Mono',monospace;font-size:28px;font-weight:700;color:var(--text);}
+.go-rank{font-size:13px;color:var(--muted);margin-bottom:20px;padding:10px;border:1px solid rgba(255,255,255,.08);border-radius:4px;}
+.rank-badge{display:inline-block;background:var(--gold);color:var(--dark);font-weight:900;font-size:12px;padding:2px 8px;border-radius:2px;margin-right:6px;}
+.go-btns{display:flex;gap:8px;}
+.go-btn-play{flex:2;background:var(--red);border:none;color:#fff;font-family:'Bebas Neue',cursive;font-size:18px;letter-spacing:3px;padding:12px;border-radius:4px;cursor:pointer;transition:all .2s;}
+.go-btn-play:hover{background:var(--red2);}
+.go-btn-share{flex:1;background:var(--dark3);border:1px solid rgba(255,255,255,.12);color:var(--muted);font-size:11px;padding:12px;border-radius:4px;cursor:pointer;transition:all .2s;}
+.go-btn-share:hover{border-color:var(--cyan);color:var(--cyan);}
+
+/* LEADERBOARD */
+.lb-section{background:var(--dark2);border:1px solid rgba(255,255,255,.06);border-radius:6px;overflow:hidden;margin-bottom:14px;}
+.lb-head{background:var(--dark3);padding:10px 18px;display:flex;justify-content:space-between;border-bottom:1px solid rgba(255,255,255,.06);}
+.lb-title{font-family:'Bebas Neue',cursive;font-size:16px;letter-spacing:3px;color:var(--gold);}
+.lb-hrow,.lb-row{display:grid;grid-template-columns:34px 1fr 80px 72px 58px;gap:6px;padding:8px 18px;align-items:center;font-size:12px;}
+.lb-hrow{font-size:9px;letter-spacing:1.5px;color:var(--muted);text-transform:uppercase;}
+.lb-row{border-bottom:1px solid rgba(255,255,255,.03);}
+.lb-row:hover{background:rgba(255,255,255,.03);}
+.lb-rank{font-family:'IBM Plex Mono',monospace;font-weight:700;color:var(--muted);text-align:center;}
+.lb-rank.g{color:var(--gold);font-size:15px;}
+.lb-rank.s{color:#BDC3C7;font-size:14px;}
+.lb-rank.b{color:#CD7F32;font-size:14px;}
+.lb-name{color:var(--text);font-weight:700;}
+.lb-score{font-family:'IBM Plex Mono',monospace;color:var(--gold);font-weight:700;text-align:right;}
+.lb-wpm{font-family:'IBM Plex Mono',monospace;color:var(--cyan);text-align:right;}
+.lb-acc{font-family:'IBM Plex Mono',monospace;color:var(--muted);text-align:right;}
+
+/* PROMO */
+.promo{margin-top:14px;background:var(--dark3);border:1px solid rgba(192,57,43,.3);border-radius:6px;padding:14px 18px;display:flex;align-items:center;justify-content:space-between;gap:14px;}
+.promo-title{font-size:12px;font-weight:700;color:var(--text);margin-bottom:3px;}
+.promo-desc{font-size:10px;color:var(--muted);}
+.promo-btn{background:var(--red);border:none;color:#fff;font-size:11px;font-weight:700;padding:8px 18px;border-radius:3px;cursor:pointer;white-space:nowrap;transition:all .2s;flex-shrink:0;}
+.promo-btn:hover{background:var(--red2);}
+
+/* BADGE POPUP */
+.badge-popup{position:fixed;bottom:28px;left:50%;transform:translateX(-50%) translateY(60px);background:var(--dark2);border:1px solid var(--gold);border-radius:8px;padding:14px 26px;text-align:center;z-index:400;min-width:200px;animation:bpIn .5s cubic-bezier(.34,1.56,.64,1) forwards;}
+@keyframes bpIn{0%{transform:translateX(-50%) translateY(60px);opacity:0}100%{transform:translateX(-50%) translateY(0);opacity:1}}
+@keyframes bpOut{0%{transform:translateX(-50%) translateY(0);opacity:1}100%{transform:translateX(-50%) translateY(-40px);opacity:0}}
+
+/* MODALS (register / mypage) */
+.modal-wrap{display:none;position:fixed;inset:0;background:rgba(0,0,0,.8);z-index:300;align-items:center;justify-content:center;}
+.modal-wrap.show{display:flex;}
+.modal{background:var(--dark2);border:1px solid rgba(255,255,255,.12);border-radius:8px;padding:28px 32px;width:380px;max-width:94vw;animation:slideUp .35s cubic-bezier(.34,1.56,.64,1);}
+.modal-title{font-family:'Bebas Neue',cursive;font-size:26px;letter-spacing:3px;color:var(--gold);margin-bottom:4px;}
+.modal-sub{font-size:11px;color:var(--muted);margin-bottom:20px;}
+.field-label{font-size:10px;color:var(--muted);letter-spacing:1px;margin-bottom:5px;}
+.field-wrap{margin-bottom:13px;}
+.field-input{width:100%;background:var(--dark3);border:1px solid rgba(255,255,255,.15);color:var(--text);font-size:14px;padding:8px 11px;border-radius:4px;outline:none;}
+.field-input:focus{border-color:var(--gold);}
+.ward-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:5px;}
+.ward-btn{background:var(--dark3);border:1px solid rgba(255,255,255,.1);color:var(--muted);font-size:10px;padding:6px 3px;border-radius:3px;cursor:pointer;transition:all .15s;text-align:center;}
+.ward-btn:hover{border-color:rgba(255,255,255,.3);color:var(--text);}
+.ward-btn.sel{background:rgba(192,57,43,.2);border-color:var(--red);color:var(--text);font-weight:700;}
+.modal-btns{display:flex;gap:8px;margin-top:18px;}
+.modal-btn-main{flex:2;background:var(--red);border:none;color:#fff;font-family:'Bebas Neue',cursive;font-size:17px;letter-spacing:2px;padding:10px;border-radius:4px;cursor:pointer;transition:all .2s;}
+.modal-btn-main:hover{background:var(--red2);}
+.modal-btn-sub{flex:1;background:transparent;border:1px solid rgba(255,255,255,.15);color:var(--muted);font-size:11px;padding:10px;border-radius:4px;cursor:pointer;}
+
+/* MY PAGE */
+.my-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:16px;}
+.my-stat{background:var(--dark3);border-radius:4px;padding:11px;text-align:center;}
+.my-stat-label{font-size:9px;color:var(--muted);letter-spacing:1px;margin-bottom:3px;text-transform:uppercase;}
+.my-stat-val{font-family:'IBM Plex Mono',monospace;font-size:20px;font-weight:700;}
+.badge-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin-bottom:14px;}
+.bg-item{background:var(--dark3);border:1px solid rgba(255,255,255,.06);border-radius:5px;padding:7px 3px;text-align:center;opacity:.3;}
+.bg-item.earned{opacity:1;border-color:rgba(243,156,18,.5);background:rgba(243,156,18,.08);}
+.bg-item-e{font-size:18px;line-height:1;margin-bottom:2px;}
+.bg-item-n{font-size:8px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.bg-item.earned .bg-item-n{color:rgba(243,156,18,.8);}
+
+/* ===== たまごモード：チュートリアル画面 ===== */
+#tutorial-overlay{
+  display:none;position:fixed;inset:0;z-index:500;
+  background:linear-gradient(160deg,#08101E 0%,#0C1828 40%,#060E20 100%);
+  flex-direction:column;align-items:center;overflow-y:auto;
+  padding:20px 16px 40px;
+}
+#tutorial-overlay.show{display:flex;}
+.tut-header{width:100%;max-width:720px;margin-bottom:16px;}
+.tut-title{font-family:'Shippori Mincho B1',serif;font-size:22px;font-weight:800;letter-spacing:4px;color:var(--text);}
+.tut-title span{font-family:'Bebas Neue',cursive;font-size:13px;color:var(--gold);letter-spacing:3px;margin-left:10px;vertical-align:middle;}
+.tut-stage-name{font-size:12px;color:var(--muted);margin-top:4px;letter-spacing:1px;}
+.tut-back-btn{float:right;background:transparent;border:1px solid rgba(255,255,255,.12);color:var(--muted);font-size:11px;padding:5px 14px;border-radius:2px;cursor:pointer;transition:all .2s;}
+.tut-back-btn:hover{border-color:rgba(255,255,255,.3);color:var(--text);}
+
+/* Progress */
+.tut-progress-wrap{width:100%;max-width:720px;height:6px;background:rgba(255,255,255,.06);border-radius:3px;margin-bottom:20px;overflow:hidden;}
+#tut-progress-fill{height:100%;background:linear-gradient(90deg,var(--gold),var(--gold2));border-radius:3px;transition:width .3s ease;}
+
+/* Main area */
+.tut-body{width:100%;max-width:720px;display:flex;flex-direction:column;align-items:center;gap:20px;}
+
+/* Key display */
+.tut-key-area{text-align:center;}
+#tut-key-label{
+  font-family:'IBM Plex Mono',monospace;font-size:72px;font-weight:700;
+  width:120px;height:120px;border-radius:16px;border:3px solid;
+  display:flex;align-items:center;justify-content:center;margin:0 auto 10px;
+  transition:all .15s;
+}
+#tut-key-label.tut-hit{transform:scale(1.15);filter:brightness(1.5);}
+#tut-key-label.tut-miss{animation:tutMiss .3s ease;border-color:var(--red2)!important;color:var(--red2)!important;}
+@keyframes tutMiss{0%,100%{transform:translateX(0)}25%{transform:translateX(-8px)}75%{transform:translateX(8px)}}
+.tut-key-sub{font-size:13px;color:var(--muted);letter-spacing:1px;}
+.tut-progress-nums{font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--muted);margin-top:4px;}
+
+/* Hands */
+.tut-hands{display:flex;gap:32px;justify-content:center;align-items:flex-end;}
+.tut-hand-wrap{text-align:center;}
+.tut-hand-label{font-size:10px;color:var(--muted);letter-spacing:2px;margin-bottom:6px;}
+.tut-hand-wrap svg{width:130px;height:190px;}
+/* Finger base + lit states */
+.hand-finger{opacity:0.42;transition:opacity .2s;}
+.hand-finger.lit{opacity:1;animation:fingerLit .55s ease-in-out infinite alternate;}
+@keyframes fingerLit{0%{filter:brightness(1.1)}100%{filter:brightness(1.8) drop-shadow(0 0 10px rgba(255,255,255,.7))}}
+
+/* Char row for word stage */
+.tut-char-row{display:flex;gap:4px;justify-content:center;flex-wrap:wrap;min-height:50px;align-items:center;}
+.tut-char-row .ch{width:34px;height:44px;}
+
+/* Word input */
+#tut-word-input{
+  background:var(--dark3);border:1.5px solid rgba(255,255,255,.15);
+  color:var(--text);font-family:'IBM Plex Mono',monospace;font-size:18px;font-weight:700;
+  padding:9px 16px;border-radius:4px;outline:none;text-align:center;letter-spacing:3px;caret-color:var(--gold);
+  width:100%;max-width:400px;
+}
+#tut-word-input:focus{border-color:var(--gold);}
+#tut-word-input.cfx{border-color:var(--green);animation:cfxAnim .3s ease;}
+
+/* Stage clear */
+#tut-stage-clear-msg{
+  font-family:'Bebas Neue',cursive;font-size:36px;letter-spacing:4px;
+  color:var(--green2);text-align:center;display:none;
+  animation:slideUp .4s cubic-bezier(.34,1.56,.64,1);
+}
+#tut-stage-clear-msg.final{color:var(--gold);}
+.tut-next-btn{
+  background:linear-gradient(135deg,var(--gold),#E67E22);border:none;
+  color:var(--dark);font-family:'Bebas Neue',cursive;font-size:18px;letter-spacing:3px;
+  padding:12px 36px;border-radius:4px;cursor:pointer;transition:all .2s;font-weight:900;
+  display:none;
+}
+.tut-next-btn:hover{transform:translateY(-2px);}
+
+/* ミニキーボード（たまご内でも使用） */
+.tut-mini-kb{display:flex;flex-direction:column;gap:3px;align-items:center;margin-top:10px;}
+.tut-kb-row{display:flex;gap:3px;}
+.tut-kb-key{width:26px;height:24px;border-radius:3px;display:flex;align-items:center;justify-content:center;font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:700;color:rgba(255,255,255,.4);border:1px solid rgba(255,255,255,.07);background:rgba(255,255,255,.03);}
+.tut-kb-key.tut-next-key{color:#fff;border-width:2px;transform:scale(1.1);animation:kbKeyPulse .5s ease-in-out infinite alternate;}
+@keyframes kbKeyPulse{0%{box-shadow:none}100%{box-shadow:0 0 8px 2px currentColor}}
+
+@media(max-width:600px){
+  #hdr{padding:12px;flex-direction:column;gap:10px;align-items:flex-start;}
+  .stats-row{grid-template-columns:repeat(3,1fr);}
+  #sv-wpm,#sv-combo{display:none;}
+  .lb-row,.lb-hrow{grid-template-columns:28px 1fr 70px 58px;}.lb-acc{display:none;}
+}
+/* 門司港シルエット背景 */
+#mojiko-bg{position:fixed;bottom:0;left:0;width:100%;height:auto;max-height:46vh;z-index:0;pointer-events:none;opacity:0.42;}
+/* サイド装飾パネル */
+.side-col{position:fixed;top:0;bottom:0;width:calc((100vw - 876px)/2);z-index:2;pointer-events:none;display:flex;align-items:center;justify-content:center;overflow:hidden;}
+.side-col-l{left:0;}
+.side-col-r{right:0;}
+@media(max-width:1080px){.side-col{display:none;}}
+</style>
+</head>
+<body>
+
+<!-- 門司港夜景シルエット -->
+<svg id="mojiko-bg" viewBox="0 0 1400 260" preserveAspectRatio="xMidYMax slice" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <filter id="mg-gw" x="-80%" y="-80%" width="260%" height="260%">
+      <feGaussianBlur in="SourceGraphic" stdDeviation="3" result="b"/>
+      <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+    <filter id="mg-gb" x="-80%" y="-80%" width="260%" height="260%">
+      <feGaussianBlur in="SourceGraphic" stdDeviation="5" result="b"/>
+      <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+  </defs>
+
+  <!-- ===== 関門橋 (遠景・左端) ===== -->
+  <rect x="55" y="82" width="12" height="168" fill="#0D1828" opacity="0.75"/>
+  <rect x="49" y="79" width="24" height="7" fill="#0D1828" opacity="0.75"/>
+  <rect x="168" y="98" width="12" height="152" fill="#0D1828" opacity="0.75"/>
+  <rect x="162" y="95" width="24" height="7" fill="#0D1828" opacity="0.75"/>
+  <!-- メインケーブル -->
+  <path d="M 61,86 Q 115,172 174,102" stroke="#0D1828" stroke-width="2.5" fill="none" opacity="0.65"/>
+  <!-- ハンガーケーブル -->
+  <line x1="80" y1="112" x2="80" y2="250" stroke="#0D1828" stroke-width="1" opacity="0.45"/>
+  <line x1="95" y1="124" x2="95" y2="250" stroke="#0D1828" stroke-width="1" opacity="0.45"/>
+  <line x1="110" y1="132" x2="110" y2="250" stroke="#0D1828" stroke-width="1" opacity="0.45"/>
+  <line x1="125" y1="137" x2="125" y2="250" stroke="#0D1828" stroke-width="1" opacity="0.45"/>
+  <line x1="140" y1="136" x2="140" y2="250" stroke="#0D1828" stroke-width="1" opacity="0.45"/>
+  <line x1="155" y1="128" x2="155" y2="250" stroke="#0D1828" stroke-width="1" opacity="0.45"/>
+  <!-- 橋桁 -->
+  <rect x="38" y="248" width="160" height="5" fill="#0D1828" opacity="0.7"/>
+
+  <!-- ===== 赤レンガ建物 (左・4階建て) ===== -->
+  <rect x="218" y="136" width="120" height="114" fill="#230D0D"/>
+  <rect x="216" y="130" width="124" height="8" fill="#2E1212"/>
+  <!-- 窓 3列×4行 -->
+  <rect x="228" y="146" width="18" height="22" fill="#120808" rx="1"/>
+  <rect x="255" y="146" width="18" height="22" fill="#120808" rx="1"/>
+  <rect x="282" y="146" width="18" height="22" fill="#120808" rx="1"/>
+  <rect x="309" y="146" width="18" height="22" fill="#120808" rx="1"/>
+  <rect x="228" y="176" width="18" height="22" fill="#120808" rx="1"/>
+  <rect x="255" y="176" width="18" height="22" fill="#120808" rx="1"/>
+  <rect x="282" y="176" width="18" height="22" fill="#120808" rx="1"/>
+  <rect x="309" y="176" width="18" height="22" fill="#120808" rx="1"/>
+  <rect x="228" y="206" width="18" height="22" fill="#120808" rx="1"/>
+  <rect x="255" y="206" width="18" height="22" fill="#120808" rx="1"/>
+  <rect x="282" y="206" width="18" height="22" fill="#120808" rx="1"/>
+  <rect x="309" y="206" width="18" height="22" fill="#120808" rx="1"/>
+
+  <!-- ===== JR門司港駅 (中央・主役) ===== -->
+
+  <!-- 左翼棟 (平屋) -->
+  <rect x="358" y="178" width="248" height="62" fill="#16120A"/>
+  <!-- 左翼屋根 (浅い勾配) -->
+  <polygon points="356,178 356,163 478,155 606,164 606,178" fill="#1C1710"/>
+  <!-- 左翼 窓 -->
+  <rect x="373" y="187" width="13" height="17" fill="#0E0C08" rx="1"/>
+  <rect x="394" y="187" width="13" height="17" fill="#0E0C08" rx="1"/>
+  <rect x="415" y="187" width="13" height="17" fill="#0E0C08" rx="1"/>
+  <rect x="436" y="187" width="13" height="17" fill="#0E0C08" rx="1"/>
+  <rect x="457" y="187" width="13" height="17" fill="#0E0C08" rx="1"/>
+  <rect x="478" y="187" width="13" height="17" fill="#0E0C08" rx="1"/>
+  <rect x="499" y="187" width="13" height="17" fill="#0E0C08" rx="1"/>
+  <rect x="520" y="187" width="13" height="17" fill="#0E0C08" rx="1"/>
+  <rect x="541" y="187" width="13" height="17" fill="#0E0C08" rx="1"/>
+  <rect x="562" y="187" width="13" height="17" fill="#0E0C08" rx="1"/>
+  <rect x="583" y="187" width="13" height="17" fill="#0E0C08" rx="1"/>
+
+  <!-- 右翼棟 (平屋) -->
+  <rect x="794" y="178" width="248" height="62" fill="#16120A"/>
+  <!-- 右翼屋根 -->
+  <polygon points="794,178 794,164 922,155 1044,163 1044,178" fill="#1C1710"/>
+  <!-- 右翼 窓 -->
+  <rect x="808" y="187" width="13" height="17" fill="#0E0C08" rx="1"/>
+  <rect x="829" y="187" width="13" height="17" fill="#0E0C08" rx="1"/>
+  <rect x="850" y="187" width="13" height="17" fill="#0E0C08" rx="1"/>
+  <rect x="871" y="187" width="13" height="17" fill="#0E0C08" rx="1"/>
+  <rect x="892" y="187" width="13" height="17" fill="#0E0C08" rx="1"/>
+  <rect x="913" y="187" width="13" height="17" fill="#0E0C08" rx="1"/>
+  <rect x="934" y="187" width="13" height="17" fill="#0E0C08" rx="1"/>
+  <rect x="955" y="187" width="13" height="17" fill="#0E0C08" rx="1"/>
+  <rect x="976" y="187" width="13" height="17" fill="#0E0C08" rx="1"/>
+  <rect x="997" y="187" width="13" height="17" fill="#0E0C08" rx="1"/>
+  <rect x="1018" y="187" width="13" height="17" fill="#0E0C08" rx="1"/>
+
+  <!-- 中央棟 本体 (3階建て) -->
+  <rect x="606" y="92" width="188" height="148" fill="#1A1510"/>
+  <!-- 柱型装飾 -->
+  <rect x="606" y="92" width="9" height="148" fill="#211B12"/>
+  <rect x="785" y="92" width="9" height="148" fill="#211B12"/>
+  <rect x="640" y="92" width="7" height="148" fill="#1E1910"/>
+  <rect x="753" y="92" width="7" height="148" fill="#1E1910"/>
+
+  <!-- 上段窓 (2階) -->
+  <rect x="615" y="106" width="21" height="30" fill="#100E0A" rx="1"/>
+  <rect x="645" y="106" width="21" height="30" fill="#100E0A" rx="1"/>
+  <!-- 中央上段窓 (少し大きめ) -->
+  <rect x="687" y="106" width="26" height="30" fill="#100E0A" rx="1"/>
+  <rect x="748" y="106" width="21" height="30" fill="#100E0A" rx="1"/>
+  <rect x="764" y="106" width="21" height="30" fill="#100E0A" rx="1"/>
+
+  <!-- 水平装飾帯 -->
+  <rect x="606" y="144" width="188" height="5" fill="#221C13"/>
+
+  <!-- 下段窓 -->
+  <rect x="615" y="153" width="20" height="24" fill="#100E0A" rx="1"/>
+  <rect x="644" y="153" width="20" height="24" fill="#100E0A" rx="1"/>
+  <rect x="756" y="153" width="20" height="24" fill="#100E0A" rx="1"/>
+  <rect x="765" y="153" width="20" height="24" fill="#100E0A" rx="1"/>
+
+  <!-- 中央アーチ入口 -->
+  <rect x="679" y="160" width="42" height="80" fill="#0C0A06"/>
+  <path d="M 676,160 Q 700,140 724,160" fill="#0C0A06"/>
+
+  <!-- マンサード屋根 (曲線勾配) -->
+  <path d="M 592,94 L 606,68 Q 700,34 794,68 L 808,94 Z" fill="#17140F"/>
+  <!-- 屋根装飾クレスティング (鉄製手すり) -->
+  <rect x="655" y="36" width="90" height="4" fill="#1E1A12"/>
+  <polygon points="668,36 664,42 672,42" fill="#1E1A12"/>
+  <polygon points="682,36 678,42 686,42" fill="#1E1A12"/>
+  <polygon points="718,36 714,42 722,42" fill="#1E1A12"/>
+  <polygon points="732,36 728,42 736,42" fill="#1E1A12"/>
+
+  <!-- 左ドーマー窓 (屋根の中) -->
+  <rect x="626" y="58" width="38" height="30" fill="#151210"/>
+  <ellipse cx="645" cy="68" rx="11" ry="9" fill="#0E0C0A"/>
+  <path d="M 621,58 Q 645,43 669,58" fill="#1C1912"/>
+
+  <!-- 右ドーマー窓 -->
+  <rect x="736" y="58" width="38" height="30" fill="#151210"/>
+  <ellipse cx="755" cy="68" rx="11" ry="9" fill="#0E0C0A"/>
+  <path d="M 731,58 Q 755,43 779,58" fill="#1C1912"/>
+
+  <!-- 時計 (屋根頂部中央) -->
+  <rect x="692" y="46" width="16" height="8" fill="#1E1A12"/>
+  <circle cx="700" cy="49" r="11" fill="#0E0C08" stroke="#2C2418" stroke-width="2"/>
+  <circle cx="700" cy="49" r="8" fill="#080806" stroke="#1C1810" stroke-width="1"/>
+  <!-- 時計の針 -->
+  <line x1="700" y1="49" x2="700" y2="42" stroke="#C89020" stroke-width="1.5" stroke-linecap="round" filter="url(#mg-gw)"/>
+  <line x1="700" y1="49" x2="706" y2="54" stroke="#C89020" stroke-width="1.2" stroke-linecap="round" filter="url(#mg-gw)"/>
+  <!-- 屋根頂部フィニアル -->
+  <polygon points="700,26 696,36 704,36" fill="#1E1A12"/>
+  <circle cx="700" cy="24" r="3" fill="#C89020" opacity="0.7" filter="url(#mg-gw)"/>
+
+  <!-- 玄関灯 -->
+  <circle cx="666" cy="91" r="3" fill="#D4A030" opacity="0.75" filter="url(#mg-gw)"/>
+  <circle cx="734" cy="91" r="3" fill="#D4A030" opacity="0.75" filter="url(#mg-gw)"/>
+
+  <!-- ===== 門司港レトロ展望室タワー (右・超高層) ===== -->
+  <!-- タワー基部 -->
+  <rect x="1090" y="192" width="56" height="48" fill="#0E1018"/>
+  <!-- タワー柱 (細い) -->
+  <rect x="1108" y="18" width="20" height="176" fill="#101420"/>
+  <!-- 頂部ディスク (パラボラ形・最大の特徴) -->
+  <rect x="1072" y="14" width="92" height="10" fill="#0E1018" rx="2"/>
+  <rect x="1078" y="10" width="80" height="6" fill="#0E1018" rx="2"/>
+  <ellipse cx="1118" cy="12" rx="46" ry="7" fill="#0D1016"/>
+  <!-- アンテナ -->
+  <rect x="1116" y="0" width="4" height="12" fill="#10141C"/>
+  <!-- 各フロアライン -->
+  <rect x="1108" y="55" width="20" height="2" fill="#14182A" opacity="0.7"/>
+  <rect x="1108" y="88" width="20" height="2" fill="#14182A" opacity="0.7"/>
+  <rect x="1108" y="121" width="20" height="2" fill="#14182A" opacity="0.7"/>
+  <rect x="1108" y="154" width="20" height="2" fill="#14182A" opacity="0.7"/>
+  <!-- タワー頂部ライト -->
+  <circle cx="1118" cy="10" r="2.5" fill="#4A8AE0" opacity="0.85" filter="url(#mg-gb)"/>
+
+  <!-- ===== 地平線・水面 ===== -->
+  <!-- 護岸 -->
+  <rect x="0" y="240" width="1400" height="8" fill="#080E18" opacity="0.95"/>
+  <!-- 水面 -->
+  <rect x="0" y="248" width="1400" height="12" fill="#060A16" opacity="0.9"/>
+  <!-- 時計の水面反射 -->
+  <ellipse cx="700" cy="252" rx="18" ry="3" fill="rgba(200,144,32,0.12)"/>
+  <!-- タワーの水面反射 -->
+  <ellipse cx="1118" cy="252" rx="24" ry="3" fill="rgba(74,138,224,0.1)"/>
+  <!-- 玄関灯の水面反射 -->
+  <ellipse cx="666" cy="252" rx="10" ry="2" fill="rgba(212,160,48,0.1)"/>
+  <ellipse cx="734" cy="252" rx="10" ry="2" fill="rgba(212,160,48,0.1)"/>
+</svg>
+
+<!-- 左サイド装飾パネル (門司港) -->
+<div class="side-col side-col-l" aria-hidden="true">
+  <svg viewBox="0 0 80 520" xmlns="http://www.w3.org/2000/svg" style="width:78%;max-width:112px;height:auto;max-height:84vh;">
+    <line x1="40" y1="0" x2="40" y2="520" stroke="rgba(106,32,16,0.28)" stroke-width="1"/>
+    <polygon points="40,12 45,20 40,28 35,20" fill="none" stroke="rgba(192,136,24,0.55)" stroke-width="1.5"/>
+    <polygon points="40,15 44,20 40,25 36,20" fill="rgba(192,136,24,0.22)"/>
+    <rect x="28" y="36" width="24" height="1.5" fill="rgba(192,136,24,0.42)" rx="1"/>
+    <rect x="33" y="41" width="14" height="1" fill="rgba(192,136,24,0.25)" rx="1"/>
+    <text x="40" y="69" text-anchor="middle" font-family="'Shippori Mincho B1','Noto Sans JP',serif" font-size="20" font-weight="700" fill="rgba(192,136,24,0.65)">門</text>
+    <text x="40" y="97" text-anchor="middle" font-family="'Shippori Mincho B1','Noto Sans JP',serif" font-size="20" font-weight="700" fill="rgba(192,136,24,0.65)">司</text>
+    <text x="40" y="125" text-anchor="middle" font-family="'Shippori Mincho B1','Noto Sans JP',serif" font-size="20" font-weight="700" fill="rgba(192,136,24,0.65)">港</text>
+    <rect x="26" y="137" width="28" height="1.5" fill="rgba(192,136,24,0.38)" rx="1"/>
+    <rect x="31" y="142" width="18" height="1" fill="rgba(192,136,24,0.22)" rx="1"/>
+    <!-- 紋章リング -->
+    <circle cx="40" cy="200" r="37" fill="none" stroke="rgba(192,136,24,0.48)" stroke-width="1.5"/>
+    <circle cx="40" cy="200" r="30" fill="rgba(8,16,30,0.55)" stroke="rgba(192,136,24,0.28)" stroke-width="1"/>
+    <!-- 8方向マーク -->
+    <line x1="40" y1="163" x2="40" y2="170" stroke="rgba(192,136,24,0.52)" stroke-width="2"/>
+    <line x1="40" y1="230" x2="40" y2="237" stroke="rgba(192,136,24,0.52)" stroke-width="2"/>
+    <line x1="3"  y1="200" x2="10" y2="200" stroke="rgba(192,136,24,0.52)" stroke-width="2"/>
+    <line x1="70" y1="200" x2="77" y2="200" stroke="rgba(192,136,24,0.52)" stroke-width="2"/>
+    <line x1="14" y1="174" x2="19" y2="179" stroke="rgba(192,136,24,0.38)" stroke-width="1.5"/>
+    <line x1="61" y1="221" x2="66" y2="226" stroke="rgba(192,136,24,0.38)" stroke-width="1.5"/>
+    <line x1="61" y1="174" x2="66" y2="179" stroke="rgba(192,136,24,0.38)" stroke-width="1.5"/>
+    <line x1="14" y1="221" x2="19" y2="226" stroke="rgba(192,136,24,0.38)" stroke-width="1.5"/>
+    <!-- 波紋 -->
+    <path d="M 19,195 Q 29,186 40,195 Q 51,204 61,195" stroke="rgba(192,136,24,0.52)" stroke-width="1.5" fill="none"/>
+    <path d="M 19,205 Q 29,196 40,205 Q 51,214 61,205" stroke="rgba(192,136,24,0.32)" stroke-width="1" fill="none"/>
+    <!-- 紋章中央文字 -->
+    <text x="40" y="207" text-anchor="middle" font-family="'Shippori Mincho B1','Noto Sans JP',serif" font-size="18" font-weight="800" fill="rgba(192,136,24,0.78)">門</text>
+    <circle cx="40" cy="179" r="2" fill="rgba(192,136,24,0.4)"/>
+    <circle cx="40" cy="221" r="2" fill="rgba(192,136,24,0.4)"/>
+    <circle cx="19" cy="200" r="2" fill="rgba(192,136,24,0.4)"/>
+    <circle cx="61" cy="200" r="2" fill="rgba(192,136,24,0.4)"/>
+    <rect x="31" y="246" width="18" height="1" fill="rgba(192,136,24,0.22)" rx="1"/>
+    <rect x="26" y="251" width="28" height="1.5" fill="rgba(192,136,24,0.38)" rx="1"/>
+    <text x="40" y="279" text-anchor="middle" font-family="'Shippori Mincho B1','Noto Sans JP',serif" font-size="14" fill="rgba(192,136,24,0.48)">レ</text>
+    <text x="40" y="299" text-anchor="middle" font-family="'Shippori Mincho B1','Noto Sans JP',serif" font-size="14" fill="rgba(192,136,24,0.48)">ト</text>
+    <text x="40" y="319" text-anchor="middle" font-family="'Shippori Mincho B1','Noto Sans JP',serif" font-size="14" fill="rgba(192,136,24,0.48)">ロ</text>
+    <rect x="33" y="349" width="14" height="1" fill="rgba(192,136,24,0.25)" rx="1"/>
+    <rect x="28" y="354" width="24" height="1.5" fill="rgba(192,136,24,0.42)" rx="1"/>
+    <polygon points="40,492 45,500 40,508 35,500" fill="none" stroke="rgba(192,136,24,0.55)" stroke-width="1.5"/>
+    <polygon points="40,495 44,500 40,505 36,500" fill="rgba(192,136,24,0.22)"/>
+  </svg>
+</div>
+
+<!-- 右サイド装飾パネル (鮨撃) -->
+<div class="side-col side-col-r" aria-hidden="true">
+  <svg viewBox="0 0 80 520" xmlns="http://www.w3.org/2000/svg" style="width:78%;max-width:112px;height:auto;max-height:84vh;">
+    <line x1="40" y1="0" x2="40" y2="520" stroke="rgba(106,32,16,0.28)" stroke-width="1"/>
+    <polygon points="40,12 45,20 40,28 35,20" fill="none" stroke="rgba(192,136,24,0.55)" stroke-width="1.5"/>
+    <polygon points="40,15 44,20 40,25 36,20" fill="rgba(192,136,24,0.22)"/>
+    <rect x="28" y="36" width="24" height="1.5" fill="rgba(192,136,24,0.42)" rx="1"/>
+    <rect x="33" y="41" width="14" height="1" fill="rgba(192,136,24,0.25)" rx="1"/>
+    <text x="40" y="63" text-anchor="middle" font-family="'Shippori Mincho B1','Noto Sans JP',serif" font-size="17" font-weight="700" fill="rgba(192,136,24,0.65)">寿</text>
+    <text x="40" y="86" text-anchor="middle" font-family="'Shippori Mincho B1','Noto Sans JP',serif" font-size="17" font-weight="700" fill="rgba(192,136,24,0.65)">司</text>
+    <text x="40" y="109" text-anchor="middle" font-family="'Shippori Mincho B1','Noto Sans JP',serif" font-size="17" font-weight="700" fill="rgba(192,136,24,0.65)">の</text>
+    <text x="40" y="132" text-anchor="middle" font-family="'Shippori Mincho B1','Noto Sans JP',serif" font-size="17" font-weight="700" fill="rgba(192,136,24,0.65)">都</text>
+    <rect x="26" y="145" width="28" height="1.5" fill="rgba(192,136,24,0.38)" rx="1"/>
+    <rect x="31" y="150" width="18" height="1" fill="rgba(192,136,24,0.22)" rx="1"/>
+    <!-- 紋章リング -->
+    <circle cx="40" cy="200" r="37" fill="none" stroke="rgba(192,136,24,0.48)" stroke-width="1.5"/>
+    <circle cx="40" cy="200" r="30" fill="rgba(8,16,30,0.55)" stroke="rgba(192,136,24,0.28)" stroke-width="1"/>
+    <line x1="40" y1="163" x2="40" y2="170" stroke="rgba(192,136,24,0.52)" stroke-width="2"/>
+    <line x1="40" y1="230" x2="40" y2="237" stroke="rgba(192,136,24,0.52)" stroke-width="2"/>
+    <line x1="3"  y1="200" x2="10" y2="200" stroke="rgba(192,136,24,0.52)" stroke-width="2"/>
+    <line x1="70" y1="200" x2="77" y2="200" stroke="rgba(192,136,24,0.52)" stroke-width="2"/>
+    <line x1="14" y1="174" x2="19" y2="179" stroke="rgba(192,136,24,0.38)" stroke-width="1.5"/>
+    <line x1="61" y1="221" x2="66" y2="226" stroke="rgba(192,136,24,0.38)" stroke-width="1.5"/>
+    <line x1="61" y1="174" x2="66" y2="179" stroke="rgba(192,136,24,0.38)" stroke-width="1.5"/>
+    <line x1="14" y1="221" x2="19" y2="226" stroke="rgba(192,136,24,0.38)" stroke-width="1.5"/>
+    <path d="M 19,195 Q 29,186 40,195 Q 51,204 61,195" stroke="rgba(192,136,24,0.52)" stroke-width="1.5" fill="none"/>
+    <path d="M 19,205 Q 29,196 40,205 Q 51,214 61,205" stroke="rgba(192,136,24,0.32)" stroke-width="1" fill="none"/>
+    <text x="40" y="207" text-anchor="middle" font-family="'Shippori Mincho B1','Noto Sans JP',serif" font-size="18" font-weight="800" fill="rgba(192,136,24,0.78)">鮨</text>
+    <circle cx="40" cy="179" r="2" fill="rgba(192,136,24,0.4)"/>
+    <circle cx="40" cy="221" r="2" fill="rgba(192,136,24,0.4)"/>
+    <circle cx="19" cy="200" r="2" fill="rgba(192,136,24,0.4)"/>
+    <circle cx="61" cy="200" r="2" fill="rgba(192,136,24,0.4)"/>
+    <rect x="31" y="246" width="18" height="1" fill="rgba(192,136,24,0.22)" rx="1"/>
+    <rect x="26" y="251" width="28" height="1.5" fill="rgba(192,136,24,0.38)" rx="1"/>
+    <text x="40" y="279" text-anchor="middle" font-family="'Shippori Mincho B1','Noto Sans JP',serif" font-size="17" font-weight="700" fill="rgba(192,136,24,0.65)">北</text>
+    <text x="40" y="302" text-anchor="middle" font-family="'Shippori Mincho B1','Noto Sans JP',serif" font-size="17" font-weight="700" fill="rgba(192,136,24,0.65)">九</text>
+    <text x="40" y="325" text-anchor="middle" font-family="'Shippori Mincho B1','Noto Sans JP',serif" font-size="17" font-weight="700" fill="rgba(192,136,24,0.65)">州</text>
+    <rect x="33" y="383" width="14" height="1" fill="rgba(192,136,24,0.25)" rx="1"/>
+    <rect x="28" y="388" width="24" height="1.5" fill="rgba(192,136,24,0.42)" rx="1"/>
+    <polygon points="40,492 45,500 40,508 35,500" fill="none" stroke="rgba(192,136,24,0.55)" stroke-width="1.5"/>
+    <polygon points="40,495 44,500 40,505 36,500" fill="rgba(192,136,24,0.22)"/>
+  </svg>
+</div>
+
+<div id="combo-fx"></div>
+
+<!-- GAME OVER -->
+<div id="go-overlay">
+  <div class="go-card">
+    <div class="go-title">TIME UP!</div>
+    <div class="go-sub" id="go-sub">お疲れさまでした</div>
+    <div class="go-stats">
+      <div class="go-stat"><div class="go-stat-label">スコア</div><div class="go-stat-val" id="go-score">0</div></div>
+      <div class="go-stat"><div class="go-stat-label">WPM</div><div class="go-stat-val" id="go-wpm">0</div></div>
+      <div class="go-stat"><div class="go-stat-label">正確度</div><div class="go-stat-val" id="go-acc">--%</div></div>
+      <div class="go-stat"><div class="go-stat-label">完食数</div><div class="go-stat-val" id="go-count">0</div></div>
+    </div>
+    <div class="go-rank" id="go-rank"><span class="rank-badge">称号</span>…</div>
+    <div class="go-btns">
+      <button class="go-btn-play" onclick="startGame()">もう一度</button>
+      <button class="go-btn-share" onclick="shareResult()">シェア</button>
+    </div>
+  </div>
+</div>
+
+<!-- HOWTO OVERLAY -->
+<div id="howto-overlay" style="display:none;position:fixed;inset:0;z-index:600;background:rgba(0,0,0,.92);backdrop-filter:blur(6px);align-items:center;justify-content:center;overflow-y:auto;padding:20px;">
+  <div style="background:linear-gradient(160deg,#0C1828,#0A1430);border:1px solid rgba(192,136,24,.25);border-radius:10px;max-width:560px;width:100%;padding:32px 28px;">
+    <div style="text-align:center;margin-bottom:24px;">
+      <div style="font-size:32px;">🍣</div>
+      <div style="font-family:'Shippori Mincho B1',serif;font-size:22px;font-weight:800;letter-spacing:4px;color:#f0e6c8;margin-top:6px;">鮨撃 KITAKYUSHU</div>
+      <div style="font-size:11px;color:#c08818;letter-spacing:3px;margin-top:4px;">HOW TO PLAY</div>
+    </div>
+
+    <div style="display:flex;flex-direction:column;gap:14px;font-size:13px;color:#c8b99a;line-height:1.7;">
+
+      <div style="background:rgba(255,255,255,.04);border-left:3px solid #c08818;border-radius:0 6px 6px 0;padding:12px 14px;">
+        <div style="color:#f0e6c8;font-weight:700;margin-bottom:4px;">🎯 ゲームの目的</div>
+        ベルトコンベアで流れてくる寿司ネタをローマ字でタイピング！<br>
+        制限時間60秒以内にできるだけ多くのネタを仕留めよう。
+      </div>
+
+      <div style="background:rgba(255,255,255,.04);border-left:3px solid #3b82f6;border-radius:0 6px 6px 0;padding:12px 14px;">
+        <div style="color:#f0e6c8;font-weight:700;margin-bottom:4px;">🔥 コンボ</div>
+        連続正解でコンボが積み重なり、スコア倍率がアップ！<br>
+        ミスするとコンボはリセット。できるだけミスしないのが高得点への近道。
+      </div>
+
+      <div style="background:rgba(255,255,255,.04);border-left:3px solid #F39C12;border-radius:0 6px 6px 0;padding:12px 14px;">
+        <div style="color:#f0e6c8;font-weight:700;margin-bottom:6px;">✨ 金色のネタ = レアパワーアップ</div>
+        ゲーム中に突然<span style="color:#F39C12;font-weight:700;">金色に光るネタ</span>が高速で流れてくる！<br>
+        仕留められればネタに応じたパワーアップが即発動。<br>
+        <div style="margin-top:6px;font-size:12px;display:grid;grid-template-columns:1fr 1fr;gap:4px;">
+          <span>🐟 大トロ → ⏱ 時間延長 +20秒</span>
+          <span>🦔 ウニ → 🔥 スコア3倍（20秒）</span>
+          <span>🐚 アワビ → 🧊 ベルトスロー（30秒）</span>
+          <span>🦐 ボタンエビ → ⚡ コンボ2倍（30秒）</span>
+          <span>🐡 フグ → ❄️ タイムフリーズ（10秒）</span>
+        </div>
+      </div>
+
+      <div style="background:rgba(255,255,255,.04);border-left:3px solid #e74c3c;border-radius:0 6px 6px 0;padding:12px 14px;">
+        <div style="color:#f0e6c8;font-weight:700;margin-bottom:6px;">⚠️ 罰ネタに注意！</div>
+        金ネタとまったく同じ見た目で<span style="color:#e74c3c;font-weight:700;">⚠️マーク</span>がついているものは罰ネタ！<br>
+        タイピングすると…<br>
+        <div style="margin-top:6px;font-size:12px;display:grid;grid-template-columns:1fr 1fr;gap:4px;">
+          <span>🐟 大トロ+⚠️ → 時間 -15秒</span>
+          <span>🦔 ウニ+⚠️ → コンボリセット</span>
+          <span>🐡 フグ+⚠️ → スコア半減</span>
+        </div>
+        流れてきても無視して通り過ごすのが正解！
+      </div>
+
+      <div style="background:rgba(255,255,255,.04);border-left:3px solid #f97316;border-radius:0 6px 6px 0;padding:12px 14px;">
+        <div style="color:#f0e6c8;font-weight:700;margin-bottom:4px;">📝 クイズ</div>
+        10ネタごとにクイズが出題される。正解するとパワーアップを選べる！<br>
+        <span style="color:#fbbf24;">⚠ クイズ中も時間は経過する。</span>さっさと答えるかスキップするかも戦略のうち。<br>
+        スキップしてもパワーアップなしでゲームに戻れる。
+      </div>
+
+      <div style="background:rgba(255,255,255,.04);border-left:3px solid #a78bfa;border-radius:0 6px 6px 0;padding:12px 14px;">
+        <div style="color:#f0e6c8;font-weight:700;margin-bottom:4px;">⌨️ 入力のルール</div>
+        ローマ字入力。「し」はsi・shi、「ち」はti・chi、「つ」はtu・tsu どちらでもOK。<br>
+        「ん」は必ず <strong style="color:#facc15;">nn</strong> と入力すること。
+      </div>
+
+    </div>
+
+    <button onclick="closeHowtoAndStart()" style="margin-top:24px;width:100%;background:#9e2e1c;border:none;color:#fff;font-family:'Bebas Neue',cursive;font-size:22px;letter-spacing:4px;padding:14px;border-radius:6px;cursor:pointer;transition:all .2s;"
+      onmouseover="this.style.background='#c03a28'" onmouseout="this.style.background='#9e2e1c'">
+      ▶ ゲーム開始！
+    </button>
+  </div>
+</div>
+
+<!-- QUIZ OVERLAY -->
+<div id="quiz-overlay">
+  <div class="quiz-card" id="quiz-card">
+    <!-- filled by JS -->
+  </div>
+</div>
+
+<!-- REGISTER MODAL -->
+<div class="modal-wrap" id="modal-reg">
+  <div class="modal">
+    <div class="modal-title">プレイヤー登録</div>
+    <div class="modal-sub">ニックネーム・学年・区を入力してスタート</div>
+    <div class="field-wrap"><div class="field-label">ニックネーム</div>
+      <input class="field-input" id="reg-nn" type="text" maxlength="12" placeholder="例：すしたろう"/></div>
+    <div class="field-wrap"><div class="field-label">学年</div>
+      <select class="field-input" id="reg-grade">
+        <option value="">選んでください</option>
+        <option>小1</option><option>小2</option><option>小3</option><option>小4</option><option>小5</option><option>小6</option>
+        <option>中1</option><option>中2</option><option>中3</option><option>一般</option>
+      </select></div>
+    <div class="field-wrap"><div class="field-label">北九州市のどの区？</div>
+      <div class="ward-grid">
+        <button class="ward-btn" onclick="selWard(this,'門司区')">門司区</button>
+        <button class="ward-btn" onclick="selWard(this,'小倉北区')">小倉北区</button>
+        <button class="ward-btn" onclick="selWard(this,'小倉南区')">小倉南区</button>
+        <button class="ward-btn" onclick="selWard(this,'戸畑区')">戸畑区</button>
+        <button class="ward-btn" onclick="selWard(this,'八幡東区')">八幡東区</button>
+        <button class="ward-btn" onclick="selWard(this,'八幡西区')">八幡西区</button>
+        <button class="ward-btn" onclick="selWard(this,'若松区')">若松区</button>
+        <button class="ward-btn" onclick="selWard(this,'区外')">区外</button>
+      </div>
+      <input type="hidden" id="reg-ward" value=""/>
+    </div>
+    <div class="modal-btns">
+      <button class="modal-btn-main" onclick="submitReg()">登録してスタート</button>
+      <button class="modal-btn-sub" onclick="closeModal('modal-reg')">キャンセル</button>
+    </div>
+  </div>
+</div>
+
+<!-- MYPAGE MODAL -->
+<div class="modal-wrap" id="modal-my">
+  <div class="modal" style="width:440px;">
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px;padding-bottom:14px;border-bottom:1px solid rgba(255,255,255,.07);">
+      <div style="width:44px;height:44px;border-radius:50%;background:rgba(192,57,43,.2);border:2px solid var(--red);display:flex;align-items:center;justify-content:center;font-size:20px;">🍣</div>
+      <div><div style="font-size:18px;font-weight:700;" id="my-name">-</div><div style="font-size:11px;color:var(--muted);" id="my-ward">-</div></div>
+    </div>
+    <div class="my-stats">
+      <div class="my-stat"><div class="my-stat-label">最高スコア</div><div class="my-stat-val" style="color:var(--gold);" id="my-score">0</div></div>
+      <div class="my-stat"><div class="my-stat-label">最高WPM</div><div class="my-stat-val" style="color:var(--cyan);" id="my-wpm">0</div></div>
+      <div class="my-stat"><div class="my-stat-label">プレイ数</div><div class="my-stat-val" id="my-plays">0</div></div>
+    </div>
+    <div style="font-size:10px;color:var(--muted);letter-spacing:1px;margin-bottom:8px;">バッジ <span id="my-badge-ct" style="color:var(--gold);font-family:'IBM Plex Mono',monospace;"></span></div>
+    <div class="badge-grid" id="my-badge-grid"></div>
+    <div style="font-size:11px;color:rgba(243,156,18,.6);background:rgba(243,156,18,.05);border:1px solid rgba(243,156,18,.2);border-radius:4px;padding:9px 11px;margin-bottom:14px;">★ 各区・学年の1位が区対抗大会に出場できます</div>
+    <div class="modal-btns">
+      <button class="modal-btn-main" onclick="closeModal('modal-my')">閉じる</button>
+      <button class="modal-btn-sub" onclick="logoutUser()">ログアウト</button>
+    </div>
+  </div>
+</div>
+
+<!-- じーも -->
+<div id="jimo-fullscreen" style="display:none;">
+  <div class="jimo-sparks"></div>
+  <img src="jimo.png" alt="じーも">
+  <div class="jimo-msg">⚓ じーも登場！</div>
+  <div class="jimo-sub">タッチして捕まえろ！</div>
+</div>
+<div id="jimo-overlay">
+  <img id="jimo-char" src="jimo.png" alt="じーも" style="display:none;" onclick="catchJimo()">
+  <div id="jimo-label" style="display:none;">✨ タッチして捕まえろ！</div>
+</div>
+<div id="jimo-celebrate" style="display:none;">
+  <img src="jimo.png" alt="じーも">
+  <div class="cel-title">じーもゲット！</div>
+  <div class="cel-bonus" id="cel-bonus-text"></div>
+  <div class="cel-stars">⭐⭐⭐</div>
+</div>
+
+<!-- HEADER -->
+<div id="hdr">
+  <div style="display:flex;align-items:baseline;gap:4px;">
+    <span class="logo-main">鮨撃</span>
+    <span class="logo-badge">BETA</span>
+    <span class="logo-sub">KITAKYUSHU — 寿司の都タイピング</span>
+  </div>
+  <div id="hdr-right">
+    <button class="nav-btn act" onclick="switchView('game',this)">ゲーム</button>
+    <button class="nav-btn" onclick="switchView('rank',this)">ランキング</button>
+    <button class="nav-btn" style="color:var(--gold);" onclick="toggleSound(this)">🔊 音あり</button>
+    <button class="nav-btn" id="user-btn" onclick="currentUser?showMypage():showModal('modal-reg')">登録/ログイン</button>
+  </div>
+</div>
+
+<!-- MAIN -->
+<div id="main">
+
+  <!-- LANG + DIFFICULTY -->
+  <div class="ctrl-row" id="lang-row">
+    <button class="mode-btn act" onclick="setLang('jp',this)">🇯🇵 日本語</button>
+    <button class="mode-btn" onclick="setLang('bi',this)">🌍 バイリンガル</button>
+    <button class="mode-btn" onclick="setLang('en',this)">🇺🇸 English</button>
+    <div style="flex:1;"></div>
+    <button class="mode-btn" id="diff-beginner" onclick="setDiff('beginner',this)">🥚 たまご</button>
+    <button class="mode-btn act" id="diff-easy" onclick="setDiff('easy',this)">🔪 見習い</button>
+    <button class="mode-btn" id="diff-normal" onclick="setDiff('normal',this)">🍣 板前</button>
+    <button class="mode-btn" id="diff-hard" onclick="setDiff('hard',this)">👨‍🍳 板長</button>
+  </div>
+
+  <!-- STATS -->
+  <div class="stats-row">
+    <div class="stat"><div class="stat-label">SCORE</div><div class="stat-val" id="sv-score">0</div></div>
+    <div class="stat"><div class="stat-label">WPM</div><div class="stat-val" id="sv-wpm">—</div></div>
+    <div class="stat"><div class="stat-label">ACCURACY</div><div class="stat-val" id="sv-acc">—</div></div>
+    <div class="stat"><div class="stat-label">COMBO</div><div class="stat-val" id="sv-combo">0</div></div>
+    <div class="stat"><div class="stat-label">TIME</div><div class="stat-val" id="sv-timer">60</div></div>
+  </div>
+
+  <!-- POWERUP BAR -->
+  <div id="powerup-bar">
+    <span id="pu-icon">⬜</span>
+    <span id="pu-label">パワーアップなし　— 10ネタでクイズ出題</span>
+    <div id="pu-timer-bar"><div id="pu-timer-fill" style="width:0%"></div></div>
+  </div>
+
+  <!-- LANES -->
+  <div id="lanes-wrap">
+    <div class="lane-header">
+      <span>回転レーン — Conveyor Belt</span>
+      <span id="belt-label">SPEED: 見習い</span>
+    </div>
+    <div id="lanes"></div>
+  </div>
+
+  <!-- TYPING ZONE -->
+  <div id="typing-zone">
+    <div class="target-row">
+      <div id="tgt-emoji">🍣</div>
+      <div id="tgt-info">
+        <div id="tgt-name">スタートを押してください</div>
+        <div id="tgt-yomi" style="display:none;"></div>
+        <div id="tgt-en" style="display:none;"></div>
+        <div id="tgt-hint">どの難易度で挑戦しますか？</div>
+      </div>
+      <div class="tgt-tags">
+        <div id="tgt-price" style="display:none;"></div>
+        <div id="tgt-sponsor-badge" style="display:none;"></div>
+      </div>
+    </div>
+    <div class="char-row" id="char-row"></div>
+    <input type="text" id="type-input" placeholder="— start typing —"
+      autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" disabled/>
+    <div id="switch-hint" style="font-size:10px;color:rgba(255,255,255,.22);text-align:center;margin-top:5px;letter-spacing:1px;">見えるネタをどれでも自由にタイピング！</div>
+  </div>
+
+  <!-- たまごモード：指ガイド -->
+  <div id="finger-guide">
+    <div class="fg-hint">
+      <div class="fg-key-badge" id="fg-key-badge">—</div>
+      <div>
+        <div class="fg-finger-name" id="fg-finger-name">—</div>
+        <div class="fg-finger-sub" id="fg-finger-sub">キーを押してください</div>
+      </div>
+    </div>
+    <div class="mini-kb" id="mini-kb"></div>
+  </div>
+
+  <!-- ACTIONS -->
+  <div class="action-row">
+    <button class="btn-start" id="btn-start" onclick="onClickStart()">▶ START</button>
+    <button class="btn-sec" id="btn-pause" onclick="togglePause()" style="display:none;">⏸ 一時停止</button>
+    <button class="btn-sec" onclick="showRanking()">🏆 ランキング</button>
+    <button class="btn-sec" onclick="showTournament()">🎌 大会情報</button>
+  </div>
+
+  <!-- LEADERBOARD -->
+  <div class="lb-section" id="lb-section">
+    <div class="lb-head">
+      <span class="lb-title">🏆 今週のランキング</span>
+      <span style="font-size:10px;color:var(--muted);">WEEKLY TOP 10</span>
+    </div>
+    <div class="lb-hrow"><div>#</div><div>名前</div><div style="text-align:right">スコア</div><div style="text-align:right">WPM</div><div style="text-align:right">正確度</div></div>
+    <div id="lb-list"></div>
+  </div>
+
+  <div class="promo">
+    <div><div class="promo-title">🥇 鮨撃 区対抗タイピング大会 2025 — エントリー受付中</div>
+    <div class="promo-desc">参加費 ¥500 / 優勝賞品: 北九州グルメ詰め合わせ＋賞状 / 主催: 門司港プログラミング道場</div></div>
+    <button class="promo-btn" onclick="showTournament()">大会に参加する</button>
+  </div>
+
+</div><!-- /main -->
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+// ============================================================
+// DATA
+// ============================================================
+const ALL_ITEMS = [
+  { e:'🍣', n:'マグロ',   yomi:'まぐろ',   r:'maguro',   en:'Bluefin Tuna',    h:'鮪。赤身の王様',       p:'¥180', lv:1 },
+  { e:'🦑', n:'イカ',     yomi:'いか',     r:'ika',      en:'Squid',           h:'烏賊。コリコリ食感',   p:'¥130', lv:1 },
+  { e:'🦐', n:'エビ',     yomi:'えび',     r:'ebi',      en:'Shrimp',          h:'海老。甘くてプリプリ', p:'¥150', lv:1 },
+  { e:'🐙', n:'タコ',     yomi:'たこ',     r:'tako',     en:'Octopus',         h:'蛸。噛むほど旨い',     p:'¥140', lv:1 },
+  { e:'🐠', n:'アジ',     yomi:'あじ',     r:'aji',      en:'Horse Mackerel',  h:'鯵。光物の代表',       p:'¥120', lv:1 },
+  { e:'🐟', n:'ブリ',     yomi:'ぶり',     r:'buri',     en:'Yellowtail',      h:'鰤。冬が旬の王者',     p:'¥170', lv:1 },
+  { e:'🐟', n:'タイ',     yomi:'たい',     r:'tai',      en:'Sea Bream',       h:'鯛。めでたい魚',       p:'¥180', lv:1 },
+  { e:'🐟', n:'サバ',     yomi:'さば',     r:'saba',     en:'Mackerel',        h:'鯖。しめ鯖で絶品',     p:'¥120', lv:1 },
+  { e:'🦀', n:'カニ',     yomi:'かに',     r:'kani',     en:'Crab',            h:'蟹。贅沢な一皿',       p:'¥350', lv:1 },
+  { e:'🐡', n:'フグ',     yomi:'ふぐ',     r:'fugu',     en:'Pufferfish',      h:'河豚。下関直送',       p:'¥500', lv:1 },
+  { e:'🐟', n:'トロ',     yomi:'とろ',     r:'toro',     en:'Fatty Tuna',      h:'大トロ。とろける旨さ', p:'¥350', lv:1 },
+  { e:'🥚', n:'玉子',     yomi:'たまご',   r:'tamago',   en:'Egg',             h:'だし巻き。甘くふわふわ',p:'¥100', lv:1 },
+  { e:'🐟', n:'イワシ',   yomi:'いわし',   r:'iwashi',   en:'Sardine',         h:'鰯。光物の風味豊か',   p:'¥110', lv:1 },
+  { e:'🐟', n:'ハマチ',   yomi:'はまち',   r:'hamati',  en:'Young Yellowtail',h:'ブリの若魚。脂のり抜群',p:'¥150', lv:1 },
+  { e:'🐟', n:'サワラ',   yomi:'さわら',   r:'sawara',   en:'Spanish Mackerel',h:'鰆。春が旬の上品な白身',p:'¥160', lv:1 },
+  { e:'🐍', n:'ウナギ',   yomi:'うなぎ',   r:'unagi',    en:'Freshwater Eel',  h:'鰻。ふわとろ甘ダレ',   p:'¥250', lv:1 },
+  { e:'🐚', n:'アサリ',   yomi:'あさり',   r:'asari',    en:'Clam',            h:'浅蜊。旨味たっぷり',   p:'¥130', lv:1 },
+  { e:'🐟', n:'シラス',   yomi:'しらす',   r:'shirasu',  en:'Whitebait',       h:'北九州近海の幸',       p:'¥120', lv:1 },
+  { e:'🐟', n:'ニシン',   yomi:'にしん',   r:'nishinn',   en:'Herring',         h:'鰊。数の子の親魚',     p:'¥130', lv:1 },
+  { e:'🌿', n:'ノリ',     yomi:'のり',     r:'nori',     en:'Seaweed',         h:'海苔。磯の香り豊か',   p:'¥80',  lv:1 },
+  { e:'🐟', n:'カマス',   yomi:'かます',   r:'kamasu',   en:'Barracuda',       h:'魳。塩焼きも絶品',     p:'¥140', lv:1 },
+  { e:'🐟', n:'メバル',   yomi:'めばる',   r:'mebaru',   en:'Rockfish',        h:'眼張。旨い白身魚',     p:'¥150', lv:1 },
+  { e:'🐟', n:'サンマ',   yomi:'さんま',   r:'sannma',    en:'Pacific Saury',   h:'秋刀魚。秋が旬の光物', p:'¥130', lv:1 },
+  { e:'🦪', n:'カキ',    yomi:'かき',     r:'kaki',     en:'Oyster',          h:'牡蠣。海のミルク',     p:'¥180', lv:1 },
+  { e:'🐟', n:'マダイ',  yomi:'まだい',   r:'madai',    en:'Red Sea Bream',   h:'真鯛。淡泊な上品白身', p:'¥180', lv:1 },
+  { e:'🐟', n:'タラ',    yomi:'たら',     r:'tara',     en:'Cod',             h:'鱈。ふわふわ白身',     p:'¥140', lv:1 },
+  { e:'🐟', n:'スズキ',  yomi:'すずき',   r:'suzuki',   en:'Sea Bass',        h:'鱸。夏が旬の白身',     p:'¥160', lv:1 },
+  { e:'🐟', n:'ホヤ',    yomi:'ほや',     r:'hoya',     en:'Sea Squirt',      h:'海のパイナップル',     p:'¥150', lv:1 },
+  { e:'🫚', n:'ガリ',    yomi:'がり',     r:'gari',     en:'Pickled Ginger',  h:'口直しの生姜漬け',     p:'無料', lv:1 },
+  { e:'🐟', n:'ツナ',    yomi:'つな',     r:'tsuna',    en:'Tuna Mayo',       h:'ツナマヨ。子どもに人気',p:'¥110', lv:1 },
+  { e:'🌽', n:'コーン',  yomi:'こーん',   r:'ko-nn',    en:'Corn',            h:'甘くてプチプチ',       p:'¥100', lv:1 },
+  { e:'🧀', n:'チーズ',  yomi:'ちーず',   r:'ti-zu',   en:'Cheese',          h:'濃厚とろとろ',         p:'¥110', lv:1 },
+  { e:'🥑', n:'アボカド',yomi:'あぼかど', r:'abokado',  en:'Avocado',         h:'とろける食感',         p:'¥120', lv:1 },
+  { e:'🐟', n:'サーモン', yomi:'さーもん', r:'samon',    en:'Salmon',          h:'鮭。とろける脂',       p:'¥160', lv:2 },
+  { e:'🥚', n:'イクラ',   yomi:'いくら',   r:'ikura',    en:'Salmon Roe',      h:'プチプチ食感',         p:'¥220', lv:2 },
+  { e:'🐚', n:'ホタテ',   yomi:'ほたて',   r:'hotate',   en:'Scallop',         h:'帆立。甘みが絶品',     p:'¥200', lv:2 },
+  { e:'🐟', n:'アナゴ',   yomi:'あなご',   r:'anago',    en:'Sea Eel',         h:'穴子。ふわふわ',       p:'¥190', lv:2 },
+  { e:'🐟', n:'コハダ',   yomi:'こはだ',   r:'kohada',   en:'Gizzard Shad',    h:'江戸前の真骨頂',       p:'¥150', lv:2 },
+  { e:'🐟', n:'カツオ',   yomi:'かつお',   r:'katsuo',   en:'Bonito',          h:'鰹。たたきも絶品',     p:'¥160', lv:2 },
+  { e:'🦔', n:'ウニ',     yomi:'うに',     r:'uni',      en:'Sea Urchin',      h:'雲丹。濃厚クリーミー', p:'¥450', lv:2 },
+  { e:'🐚', n:'アワビ',   yomi:'あわび',   r:'awabi',    en:'Abalone',         h:'鮑。磯の香り豊か',     p:'¥600', lv:2 },
+  { e:'🐟', n:'ヒラメ',   yomi:'ひらめ',   r:'hirame',   en:'Flounder',        h:'平目。上品な白身',     p:'¥200', lv:2 },
+  { e:'🐟', n:'中トロ',  yomi:'ちゅうとろ',r:'tyuutoro',  en:'Medium Fatty Tuna',h:'大トロと赤身の中間',  p:'¥280', lv:2 },
+  { e:'🐟', n:'カンパチ',yomi:'かんぱち', r:'kannpati', en:'Amberjack',       h:'間八。コリコリ歯ごたえ',p:'¥180', lv:2 },
+  { e:'🐟', n:'エンガワ',yomi:'えんがわ', r:'enngawa',   en:'Flatfish Fin',    h:'縁側。コリコリ絶品',   p:'¥160', lv:2 },
+  { e:'🐟', n:'のどぐろ',yomi:'のどぐろ', r:'nodoguro', en:'Blackthroat Seaperch',h:'喉黒。高級白身魚',  p:'¥350', lv:2 },
+  { e:'🐟', n:'ネギトロ',yomi:'ねぎとろ', r:'negitoro', en:'Minced Tuna',     h:'まぐろの旨みとネギ',   p:'¥160', lv:2 },
+  { e:'🐟', n:'しめさば',yomi:'しめさば', r:'shimesaba',en:'Pickled Mackerel', h:'〆鯖。酢と塩で〆た逸品',p:'¥140', lv:2 },
+  { e:'🦐', n:'アマエビ',yomi:'あまえび', r:'amaebi',   en:'Sweet Shrimp',    h:'甘海老。生でとろける甘さ',p:'¥200', lv:2 },
+  { e:'🐚', n:'ホッキガイ',yomi:'ほっきがい',r:'hokkigai',en:'Surf Clam',     h:'北寄貝。甘みとコリコリ感',p:'¥180', lv:2 },
+  { e:'🐚', n:'ツブ貝',  yomi:'つぶがい', r:'tsubugai', en:'Whelk',           h:'螺貝。コリコリ食感',   p:'¥190', lv:2 },
+  { e:'🥚', n:'たらこ',  yomi:'たらこ',   r:'tarako',   en:'Pollock Roe',     h:'鱈子。プチプチ旨み',   p:'¥150', lv:2 },
+  { e:'🥚', n:'とびっこ',yomi:'とびっこ', r:'tobikko',  en:'Flying Fish Roe', h:'飛び子。プチプチ食感', p:'¥160', lv:2 },
+  { e:'🍙', n:'いなり',  yomi:'いなり',   r:'inari',    en:'Inari Sushi',     h:'稲荷。甘い油揚げ',     p:'¥100', lv:2 },
+  { e:'🍤', n:'てんぷら',yomi:'てんぷら', r:'tennpura',  en:'Tempura',         h:'天ぷら。サクサク衣',   p:'¥160', lv:2 },
+  { e:'🌿', n:'かっぱ巻き',yomi:'かっぱまき',r:'kappamaki',en:'Cucumber Roll',h:'きゅうりのさっぱり巻き',p:'¥110', lv:2 },
+  { e:'🍣', n:'てっか巻き',yomi:'てっかまき',r:'tekkamaki',en:'Tuna Roll',    h:'鉄火巻き。まぐろの細巻',p:'¥130', lv:2 },
+  { e:'🍵', n:'あがり',  yomi:'あがり',   r:'agari',    en:'Green Tea',       h:'お寿司屋さんのお茶',   p:'無料', lv:2 },
+  { e:'🫚', n:'わさび',  yomi:'わさび',   r:'wasabi',   en:'Wasabi',          h:'山葵。ピリっと辛い',   p:'', lv:2 },
+  { e:'🍱', n:'ちらし寿司',yomi:'ちらしずし',r:'tirashizushi',en:'Chirashi Sushi',h:'散らし寿司。彩り豊か',p:'¥580', lv:2 },
+  { e:'🍜', n:'みそしる', yomi:'みそしる', r:'misoshiru',en:'Miso Soup',       h:'お味噌汁。ほっこり',   p:'¥110', lv:2 },
+  { e:'🥚', n:'ちゃわんむし',yomi:'ちゃわんむし',r:'chawannmushi',en:'Steamed Egg Custard',h:'茶碗蒸し。とろとろ',p:'¥160', lv:2 },
+  { e:'🔥', n:'あぶりサーモン',yomi:'あぶりさーもん',r:'aburisamonn',en:'Torched Salmon',h:'炙り鮭。香ばしさ抜群',p:'¥200', lv:2 },
+  { e:'🥢', n:'軍艦巻き', yomi:'ぐんかんまき', r:'gunnkannmaki', en:'Gunkan Roll', h:'のりで囲った特殊形', p:'¥160', lv:2 },
+  { e:'🙇', n:'へいいらっしゃい', yomi:'へいいらっしゃい', r:'heiirassyai', en:'Hey, welcome!', h:'威勢のいい職人の掛け声', p:'', lv:2 },
+  { e:'🙏', n:'ありがとうございます', yomi:'ありがとうございます', r:'arigatougozaimasu', en:'Thank you very much', h:'感謝の気持ちを込めて', p:'', lv:2 },
+  { e:'🔪', n:'三枚おろし', yomi:'さんまいおろし', r:'sannmaioroshi', en:'Three-piece fillet', h:'魚を三枚に下ろす技法', p:'', lv:2 },
+  { e:'🍚', n:'シャリを握る', yomi:'しゃりをにぎる', r:'sharionigiru', en:'Shaping the sushi rice', h:'酢飯を手で成形する', p:'', lv:2 },
+  { e:'🐟', n:'活け締め', yomi:'いけじめ', r:'ikejime', en:'Ikejime', h:'鮮度を保つ締め方', p:'', lv:2 },
+  { e:'🐟', n:'びんちょうまぐろ',yomi:'びんちょうまぐろ',r:'binnchomaguro',en:'Albacore Tuna',h:'ビンチョウ。あっさり白いまぐろ',p:'¥130', lv:3 },
+  { e:'🦐', n:'ボタンエビ',yomi:'ぼたんえび',r:'botannebi',en:'Botan Shrimp',h:'牡丹海老。とろける甘さ最高峰',p:'¥400', lv:3 },
+  { e:'🐚', n:'みる貝',  yomi:'みるがい', r:'mirugai',  en:'Geoduck Clam',    h:'海松貝。シャキシャキ磯の香り',p:'¥300', lv:3 },
+  { e:'🔥', n:'炙りで仕上げる', yomi:'あぶりでしあげる', r:'aburideshiageru', en:'Torched to perfection', h:'バーナーで香ばしく', p:'', lv:3 },
+  { e:'🍣', n:'おまかせコース', yomi:'おまかせこーす', r:'omakasekosu', en:"Chef's choice", h:'職人に全部任せる', p:'¥8800', lv:2 },
+  { e:'🔪', n:'かつらむき', yomi:'かつらむき', r:'katuramuki', en:'Katsuramuki', h:'薄く円形に剥く包丁技', p:'', lv:2 },
+  { e:'🚢', n:'唐戸市場から直送', yomi:'からといちばからちょくそう', r:'karatoitibakara', en:'Direct from Karato', h:'関門海峡の鮮魚市場', p:'', lv:3 },
+  { e:'🏯', n:'小倉城', yomi:'こくらじょう', r:'kokurajo', en:'Kokura Castle', h:'北九州のシンボル', p:'', lv:2 },
+  { e:'🌉', n:'門司港レトロ', yomi:'もじこうれとろ', r:'mojikoretoro', en:'Mojiko Retro District', h:'大正ロマンあふれる港町', p:'', lv:2 },
+  { e:'🌉', n:'関門橋', yomi:'かんもんきょう', r:'kannmonnkyou', en:'Kanmon Bridge', h:'本州と九州をつなぐ橋', p:'', lv:2 },
+  { e:'🚢', n:'関門海峡', yomi:'かんもんかいきょう', r:'kannmonnkaikyo', en:'Kanmon Strait', h:'本州と九州を分かつ海峡', p:'', lv:2 },
+  { e:'🏭', n:'八幡製鉄所', yomi:'やわたせいてつじょ', r:'yawataseitetsujo', en:'Yawata Steel Works', h:'明治日本の産業遺産', p:'', lv:3 },
+  { e:'🌸', n:'河内藤園', yomi:'かわちふじえん', r:'kawatifujienn', en:'Kawachi Wisteria Garden', h:'圧巻の藤棚', p:'', lv:2 },
+  { e:'🌊', n:'洞海湾', yomi:'どうかいわん', r:'dokaikan', en:'Dokai Bay', h:'工場夜景が映える湾', p:'', lv:2 },
+  { e:'🎡', n:'皿倉山', yomi:'さらくらやま', r:'sarakurayama', en:'Sarakura Mountain', h:'百万ドルの夜景スポット', p:'', lv:2 },
+  { e:'🍜', n:'焼きうどん', yomi:'やきうどん', r:'yakiudonn', en:'Yaki Udon', h:'北九州発祥のソウルフード', p:'', lv:1 },
+  { e:'🍱', n:'かしわめし', yomi:'かしわめし', r:'kashiwameshi', en:'Kashiwa Meshi', h:'折尾駅の名物駅弁', p:'', lv:2 },
+  { e:'🐟', n:'唐戸市場', yomi:'からといちば', r:'karatoitiba', en:'Karato Fish Market', h:'関門の新鮮魚介が並ぶ', p:'', lv:2 },
+  { e:'🏙️', n:'北九州市', yomi:'きたきゅうしゅうし', r:'kitakyushushi', en:'Kitakyushu City', h:'政令指定都市・人口約93万人', p:'', lv:2 },
+  { e:'🌅', n:'響灘', yomi:'ひびきなだ', r:'hibikinada', en:'Hibiki Sea', h:'北九州市西側の海域', p:'', lv:2 },
+  { e:'🎆', n:'北九州まつり', yomi:'きたきゅうしゅうまつり', r:'kitakyushomatsuri', en:'Kitakyushu Festival', h:'夏の一大イベント', p:'', lv:2 },
+  { e:'🌊', n:'北九州市観光局', yomi:'きたきゅうしゅうしかんこうきょく', r:'kitakyushukannkoukyoku', en:'Kitakyushu Tourism', h:'北九州の魅力を全国へ', p:'', lv:2, tag:'公式' },
+  { e:'🎓', n:'門司港プログラミング道場', yomi:'もじこうぷろぐらみんぐどうじょう', r:'mojikopuroguraminngudojo', en:'Mojiko Programming Dojo', h:'子どもたちのIT教育', p:'', lv:3, tag:'主催' },
+  { e:'🍣', n:'北九州寿司の都構想', yomi:'きたきゅうしゅうすしのみやこ', r:'kitakyushusushinomiyako', en:'Kitakyushu Sushi Capital', h:'寿司で街を活性化', p:'', lv:3, tag:'公式' },
+];
+
+const QUIZZES = [
+  { q:'北九州市にある明治の世界遺産の製鉄所は？', hint:'ひらがな・漢字・ローマ字で', a:'yawataseitetsujo', display:'八幡製鉄所', ja:['やわたせいてつじょ','八幡製鉄所','八幡製鐵所'] },
+  { q:'関門海峡をはさんだ対岸の山口県の市は？', hint:'ひらがな・漢字・ローマ字で', a:'shimonoseki', display:'下関', ja:['しものせき','下関'] },
+  { q:'北九州発祥のソウルフードは？', hint:'やき＋うどん', a:'yakiudon', display:'焼きうどん', ja:['やきうどん','焼きうどん','焼うどん'] },
+  { q:'小倉城を築いた武将の名字は？（細川）', hint:'ひらがな・漢字・ローマ字で', a:'hosokawa', display:'細川（忠興）', ja:['ほそかわ','細川'] },
+  { q:'寿司のご飯を何という？', hint:'しゃり', a:'shari', display:'シャリ', ja:['しゃり'] },
+  { q:'北九州市は何区で構成されている？（数字で）', hint:'ひらがな・漢字・数字', a:'nana', display:'七（7区）', ja:['なな','七','7'] },
+  { q:'門司港名物の果物は何？', hint:'バナナの叩き売り', a:'banana', display:'バナナ', ja:['ばなな'] },
+  { q:'河豚を調理するために必要なものは？', hint:'めんきょ', a:'menkyo', display:'免許', ja:['めんきょ','免許'] },
+  { q:'北九州の百万ドルの夜景が見える山は？', hint:'さらくらやま', a:'sarakurayama', display:'皿倉山', ja:['さらくらやま','皿倉山'] },
+  { q:'折尾駅名物の駅弁は？', hint:'かしわめし', a:'kashiwameshi', display:'かしわめし', ja:['かしわめし','かしわ飯','柏飯','柏めし'] },
+  { q:'門司港の重要文化財の駅名は？', hint:'もじこうえき', a:'mojikoeki', display:'門司港駅', ja:['もじこうえき','門司港駅'] },
+  { q:'北九州まつりが開催される季節は？', hint:'夏', a:'natsu', display:'夏', ja:['なつ','夏'] },
+];
+
+const POWERUPS = [
+  { id:'x2',    icon:'🔥', name:'炙りモード',    desc:'スコア2倍＆速度1.5倍！30秒間', duration:30, color:'rgba(192,57,43,.3)' },
+  { id:'slow',  icon:'🧊', name:'冷却タイム',    desc:'ベルト半速！30秒間', duration:30, color:'rgba(26,188,156,.2)' },
+  { id:'combo', icon:'⚡', name:'コンボ激化',    desc:'コンボ倍率2倍！30秒間', duration:30, color:'rgba(243,156,18,.2)' },
+  { id:'short', icon:'🎯', name:'おまかせ',      desc:'短いネタだけ！20秒間', duration:20, color:'rgba(52,152,219,.2)' },
+];
+
+const BADGES = [
+  { id:'aji',    e:'🐟', name:'アジの握り',   cond:'累計500点',      axis:'score', th:500    },
+  { id:'ika',    e:'🦑', name:'イカ職人',      cond:'累計2,000点',    axis:'score', th:2000   },
+  { id:'tako',   e:'🐙', name:'タコの達人',    cond:'累計5,000点',    axis:'score', th:5000   },
+  { id:'maguro', e:'🍣', name:'マグロ棟梁',    cond:'累計15,000点',   axis:'score', th:15000  },
+  { id:'uni',    e:'🦔', name:'ウニの匠',      cond:'累計40,000点',   axis:'score', th:40000  },
+  { id:'fugu',   e:'🐡', name:'フグ免許皆伝',  cond:'累計100,000点',  axis:'score', th:100000 },
+  { id:'wpm20',  e:'🍚', name:'シャリ打ち',    cond:'WPM 20以上',    axis:'wpm',   th:20  },
+  { id:'wpm40',  e:'🔪', name:'包丁さばき',    cond:'WPM 40以上',    axis:'wpm',   th:40  },
+  { id:'wpm60',  e:'🌊', name:'関門の流れ',    cond:'WPM 60以上',    axis:'wpm',   th:60  },
+  { id:'wpm80',  e:'⚡', name:'神速の握り',    cond:'WPM 80以上',    axis:'wpm',   th:80  },
+  { id:'wpm100', e:'🏯', name:'小倉城主',      cond:'WPM 100以上',   axis:'wpm',   th:100 },
+  { id:'combo5', e:'🔥', name:'炙り師',        cond:'5コンボ達成',   axis:'combo', th:5   },
+  { id:'acc100', e:'💯', name:'完璧な一皿',    cond:'正確度100%',    axis:'acc',   th:100 },
+  { id:'hard',   e:'🚢', name:'唐戸直送',      cond:'板長モードクリア', axis:'diff', th:1 },
+  { id:'all',    e:'🏆', name:'寿司の都の王',  cond:'全バッジ制覇',  axis:'all',   th:14  },
+];
+
+const RANKS = [
+  { min:0,    title:'🍚 シャリ見習い', msg:'基本から練習しよう！' },
+  { min:100,  title:'🐟 アジの握り',   msg:'もう少しで一人前！' },
+  { min:400,  title:'🦑 イカの達人',   msg:'いい調子です！' },
+  { min:900,  title:'🐙 タコ職人',     msg:'かなりの腕前！' },
+  { min:1600, title:'🍣 マグロ棟梁',   msg:'本物の寿司職人！' },
+  { min:2500, title:'🏆 北九州の伝説', msg:'まさに伝説の域！' },
+];
+
+const LB_DATA = [
+  { name:'田中 太郎', score:2840, wpm:92, acc:'97%' },
+  { name:'山田 花子', score:2320, wpm:85, acc:'99%' },
+  { name:'鈴木 一郎', score:1980, wpm:78, acc:'95%' },
+  { name:'佐藤 美咲', score:1620, wpm:71, acc:'93%' },
+  { name:'中村 健太', score:1200, wpm:65, acc:'91%' },
+  { name:'小林 あゆみ', score:980, wpm:58, acc:'89%' },
+  { name:'加藤 直樹', score:740, wpm:51, acc:'86%' },
+  { name:'伊藤 さくら', score:580, wpm:44, acc:'88%' },
+  { name:'松本 剛', score:420, wpm:37, acc:'84%' },
+  { name:'木村 裕子', score:280, wpm:29, acc:'80%' },
+];
+
+const DIFF_LEVELS = { beginner:[1], easy:[1], normal:[1,2], hard:[1,2,3] };
+const LANE_COUNTS = { beginner:1, easy:1, normal:2, hard:3 };
+// 流れる速度 px/frame (60fps想定)
+const BASE_SPEEDS = { beginner:0.35, easy:0.7, normal:1.2, hard:1.7 };
+const DIFF_MULT = { beginner:0.5, easy:1.0, normal:1.5, hard:2.0 };
+
+// ============================================================
+// たまごモード：指ガイド用データ
+// ============================================================
+// キー → [指番号, 指名, 色]
+const FINGER_MAP = {
+  q:[0,'左小指','#9B59B6'], a:[0,'左小指','#9B59B6'], z:[0,'左小指','#9B59B6'],
+  w:[1,'左薬指','#2980B9'], s:[1,'左薬指','#2980B9'], x:[1,'左薬指','#2980B9'],
+  e:[2,'左中指','#16A085'], d:[2,'左中指','#16A085'], c:[2,'左中指','#16A085'],
+  r:[3,'左人差し指','#27AE60'], f:[3,'左人差し指','#27AE60'], v:[3,'左人差し指','#27AE60'],
+  t:[3,'左人差し指','#27AE60'], g:[3,'左人差し指','#27AE60'], b:[3,'左人差し指','#27AE60'],
+  y:[4,'右人差し指','#F39C12'], h:[4,'右人差し指','#F39C12'], n:[4,'右人差し指','#F39C12'],
+  u:[4,'右人差し指','#F39C12'], j:[4,'右人差し指','#F39C12'], m:[4,'右人差し指','#F39C12'],
+  i:[5,'右中指','#E67E22'], k:[5,'右中指','#E67E22'],
+  o:[6,'右薬指','#E74C3C'], l:[6,'右薬指','#E74C3C'],
+  p:[7,'右小指','#C0392B'],
+};
+const KB_ROWS = [
+  ['q','w','e','r','t','y','u','i','o','p'],
+  ['a','s','d','f','g','h','j','k','l'],
+  ['z','x','c','v','b','n','m'],
+];
+const PLATE_COLORS = ['pc-red','pc-gold','pc-teal','pc-blue','pc-purple'];
+
+// ============================================================
+// STATE
+// ============================================================
+let diff = 'easy';
+let lang = 'jp';
+let gameActive = false;
+let startTime = null;
+let timeLeft = 60;
+let timerInt = null;
+let animFrame = null;
+let score = 0;
+let totalKeys = 0;
+let correctKeys = 0;
+let completedWords = 0;
+let combo = 0;
+let maxCombo = 0;
+let itemsSinceQuiz = 0;
+let quizUsed = new Set();
+let soundOn = true;
+
+// powerup state
+let puActive = null;
+let puEndTime = 0;
+let puInt = null;
+
+// 金ネタ状態
+let goldPlate = null;       // 現在流れている金皿
+let goldSpawnTimer = null;  // 次の金ネタ出現タイマー
+let timeFrozen = false;     // タイムフリーズ中
+
+// 罰ネタ状態
+let trapPlate = null;
+let trapSpawnTimer = null;
+
+// 罰ネタ定義（金ネタと同じ見た目、⚠️マークだけ違う）
+const TRAP_ITEMS = [
+  { e:'🐟', n:'大トロ',    r:'ootoro',    trap:'time_minus',    trapDesc:'時間 -15秒！' },
+  { e:'🦔', n:'ウニ',      r:'uni',       trap:'combo_reset',   trapDesc:'コンボリセット！' },
+  { e:'🐡', n:'フグ',      r:'fugu',      trap:'score_half',    trapDesc:'スコア半減！' },
+];
+
+// 金ネタ定義（ネタ+パワーアップ効果）
+const GOLD_ITEMS = [
+  { e:'🐟', n:'大トロ',    r:'ootoro',    pu:'time_extend', puIcon:'⏱', puName:'時間延長',    puDesc:'+20秒！',             color:'#F39C12' },
+  { e:'🦔', n:'ウニ',      r:'uni',       pu:'score_x3',    puIcon:'🔥', puName:'スコア3倍',   puDesc:'スコア3倍！20秒間',   color:'#E67E22' },
+  { e:'🐚', n:'アワビ',    r:'awabi',     pu:'slow',        puIcon:'🧊', puName:'冷却タイム',  puDesc:'ベルト半速！30秒間',  color:'#1ABC9C' },
+  { e:'🦐', n:'ボタンエビ',r:'botannebi', pu:'combo2',      puIcon:'⚡', puName:'コンボ激化',  puDesc:'コンボ2倍！30秒間',   color:'#9B59B6' },
+  { e:'🐡', n:'フグ',      r:'fugu',      pu:'time_freeze', puIcon:'❄️', puName:'タイムフリーズ',puDesc:'時間停止！10秒間',  color:'#3498DB' },
+];
+
+// lane plates: array of { laneIdx, item, el, x, word, typed, active, done }
+let plates = [];
+let pool = [];
+let laneEls = [];
+let laneWidth = 0;
+let SPEED = 1.2;
+let activeIdx = 0; // which plate index is in the typing zone
+let laneSpawnDelay = []; // レーンごとの初回スポーン遅延フレーム数
+
+// ============================================================
+// NORMALIZE
+// ============================================================
+function norm(s){
+  return s.replace(/ /g,'').toLowerCase()
+    .replace(/si/g,'shi')   // し: si→shi
+        .replace(/tu/g,'tsu');  // つ: tu→tsu
+}
+// カタカナ→ひらがな変換＋スペース除去（クイズ日本語正解判定用）
+function normJP(s){ return s.replace(/[\s　]/g,'').replace(/[\u30A1-\u30F6]/g,c=>String.fromCharCode(c.charCodeAt(0)-0x60)); }
+
+// ============================================================
+// BUILD LANES
+// ============================================================
+function buildLanes(){
+  const cnt = LANE_COUNTS[diff];
+  const lanesDiv = document.getElementById('lanes');
+  lanesDiv.innerHTML = '';
+  laneEls = [];
+  for(let i=0;i<cnt;i++){
+    const l = document.createElement('div');
+    l.className = 'lane';
+    l.innerHTML = `<span class="zone-label">3×ゾーン</span>`;
+    lanesDiv.appendChild(l);
+    laneEls.push(l);
+  }
+  laneWidth = lanesDiv.offsetWidth || 800;
+  // レーンごとに初回スポーンをずらす（レーン0はすぐ、以降150フレームずつ遅延）
+  laneSpawnDelay = Array.from({length: cnt}, (_, i) => i * 150);
+}
+
+// ============================================================
+// POOL
+// ============================================================
+function buildPool(){
+  const lvs = DIFF_LEVELS[diff];
+  let src = ALL_ITEMS.filter(it => lvs.includes(it.lv));
+  // たまごモード: 3〜4文字の超短いネタのみ
+  if(diff === 'beginner') src = src.filter(it => it.p !== '' && norm(it.r).length <= 4);
+  // 板前モード: 寿司ネタのみ（価格あり = 食材・寿司ネタ）
+  if(diff === 'normal') src = src.filter(it => it.p !== '');
+  if(puActive && puActive.id === 'short') src = src.filter(it => norm(it.r).length <= 6);
+  pool = [];
+  while(pool.length < 40) pool.push(...src.sort(()=>Math.random()-.5));
+  return pool;
+}
+
+// ============================================================
+// PLATE MANAGEMENT
+// ============================================================
+function spawnPlate(laneIdx){
+  const item = pool[Math.floor(Math.random()*pool.length)];
+  const word = norm(item.r);
+  const colorCls = item.tag ? 'pc-sponsor' : PLATE_COLORS[Math.floor(Math.random()*PLATE_COLORS.length)];
+
+  const el = document.createElement('div');
+  el.className = 'plate';
+  el.style.left = '-90px';
+  el.innerHTML = `
+    <div class="plate-dish ${colorCls}">
+      <div class="plate-emoji">${item.e}</div>
+      <div class="plate-word">${word}</div>
+    </div>
+    <div class="plate-name">${item.n}</div>`;
+  laneEls[laneIdx].appendChild(el);
+
+  const plate = { laneIdx, item, el, x:-90, word, typed:'', active:false, done:false };
+  el.addEventListener('click', () => selectTarget(plate));
+  return plate;
+}
+
+function getPlatesInLane(li){ return plates.filter(p=>p.laneIdx===li&&!p.done); }
+
+// ============================================================
+// TARGET PLATE — TAB/クリックで手動切替可能、打ち終えた後は自動選択
+// ============================================================
+let targetPlate = null;
+let lockedPlate = null; // 候補が1つに絞れた時点でロック
+
+function lockNextTarget(){
+  // すでに有効なターゲットがあれば変えない（手動選択を尊重）
+  if(targetPlate && !targetPlate.done) return;
+  // 画面内で最も左にある未完了の皿を自動選択（右端が入ってきた瞬間から対象）
+  const visible = plates.filter(p => !p.done && p.x > -70);
+  if(!visible.length){ targetPlate = null; return; }
+  visible.sort((a,b) => a.x - b.x);
+  targetPlate = visible[0];
+  renderTarget(targetPlate.item, targetPlate.typed || '');
+}
+
+// クリック or TABで任意の皿を狙う
+function selectTarget(p){
+  if(!gameActive || gamePaused || p.done) return;
+  targetPlate = p;
+  const inp = document.getElementById('type-input');
+  inp.value = p.typed || '';
+  inp.focus();
+  renderTarget(p.item, p.typed || '');
+}
+
+// TABキーで次の皿へ切替（type-inputにフォーカスがある時）
+document.getElementById('type-input').addEventListener('keydown', function(e){
+  if(e.code !== 'Tab') return;
+  e.preventDefault();
+  if(!gameActive || gamePaused) return;
+  const available = plates.filter(p => !p.done && p.x > -70);
+  if(available.length <= 1) return;
+  const currentIdx = available.findIndex(p => p === targetPlate);
+  const nextIdx = (currentIdx + 1) % available.length;
+  selectTarget(available[nextIdx]);
+});
+
+// ============================================================
+// ANIMATION LOOP
+// ============================================================
+function gameLoop(){
+  if(!gameActive) return;
+  animFrame = requestAnimationFrame(gameLoop);
+
+  const speed = (puActive && puActive.id==='slow') ? SPEED*0.5
+              : (puActive && puActive.id==='x2')  ? SPEED*1.5
+              : SPEED;
+  const goldSpeed = SPEED * 2.5; // 金ネタは2.5倍速
+  // offsetWidthが0を返す場合（レイアウト未確定フレーム等）は前回の有効値を使う
+  const rawW = laneEls[0] ? laneEls[0].offsetWidth : 0;
+  if(rawW > 0) laneWidth = rawW;
+  const laneW = laneWidth || 800;
+
+  plates.forEach(p=>{
+    if(p.done) return;
+    p.x += p.isGold ? goldSpeed : speed;
+    p.el.style.left = p.x + 'px';
+    if(p.x > laneW + 20) plateMiss(p);
+  });
+
+  // スポーン：各レーンに皿を補充（遅延中のレーンはスキップ）
+  laneEls.forEach((_,li)=>{
+    if(laneSpawnDelay[li] > 0){ laneSpawnDelay[li]--; return; }
+    const active = getPlatesInLane(li);
+    const rightmost = active.length ? Math.max(...active.map(p=>p.x)) : -200;
+    // 最大2枚に制限。次の皿は先頭皿が画面内（30%以上）に進んでから生成
+    if(active.length < 2 && (active.length === 0 || rightmost > laneW * 0.3)){
+      plates.push(spawnPlate(li));
+    }
+  });
+
+  // ハイライト更新 — ロック済みは強く、他の候補はうっすら光らせる
+  const curTyped = norm(document.getElementById('type-input').value);
+  plates.forEach(p=>{
+    const dish = p.el.querySelector('.plate-dish');
+    if(!dish) return;
+    if(p.done){ dish.classList.remove('active','semi-active'); return; }
+    const matches = curTyped.length > 0 && p.word.startsWith(curTyped);
+    dish.classList.toggle('active',      matches && p === lockedPlate);
+    dish.classList.toggle('semi-active', matches && p !== lockedPlate);
+  });
+
+  // タイピング未入力時はヒントエリアを自動更新（ベルト上の次のネタを表示）
+  if(curTyped.length === 0) lockNextTarget();
+}
+
+// ============================================================
+// PLATE MISS
+// ============================================================
+function plateMiss(p){
+  p.done = true;
+  if(p.isTrap){ trapPlate = null; }
+  const dish = p.el.querySelector('.plate-dish');
+
+  // ダメネタが通り過ぎた場合はコンボリセットなし・スプラッシュなし（回避成功）
+  if(p.isTrap){
+    const typedNow = norm(document.getElementById('type-input').value);
+    const stillMatch = typedNow.length > 0 && plates.some(q => !q.done && q !== p && q.word.startsWith(typedNow));
+    if(!stillMatch){
+      targetPlate = null;
+      document.getElementById('type-input').value = '';
+      document.getElementById('char-row').innerHTML = '';
+      document.getElementById('tgt-name').textContent = '— 見えるネタをタイピング！ —';
+      // コンボはリセットしない
+    }
+    const splash = document.createElement('div');
+    splash.className = 'miss-splash';
+    splash.style.color = '#2ecc71';
+    splash.textContent = '回避！';
+    splash.style.left = Math.min(p.x - 30, 200)+'px';
+    splash.style.top = '20px';
+    if(laneEls[p.laneIdx]) laneEls[p.laneIdx].appendChild(splash);
+    setTimeout(()=>{ splash.remove(); p.el.remove(); plates = plates.filter(x=>x!==p); }, 700);
+    return;
+  }
+
+  if(dish) dish.classList.add('miss');
+
+  // 流れ去った後、現在の入力に一致する皿が残っていなければリセット
+  const typedNow = norm(document.getElementById('type-input').value);
+  const stillMatch = typedNow.length > 0 && plates.some(q => !q.done && q !== p && q.word.startsWith(typedNow));
+  if(!stillMatch){
+    targetPlate = null;
+    document.getElementById('type-input').value = '';
+    document.getElementById('char-row').innerHTML = '';
+    document.getElementById('tgt-name').textContent = '— 見えるネタをタイピング！ —';
+    if(typedNow.length > 0){ combo = 0; document.getElementById('sv-combo').textContent = '0'; }
+  }
+
+  const splash = document.createElement('div');
+  splash.className = 'miss-splash';
+  splash.textContent = '食べ損ね…';
+  splash.style.left = Math.min(p.x - 30, 200)+'px';
+  splash.style.top = '20px';
+  if(laneEls[p.laneIdx]) laneEls[p.laneIdx].appendChild(splash);
+  setTimeout(()=>{ splash.remove(); p.el.remove(); plates = plates.filter(x=>x!==p); }, 700);
+
+  playMissVoice();
+}
+
+// ============================================================
+// PLATE SUCCESS
+// ============================================================
+function plateSuccess(p){
+  p.done = true;
+  const dish = p.el.querySelector('.plate-dish');
+  if(dish) dish.classList.add('done');
+
+  const laneW = laneEls[0] ? laneEls[0].offsetWidth : 800;
+  const pct = p.x / laneW;
+  let mult = 1, popColor = '#fff', popLabel = '';
+  if(pct < 0.25){ mult=3; popColor='#F39C12'; popLabel='神速！×3'; }
+  else if(pct < 0.5){ mult=2; popColor='#2ECC71'; popLabel='はやい！×2'; }
+  else { popLabel='×1'; }
+
+  if(puActive && puActive.id==='x2') mult *= 2;
+  if(puActive && puActive.id==='score_x3') mult *= 3;
+  if(puActive && puActive.id==='combo') combo += 1;
+  if(puActive && puActive.id==='combo2') combo += 1;
+
+  const base = Math.max(10, norm(p.item.r).length * 12);
+  const comboBonus = combo >= 3 ? combo * 5 : 0;
+  const diffBonus = DIFF_MULT[diff] || 1.0;
+  const pts = Math.round((base + comboBonus) * mult * diffBonus);
+
+  combo++;
+  if(combo > maxCombo) maxCombo = combo;
+  score += pts;
+  completedWords++;
+
+  // じーも登場（難易度別条件 かつ クールダウンなし）
+  const jimoCond = {
+    easy:   { minCombo: 2, rate: 0.20 },
+    normal: { minCombo: 3, rate: 0.28 },
+    hard:   { minCombo: 3, rate: 0.35 },
+  };
+  const jc = jimoCond[diff];
+  if(jc && combo >= jc.minCombo && !jimoCooldown && Math.random() < jc.rate) spawnJimo();
+  itemsSinceQuiz++;
+  correctKeys += norm(p.item.r).length;
+  totalKeys   += norm(p.item.r).length;
+
+  document.getElementById('sv-score').textContent = score.toLocaleString();
+  document.getElementById('sv-combo').textContent = combo;
+  flashStat('sv-score');
+  if(combo >= 3){ showComboFx(combo); playComboSound(combo); }
+  else { playCorrectSound(); }
+  playCorrectVoice();
+
+  const pop = document.createElement('div');
+  pop.className = 'score-pop';
+  pop.style.cssText = `color:${popColor};left:${Math.min(p.x,300)}px;top:10px;`;
+  pop.textContent = '+'+pts+(popLabel?' '+popLabel:'');
+  if(laneEls[p.laneIdx]) laneEls[p.laneIdx].appendChild(pop);
+  setTimeout(()=>pop.remove(), 700);
+  setTimeout(()=>{ p.el.remove(); plates = plates.filter(x=>x!==p); }, 300);
+
+  // 罰ネタ正解 → ペナルティ発動
+  if(p.isTrap){
+    trapPlate = null;
+    triggerTrap(p.item.trap, p.item.trapDesc);
+  }
+  // 金ネタ正解 → パワーアップ即発動
+  else if(p.isGold){
+    goldPlate = null;
+    activateGoldPowerup(p.item);
+  }
+
+  // ターゲットをクリアして次を探す
+  targetPlate = null;
+
+  if(itemsSinceQuiz >= 10){
+    itemsSinceQuiz = 0;
+    setTimeout(()=>triggerQuiz(), 300);
+  }
+}
+
+// ============================================================
+// RENDER TARGET
+// ============================================================
+function renderTarget(item, typed){
+  if(!item) return;
+  document.getElementById('tgt-emoji').textContent = item.e;
+  document.getElementById('tgt-name').textContent = lang==='en' ? (item.en||item.n) : item.n;
+
+  const yomiEl = document.getElementById('tgt-yomi');
+  if(lang==='jp' && item.yomi && item.yomi!==item.n){ yomiEl.textContent='（'+item.yomi+'）'; yomiEl.style.display=''; }
+  else yomiEl.style.display='none';
+
+  const enEl = document.getElementById('tgt-en');
+  if(lang==='bi' && item.en){ enEl.textContent=item.n+' — '+item.en; enEl.style.display=''; }
+  else if(lang==='en'){ enEl.textContent='→ type: '+norm(item.r); enEl.style.display=''; }
+  else enEl.style.display='none';
+
+  document.getElementById('tgt-hint').textContent = item.h;
+
+  const priceEl = document.getElementById('tgt-price');
+  if(item.p){ priceEl.textContent=item.p; priceEl.style.display=''; } else priceEl.style.display='none';
+
+  const spEl = document.getElementById('tgt-sponsor-badge');
+  const tz   = document.getElementById('typing-zone');
+  if(item.tag){ spEl.textContent='★ '+item.tag; spEl.style.display=''; tz.classList.add('sponsor-active'); }
+  else { spEl.style.display='none'; tz.classList.remove('sponsor-active'); }
+
+  renderCharBoxes(typed, norm(item.r));
+  updateFingerGuide(typed, norm(item.r));
+}
+
+// ============================================================
+// たまごモード：指ガイド描画
+// ============================================================
+function updateFingerGuide(typed, word){
+  const guide = document.getElementById('finger-guide');
+  if(diff !== 'beginner' || !word){ guide.classList.remove('show'); return; }
+  guide.classList.add('show');
+
+  const nextKey = typed.length < word.length ? word[typed.length] : null;
+  const info = nextKey ? FINGER_MAP[nextKey] : null;
+  const color = info ? info[2] : 'var(--muted)';
+
+  // バッジ・指名表示
+  const badge = document.getElementById('fg-key-badge');
+  badge.textContent = nextKey ? nextKey.toUpperCase() : '✓';
+  badge.style.color = color;
+  badge.style.borderColor = color;
+  badge.style.background = nextKey ? color+'22' : 'transparent';
+
+  document.getElementById('fg-finger-name').textContent = info ? info[1] : (nextKey ? '—' : '完成！');
+  document.getElementById('fg-finger-name').style.color = color;
+  document.getElementById('fg-finger-sub').textContent = info ? `「${nextKey.toUpperCase()}」キーを押す` : '';
+
+  // ミニキーボード描画
+  const kb = document.getElementById('mini-kb');
+  kb.innerHTML = '';
+  KB_ROWS.forEach(row => {
+    const rowDiv = document.createElement('div');
+    rowDiv.className = 'kb-row';
+    row.forEach(k => {
+      const kDiv = document.createElement('div');
+      const kInfo = FINGER_MAP[k];
+      kDiv.className = 'kb-key' + (k === nextKey ? ' next' : '');
+      kDiv.textContent = k.toUpperCase();
+      if(kInfo){
+        kDiv.style.color = k === nextKey ? '#fff' : kInfo[2]+'88';
+        kDiv.style.borderColor = k === nextKey ? kInfo[2] : kInfo[2]+'44';
+        kDiv.style.background = k === nextKey ? kInfo[2]+'33' : 'transparent';
+        if(k === nextKey) kDiv.style.setProperty('color', kInfo[2]);
+      }
+      rowDiv.appendChild(kDiv);
+    });
+    kb.appendChild(rowDiv);
+  });
+}
+
+function renderCharBoxes(typed, word){
+  const row = document.getElementById('char-row');
+  row.innerHTML = '';
+  for(let i=0;i<word.length;i++){
+    const b = document.createElement('div');
+    b.className = 'ch';
+    b.style.position='relative';
+    b.textContent = word[i];
+    if(i < typed.length) b.classList.add(typed[i]===word[i]?'ok':'ng');
+    else if(i===typed.length) b.classList.add('cur');
+    row.appendChild(b);
+  }
+}
+
+// ============================================================
+// TYPING HANDLER — フリータイピング方式（ロック機能付き）
+// ============================================================
+document.getElementById('type-input').addEventListener('input', function(e){
+  if(!gameActive){ e.target.value=''; return; }
+
+  let typed = norm(e.target.value);
+  if(typed.length === 0){
+    lockedPlate = null; targetPlate = null;
+    document.getElementById('char-row').innerHTML = '';
+    document.getElementById('tgt-name').textContent = '— 見えるネタをタイピング！ —';
+    return;
+  }
+
+  const visible = plates.filter(p => !p.done && p.x > -70);
+
+  // ロック中の皿がまだ一致していればその皿だけ対象にする
+  const pool = (lockedPlate && !lockedPlate.done && lockedPlate.word.startsWith(typed))
+    ? [lockedPlate]
+    : visible.filter(p => p.word.startsWith(typed));
+
+  if(pool.length === 0){
+    // どの皿にも一致しない → ミス
+    typed = typed.slice(0, -1);
+    e.target.value = typed;
+    totalKeys++;
+    combo = 0;
+    document.getElementById('sv-combo').textContent = '0';
+    playMissVoice();
+    // ロック皿が1文字戻しても一致すれば維持、なければ解除して再検索
+    if(lockedPlate && !lockedPlate.done && lockedPlate.word.startsWith(typed)){
+      targetPlate = lockedPlate;
+      renderTarget(lockedPlate.item, typed);
+    } else {
+      lockedPlate = null;
+      const reMatches = typed.length > 0 ? visible.filter(p => p.word.startsWith(typed)) : [];
+      if(reMatches.length > 0){
+        const best = reMatches.sort((a,b) => a.x - b.x)[0];
+        targetPlate = best;
+        renderTarget(best.item, typed);
+        if(reMatches.length === 1) lockedPlate = best;
+      } else {
+        targetPlate = null;
+        document.getElementById('char-row').innerHTML = '';
+        document.getElementById('tgt-name').textContent = '— 見えるネタをタイピング！ —';
+      }
+    }
+    return;
+  }
+
+  playKeySound();
+  totalKeys++;
+
+  // 完全一致（ロック中なら必ずその皿、複数なら最も左）
+  const exact = pool.filter(p => p.word === typed).sort((a,b) => a.x - b.x)[0];
+  if(exact){
+    this.classList.add('cfx');
+    setTimeout(()=>this.classList.remove('cfx'), 300);
+    this.value = '';
+    lockedPlate = null; targetPlate = null;
+    document.getElementById('char-row').innerHTML = '';
+    document.getElementById('tgt-name').textContent = '…';
+    plateSuccess(exact);
+    return;
+  }
+
+  // 最も左（落下に近い）を表示ターゲットにする
+  const best = pool.sort((a,b) => a.x - b.x)[0];
+  targetPlate = best;
+  renderTarget(best.item, typed);
+
+  // 候補が1つに絞れたらロック
+  lockedPlate = pool.length === 1 ? best : null;
+});
+
+// ============================================================
+// QUIZ
+// ============================================================
+function triggerQuiz(){
+  if(!gameActive) return;
+  if(gamePaused) return; // ポーズ中はクイズを出さない
+  fadeBgm(0.18, 200);
+  // pause belt (タイマーは継続)
+  cancelAnimationFrame(animFrame);
+
+  // クイズ前に流れていた皿をすべて片付ける
+  plates.forEach(p => p.el.remove());
+  plates = [];
+  targetPlate = null;
+  lockedPlate = null;
+  document.getElementById('type-input').value = '';
+  document.getElementById('char-row').innerHTML = '';
+  document.getElementById('tgt-name').textContent = '…';
+
+  const unused = QUIZZES.filter(q=>!quizUsed.has(q.a));
+  const q = unused.length ? unused[Math.floor(Math.random()*unused.length)] : QUIZZES[Math.floor(Math.random()*QUIZZES.length)];
+  quizUsed.add(q.a);
+
+  const card = document.getElementById('quiz-card');
+  card.innerHTML = `
+    <div class="quiz-badge">🍣 小休憩クイズ</div>
+    <div class="quiz-q">${q.q}</div>
+    <div class="quiz-hint">ヒント: ${q.hint}</div>
+    <input class="quiz-input" id="quiz-inp" type="text" placeholder="ローマ字・ひらがな・漢字で入力..."
+      autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+    <button class="quiz-submit" onclick="submitQuiz('${q.a}')">答えを送信</button>
+    <button class="quiz-skip" onclick="skipQuiz()">スキップしてゲームに戻る</button>
+  `;
+  document.getElementById('quiz-overlay').classList.add('show');
+  setTimeout(()=>{ const inp=document.getElementById('quiz-inp'); if(inp) inp.focus(); }, 100);
+}
+
+function submitQuiz(ans){
+  const inp = document.getElementById('quiz-inp');
+  if(!inp) return;
+  const typed = norm(inp.value);
+  const correct = norm(ans);
+  const card = document.getElementById('quiz-card');
+
+  // 日本語（ひらがな/カタカナ/漢字）入力でも正解判定
+  const quizObj = QUIZZES.find(q => norm(q.a) === correct);
+  const typedJP = normJP(inp.value);
+  const matchesJP = !!(quizObj && quizObj.ja && quizObj.ja.some(j => normJP(j) === typedJP));
+
+  if(typed === correct || matchesJP){
+    // ランダムに3種類選んで選択肢として提示
+    const choices = POWERUPS.slice().sort(()=>Math.random()-.5).slice(0,3);
+    const cardsHTML = choices.map(pu=>`
+      <div class="pu-card" onclick="activatePowerup('${pu.id}')">
+        <div class="pu-card-icon">${pu.icon}</div>
+        <div class="pu-card-name">${pu.name}</div>
+        <div class="pu-card-desc">${pu.desc}</div>
+      </div>
+    `).join('');
+    card.innerHTML = `
+      <div class="quiz-result">
+        <div class="quiz-result-icon">🎉</div>
+        <div class="quiz-result-title" style="color:var(--green2);">正解！</div>
+        <div class="quiz-result-desc" style="margin-bottom:16px;">パワーアップを1つ選んでください</div>
+      </div>
+      <div class="pu-cards">${cardsHTML}</div>
+    `;
+    playCorrectSound();
+  } else {
+    card.innerHTML = `
+      <div class="quiz-result">
+        <div class="quiz-result-icon">😢</div>
+        <div class="quiz-result-title" style="color:var(--red2);">残念！</div>
+        <div class="quiz-result-desc">正解は「${QUIZZES.find(q=>norm(q.a)===correct)?.display || ans}」でした</div>
+      </div>
+      <button class="quiz-submit" style="margin-top:16px;" onclick="skipQuiz()">ゲームに戻る</button>
+    `;
+  }
+}
+
+function activatePowerup(id){
+  const pu = POWERUPS.find(p=>p.id===id);
+  if(!pu) return;
+  skipQuiz();
+  _applyPowerup(id, pu.icon, pu.name, pu.desc || '', pu.duration, pu.color || '');
+}
+
+function activateGoldPowerup(goldItem){
+  const g = goldItem;
+  const durations = { time_extend:0, score_x3:20, slow:30, combo2:30, time_freeze:10 };
+  const dur = durations[g.pu] || 20;
+  _applyPowerup(g.pu, g.puIcon, g.puName, g.puDesc, dur, g.color);
+}
+
+function _applyPowerup(id, icon, name, desc, duration, color){
+  // 時間延長は即時処理
+  if(id === 'time_extend'){
+    timeLeft = Math.min(timeLeft + 20, 99);
+    document.getElementById('sv-timer').textContent = timeLeft;
+    showGoldFX('⏱ +20秒！', '#F39C12');
+    return;
+  }
+  // タイムフリーズ
+  if(id === 'time_freeze'){
+    timeFrozen = true;
+    showGoldFX('❄️ 時間停止！', '#3498DB');
+    const bar = document.getElementById('powerup-bar');
+    bar.classList.add('active');
+    document.getElementById('pu-icon').textContent = icon;
+    document.getElementById('pu-label').textContent = name + ' 発動中！';
+    let rem = duration;
+    clearInterval(puInt);
+    puInt = setInterval(()=>{
+      rem--;
+      document.getElementById('pu-timer-fill').style.width = (rem/duration*100)+'%';
+      if(rem <= 0){
+        clearInterval(puInt);
+        timeFrozen = false;
+        puActive = null;
+        bar.classList.remove('active');
+        document.getElementById('pu-icon').textContent='⬜';
+        document.getElementById('pu-label').textContent='パワーアップなし　— 10ネタでクイズ出題';
+        document.getElementById('pu-timer-fill').style.width='0%';
+      }
+    }, 1000);
+    return;
+  }
+
+  puActive = { id, icon, name, duration };
+  puEndTime = Date.now() + duration * 1000;
+  if(id==='short') buildPool();
+
+  showGoldFX(icon + ' ' + name + '！', color || '#F39C12');
+  const bar = document.getElementById('powerup-bar');
+  bar.classList.add('active');
+  document.getElementById('pu-icon').textContent = icon;
+  document.getElementById('pu-label').textContent = name + ' 発動中！';
+
+  clearInterval(puInt);
+  puInt = setInterval(()=>{
+    const rem = puEndTime - Date.now();
+    const pct = Math.max(0, rem/(duration*1000)*100);
+    document.getElementById('pu-timer-fill').style.width = pct+'%';
+    if(rem <= 0){
+      clearInterval(puInt);
+      puActive = null;
+      bar.classList.remove('active');
+      document.getElementById('pu-icon').textContent='⬜';
+      document.getElementById('pu-label').textContent='パワーアップなし　— 10ネタでクイズ出題';
+      document.getElementById('pu-timer-fill').style.width='0%';
+      if(id==='short') buildPool();
+    }
+  }, 100);
+}
+
+function showGoldFX(text, color){
+  const el = document.getElementById('combo-fx');
+  if(!el) return;
+  el.textContent = text;
+  el.style.color = color || '#F39C12';
+  el.style.textShadow = '0 0 24px '+color;
+  el.style.transform = 'translate(-50%,-50%) scale(1)';
+  el.style.opacity = '1';
+  setTimeout(()=>{
+    el.style.transform = 'translate(-50%,-50%) scale(0)';
+    el.style.opacity = '0';
+  }, 1200);
+}
+
+// 金ネタスポーン
+function spawnGoldPlate(){
+  if(!gameActive || gamePaused) return;
+  if(goldPlate && !goldPlate.done) return; // 既に出てる
+
+  const gItem = GOLD_ITEMS[Math.floor(Math.random()*GOLD_ITEMS.length)];
+  const laneIdx = Math.floor(Math.random() * laneEls.length);
+  const word = norm(gItem.r);
+
+  const el = document.createElement('div');
+  el.className = 'plate';
+  el.style.left = '-90px';
+  el.innerHTML = `
+    <div class="plate-dish pc-sponsor" style="border-color:${gItem.color};box-shadow:0 0 18px 4px ${gItem.color}88;background:${gItem.color}22;">
+      <div class="plate-emoji">${gItem.e}</div>
+      <div class="plate-word" style="color:${gItem.color};">${word}</div>
+      <div style="font-size:6px;color:${gItem.color};font-weight:700;margin-top:2px;">GOLD</div>
+    </div>
+    <div class="plate-name" style="color:${gItem.color};font-weight:700;">${gItem.n}</div>`;
+
+  laneEls[laneIdx].appendChild(el);
+  goldPlate = { laneIdx, item: gItem, el, x: -90, word, done: false, isGold: true };
+  plates.push(goldPlate);
+
+  // 次の金ネタ予約（25〜40秒後）
+  const next = (25 + Math.random() * 15) * 1000;
+  goldSpawnTimer = setTimeout(spawnGoldPlate, next);
+}
+
+function startGoldSpawnCycle(){
+  clearTimeout(goldSpawnTimer);
+  goldPlate = null;
+  // 最初は15〜25秒後に出現
+  const first = (15 + Math.random() * 10) * 1000;
+  goldSpawnTimer = setTimeout(spawnGoldPlate, first);
+}
+
+// 罰ネタスポーン（金ネタと同じ見た目、⚠️マークだけ違う）
+function spawnTrapPlate(){
+  if(!gameActive || gamePaused) return;
+  if(trapPlate && !trapPlate.done) return;
+
+  const tItem = TRAP_ITEMS[Math.floor(Math.random()*TRAP_ITEMS.length)];
+  const laneIdx = Math.floor(Math.random() * laneEls.length);
+  const word = norm(tItem.r);
+  const color = '#F39C12'; // 金ネタと同じ色で紛らわしく
+
+  const el = document.createElement('div');
+  el.className = 'plate';
+  el.style.left = '-90px';
+  el.innerHTML = `
+    <div class="plate-dish pc-sponsor" style="border-color:${color};box-shadow:0 0 18px 4px ${color}88;background:${color}22;position:relative;">
+      <div style="position:absolute;top:-6px;right:-6px;font-size:14px;line-height:1;z-index:10;">⚠️</div>
+      <div class="plate-emoji">${tItem.e}</div>
+      <div class="plate-word" style="color:${color};">${word}</div>
+      <div style="font-size:6px;color:${color};font-weight:700;margin-top:2px;">GOLD</div>
+    </div>
+    <div class="plate-name" style="color:${color};font-weight:700;">${tItem.n}</div>`;
+
+  laneEls[laneIdx].appendChild(el);
+  trapPlate = { laneIdx, item: tItem, el, x: -90, word, done: false, isGold: true, isTrap: true };
+  plates.push(trapPlate);
+
+  // 次の罰ネタ（30〜50秒後）
+  const next = (30 + Math.random() * 20) * 1000;
+  trapSpawnTimer = setTimeout(spawnTrapPlate, next);
+}
+
+function startTrapSpawnCycle(){
+  clearTimeout(trapSpawnTimer);
+  trapPlate = null;
+  // 最初は20〜35秒後
+  const first = (20 + Math.random() * 15) * 1000;
+  trapSpawnTimer = setTimeout(spawnTrapPlate, first);
+}
+
+function triggerTrap(trapId, desc){
+  if(trapId === 'time_minus'){
+    timeLeft = Math.max(0, timeLeft - 15);
+    document.getElementById('sv-timer').textContent = timeLeft;
+  } else if(trapId === 'combo_reset'){
+    combo = 0;
+    document.getElementById('sv-combo').textContent = '0';
+  } else if(trapId === 'score_half'){
+    score = Math.floor(score / 2);
+    document.getElementById('sv-score').textContent = score.toLocaleString();
+  }
+  // 赤フラッシュ
+  const el = document.getElementById('combo-fx');
+  if(el){
+    el.textContent = '⚠️ ' + desc;
+    el.style.color = '#e74c3c';
+    el.style.textShadow = '0 0 24px #e74c3c';
+    el.style.transform = 'translate(-50%,-50%) scale(1)';
+    el.style.opacity = '1';
+    setTimeout(()=>{ el.style.transform='translate(-50%,-50%) scale(0)'; el.style.opacity='0'; }, 1500);
+  }
+  // 画面赤点滅
+  document.body.style.background = 'rgba(200,0,0,0.15)';
+  setTimeout(()=>{ document.body.style.background=''; }, 400);
+}
+
+function skipQuiz(){
+  document.getElementById('quiz-overlay').classList.remove('show');
+  if(!gameActive) return;
+  if(gamePaused) return; // ポーズ中はそのまま
+  fadeBgm(1.0, 250);
+  // クイズ後は皿を改めてスタッガーつきで流す
+  laneSpawnDelay = Array.from({length: laneEls.length}, (_, i) => i * 150);
+  // 二重起動を防ぐため既存のループを必ずクリアしてから再開
+  clearInterval(timerInt);
+  cancelAnimationFrame(animFrame);
+  timerInt = setInterval(tick, 1000);
+  animFrame = requestAnimationFrame(gameLoop);
+  const inp = document.getElementById('type-input');
+  if(inp && !inp.disabled) inp.focus();
+}
+
+// ============================================================
+// PAUSE
+// ============================================================
+let gamePaused = false;
+
+function togglePause(){
+  if(!gameActive) return;
+  const btn = document.getElementById('btn-pause');
+  const inp = document.getElementById('type-input');
+  if(!gamePaused){
+    gamePaused = true;
+    cancelAnimationFrame(animFrame);
+    clearInterval(timerInt);
+    inp.disabled = true;
+    btn.textContent = '▶ 再開';
+    btn.style.borderColor = 'var(--gold)';
+    btn.style.color = 'var(--gold)';
+    fadeBgm(0.12, 300);
+    showPauseOverlay();
+  } else {
+    gamePaused = false;
+    inp.disabled = false;
+    inp.focus();
+    btn.textContent = '⏸ 一時停止';
+    btn.style.borderColor = '';
+    btn.style.color = '';
+    hidePauseOverlay();
+    fadeBgm(1.0, 300);
+    // 二重起動を防ぐため既存のループを必ずクリアしてから再開
+    clearInterval(timerInt);
+    cancelAnimationFrame(animFrame);
+    timerInt = setInterval(tick, 1000);
+    animFrame = requestAnimationFrame(gameLoop);
+  }
+}
+
+function showPauseOverlay(){
+  let ov = document.getElementById('pause-overlay');
+  if(!ov){
+    ov = document.createElement('div');
+    ov.id = 'pause-overlay';
+    ov.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.72);z-index:150;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;backdrop-filter:blur(3px);';
+    document.body.appendChild(ov);
+  }
+  ov.innerHTML = `
+    <div style="font-family:'Bebas Neue',cursive;font-size:56px;letter-spacing:6px;color:var(--gold);">PAUSE</div>
+    <div style="font-size:13px;color:var(--muted);">ESCキーまたはボタンで再開</div>
+    <button onclick="togglePause()" style="background:var(--red);border:none;color:#fff;font-family:'Bebas Neue',cursive;font-size:20px;letter-spacing:3px;padding:12px 36px;border-radius:4px;cursor:pointer;margin-top:6px;">▶ 再開</button>
+  `;
+  ov.style.display = 'flex';
+}
+
+function hidePauseOverlay(){
+  const ov = document.getElementById('pause-overlay');
+  if(ov) ov.style.display = 'none';
+}
+
+// ESCキーでポーズ切替（クイズ表示中は無効）
+document.addEventListener('keydown', function(e){
+  if(e.code === 'Escape' && gameActive){
+    const quizOv = document.getElementById('quiz-overlay');
+    if(quizOv && quizOv.classList.contains('show')) return;
+    togglePause();
+  }
+});
+
+// ============================================================
+// GAME FLOW
+// ============================================================
+function onClickStart(){
+  // 初回 or リセット: 説明を出してからスタート / ゲーム中はそのままリセット
+  if(!gameActive){
+    document.getElementById('howto-overlay').style.display='flex';
+  } else {
+    startGame();
+  }
+}
+function closeHowtoAndStart(){
+  document.getElementById('howto-overlay').style.display='none';
+  startGame();
+}
+function startGame(){
+  document.getElementById('go-overlay').classList.remove('show');
+  hidePauseOverlay();
+  gamePaused = false;
+  score=0; totalKeys=0; correctKeys=0; completedWords=0;
+  combo=0; maxCombo=0; timeLeft=60; itemsSinceQuiz=0;
+  quizUsed.clear(); plates=[]; targetPlate=null; puActive=null; clearInterval(puInt);
+  timeFrozen=false; clearTimeout(goldSpawnTimer); goldPlate=null;
+  clearTimeout(trapSpawnTimer); trapPlate=null;
+  document.getElementById('pu-timer-fill').style.width='0%';
+  document.getElementById('powerup-bar').classList.remove('active');
+  document.getElementById('pu-icon').textContent='⬜';
+  document.getElementById('pu-label').textContent='パワーアップなし　— 10ネタでクイズ出題';
+
+  ['sv-score','sv-combo'].forEach(id=>document.getElementById(id).textContent='0');
+  document.getElementById('sv-wpm').textContent='—';
+  document.getElementById('sv-acc').textContent='—';
+  document.getElementById('sv-timer').textContent='60';
+  document.getElementById('sv-timer').classList.remove('urg');
+  document.getElementById('btn-start').textContent='↺ RESET';
+
+  // 停止ボタンを表示
+  const pbtn = document.getElementById('btn-pause');
+  pbtn.style.display = '';
+  pbtn.textContent = '⏸ 一時停止';
+  pbtn.style.borderColor = '';
+  pbtn.style.color = '';
+
+  SPEED = BASE_SPEEDS[diff];
+  buildLanes();
+  buildPool();
+  laneWidth = (laneEls[0] && laneEls[0].offsetWidth > 0) ? laneEls[0].offsetWidth : 800;
+
+  const inp = document.getElementById('type-input');
+  inp.disabled=false; inp.value=''; inp.focus();
+  inp.placeholder = lang==='en'?'— type here —':'タイピング開始...';
+
+  gameActive=true;
+  startTime=Date.now();
+  clearInterval(timerInt); cancelAnimationFrame(animFrame);
+  timerInt = setInterval(tick,1000);
+  animFrame = requestAnimationFrame(gameLoop);
+  startBgm();
+  startGoldSpawnCycle();
+  startTrapSpawnCycle();
+}
+
+function tick(){
+  if(timeFrozen) return; // タイムフリーズ中はカウントしない
+  timeLeft--;
+  const tel = document.getElementById('sv-timer');
+  tel.textContent = timeLeft;
+  if(timeLeft<=10) tel.classList.add('urg');
+
+  const elapsed = (Date.now()-startTime)/60000;
+  const wpm = elapsed>0 ? Math.round((correctKeys/5)/elapsed) : 0;
+  document.getElementById('sv-wpm').textContent = wpm;
+
+  if(timeLeft<=0){
+    clearInterval(timerInt); cancelAnimationFrame(animFrame);
+    gameActive=false;
+    endGame(wpm);
+  }
+}
+
+function endGame(wpm){
+  stopBgm();
+  const inp=document.getElementById('type-input');
+  inp.disabled=true; inp.value=''; inp.placeholder='— start typing —';
+  document.getElementById('btn-start').textContent='▶ START';
+  document.getElementById('btn-pause').style.display='none';
+  gamePaused = false;
+
+  const acc = totalKeys>0 ? Math.round((correctKeys/totalKeys)*100) : 0;
+  const rank = RANKS.slice().reverse().find(r=>score>=r.min)||RANKS[0];
+
+  document.getElementById('go-score').textContent = score.toLocaleString();
+  document.getElementById('go-wpm').textContent   = wpm;
+  document.getElementById('go-acc').textContent   = acc+'%';
+  document.getElementById('go-count').textContent = completedWords;
+  document.getElementById('go-rank').innerHTML    = `<span class="rank-badge">${rank.title}</span>${rank.msg}`;
+  document.getElementById('go-sub').textContent   = completedWords>0 ? `${completedWords}ネタ完食！` : 'もう一度チャレンジ！';
+  document.getElementById('go-overlay').classList.add('show');
+  document.getElementById('sv-acc').textContent   = acc+'%';
+
+  // leaderboard
+  LB_DATA.push({ name:currentUser?currentUser.nickname:'あなた', score, wpm, acc:acc+'%' });
+  LB_DATA.sort((a,b)=>b.score-a.score); LB_DATA.splice(10);
+  renderLB();
+
+  // save & badges
+  saveScore(score, wpm, acc);
+  const nb = checkBadges(score, wpm, acc, diff, maxCombo);
+  if(nb.length) setTimeout(()=>showBadgePopup(nb), 900);
+}
+
+// ============================================================
+// ============================================================
+// じーも
+// ============================================================
+let jimoTimer = null;
+let jimoCooldown = false;
+let jimoMoveInterval = null;
+
+function pauseGameForJimo(){
+  if(!gameActive || gamePaused) return;
+  cancelAnimationFrame(animFrame);
+  clearInterval(timerInt);
+  document.getElementById('type-input').disabled = true;
+  fadeBgm(0.20, 300);
+}
+
+function resumeGameAfterJimo(){
+  if(!gameActive) return;
+  document.getElementById('type-input').disabled = false;
+  document.getElementById('type-input').focus();
+  clearInterval(timerInt);
+  cancelAnimationFrame(animFrame);
+  timerInt = setInterval(tick, 1000);
+  animFrame = requestAnimationFrame(gameLoop);
+  fadeBgm(1.0, 300);
+}
+
+function createSparks(container){
+  const colors = ['#FFD700','#FF6B00','#FF3366','#00FFAA','#FFFFFF'];
+  for(let i=0;i<20;i++){
+    const s = document.createElement('div');
+    s.className = 'spark';
+    const angle = (i / 20) * 360;
+    const dist = 100 + Math.random() * 200;
+    const sx = Math.cos(angle * Math.PI / 180) * dist + 'px';
+    const sy = Math.sin(angle * Math.PI / 180) * dist + 'px';
+    s.style.cssText = `left:50%;top:50%;background:${colors[i%colors.length]};--sx:${sx};--sy:${sy};animation-delay:${Math.random()*0.3}s;`;
+    container.appendChild(s);
+    setTimeout(() => s.remove(), 1300);
+  }
+}
+
+function createConfetti(container){
+  const colors = ['#FFD700','#FF6B00','#FF3366','#00FFAA','#4488FF','#FF88CC'];
+  for(let i=0;i<40;i++){
+    const c = document.createElement('div');
+    c.className = 'confetti';
+    c.style.cssText = `
+      left:${Math.random()*100}%;
+      top:-20px;
+      background:${colors[Math.floor(Math.random()*colors.length)]};
+      border-radius:${Math.random()>0.5?'50%':'2px'};
+      width:${6+Math.random()*10}px;
+      height:${6+Math.random()*10}px;
+      animation-duration:${1.5+Math.random()*1.5}s;
+      animation-delay:${Math.random()*0.5}s;
+    `;
+    container.appendChild(c);
+    setTimeout(() => c.remove(), 3000);
+  }
+}
+
+function spawnJimo(){
+  const char = document.getElementById('jimo-char');
+  if(char.style.display !== 'none') return;
+
+  // ① レーン停止
+  pauseGameForJimo();
+
+  // ② 右からスライドで全画面登場
+  const fs = document.getElementById('jimo-fullscreen');
+  fs.style.display = 'flex';
+  // スパーク生成
+  const sparksEl = fs.querySelector('.jimo-sparks') || (() => {
+    const el = document.createElement('div'); el.className='jimo-sparks'; fs.appendChild(el); return el;
+  })();
+  setTimeout(() => { fs.classList.add('show'); createSparks(sparksEl); playJimoSpawnSound(); }, 10);
+
+  // ③ 2.5秒後に全画面を消して小じーもを配置
+  setTimeout(() => {
+    fs.classList.remove('show');
+    setTimeout(() => {
+      fs.style.display = 'none';
+
+      const margin = 100;
+      const label = document.getElementById('jimo-label');
+
+      function placeJimo(){
+        const x = margin + Math.random() * (window.innerWidth - margin * 2);
+        const y = margin + Math.random() * (window.innerHeight - margin * 2);
+        char.style.left = x + 'px';
+        char.style.top = y + 'px';
+        label.style.left = (x - 10) + 'px';
+        label.style.top = (y + 68) + 'px';
+      }
+
+      placeJimo();
+      char.style.display = 'block';
+      label.style.display = 'block';
+      playJimoAppearSound();
+
+      // ランダムに逃げ回る（0.6〜1.2秒ごとに移動）
+      function scheduleNextMove(){
+        jimoMoveInterval = setTimeout(() => {
+          if(char.style.display === 'none') return;
+          placeJimo();
+          scheduleNextMove();
+        }, 600 + Math.random() * 600);
+      }
+      scheduleNextMove();
+
+      // 5秒以内に捕まえないと逃げる
+      jimoTimer = setTimeout(() => dismissJimo(true), 5000);
+    }, 400);
+  }, 2500);
+}
+
+function catchJimo(){
+  clearTimeout(jimoTimer);
+  clearTimeout(jimoMoveInterval); jimoMoveInterval = null;
+  playJimoCatchSound();
+
+  // 小じーもを隠す
+  document.getElementById('jimo-char').style.display = 'none';
+  document.getElementById('jimo-label').style.display = 'none';
+
+  // ボーナス計算
+  const bonus = Math.max(3000, Math.round(score * 0.5));
+  score += bonus;
+  document.getElementById('sv-score').textContent = score.toLocaleString();
+
+  // ④ 全画面お祝い演出（下からスライドアップ）
+  const cel = document.getElementById('jimo-celebrate');
+  document.getElementById('cel-bonus-text').textContent = '＋' + bonus.toLocaleString() + '点ボーナス！';
+  cel.style.display = 'flex';
+  setTimeout(() => { cel.classList.add('show'); createConfetti(cel); createSparks(cel); }, 10);
+
+  // ⑤ 2秒後にゲーム再開
+  setTimeout(() => {
+    cel.classList.remove('show');
+    setTimeout(() => {
+      cel.style.display = 'none';
+      resumeGameAfterJimo();
+      // クールダウン開始
+      jimoCooldown = true;
+      setTimeout(() => { jimoCooldown = false; }, 10000);
+    }, 300);
+  }, 2000);
+}
+
+function dismissJimo(escaped = false){
+  clearTimeout(jimoMoveInterval); jimoMoveInterval = null;
+  document.getElementById('jimo-char').style.display = 'none';
+  document.getElementById('jimo-label').style.display = 'none';
+  if(escaped) playJimoDismissSound();
+  resumeGameAfterJimo(); // 逃げた場合もゲームを再開する
+  jimoCooldown = true;
+  setTimeout(() => { jimoCooldown = false; }, 10000);
+}
+
+// DIFF / LANG
+// ============================================================
+function setDiff(d,btn){
+  // たまごはチュートリアル画面を開く（ベルトゲームは変更しない）
+  if(d==='beginner'){ openTutorial(); return; }
+  diff=d;
+  document.querySelectorAll('[id^=diff-]').forEach(b=>b.classList.remove('act'));
+  btn.classList.add('act');
+  document.getElementById('belt-label').textContent='SPEED: '+{easy:'見習い',normal:'板前',hard:'板長'}[d];
+  document.getElementById('finger-guide').classList.remove('show');
+  if(!gameActive) buildLanes();
+}
+function setLang(l,btn){
+  lang=l;
+  document.querySelectorAll('#lang-row .mode-btn').forEach(b=>b.classList.remove('act'));
+  btn.classList.add('act');
+}
+
+// ============================================================
+// SOUND
+// ============================================================
+let audioCtx=null;
+function getCtx(){ if(!audioCtx) audioCtx=new(window.AudioContext||window.webkitAudioContext)(); return audioCtx; }
+
+function playKeySound(){
+  if(!soundOn) return;
+  try{
+    const ctx=getCtx(), buf=ctx.createBuffer(1,ctx.sampleRate*.04,ctx.sampleRate), d=buf.getChannelData(0);
+    for(let i=0;i<d.length;i++) d[i]=(Math.random()*2-1)*Math.exp(-i/(ctx.sampleRate*.008));
+    const s=ctx.createBufferSource(), g=ctx.createGain(); s.buffer=buf; g.gain.value=.15;
+    s.connect(g); g.connect(ctx.destination); s.start();
+  }catch(e){}
+}
+function playCorrectSound(){
+  if(!soundOn) return;
+  try{
+    const ctx=getCtx(), now=ctx.currentTime;
+    [[880,0],[1108,.04]].forEach(([f,d])=>{
+      const o=ctx.createOscillator(),g=ctx.createGain();
+      o.type='sine'; o.frequency.setValueAtTime(f,now+d); o.frequency.exponentialRampToValueAtTime(f*1.5,now+d+.12);
+      g.gain.setValueAtTime(.2,now+d); g.gain.exponentialRampToValueAtTime(.001,now+d+.22);
+      o.connect(g); g.connect(ctx.destination); o.start(now+d); o.stop(now+d+.25);
+    });
+  }catch(e){}
+}
+function playComboSound(n){
+  if(!soundOn) return;
+  try{
+    const ctx=getCtx(),now=ctx.currentTime,bf=440*Math.pow(1.06,Math.min(n,12));
+    [0,.08,.16].forEach((d,i)=>{
+      const o=ctx.createOscillator(),g=ctx.createGain();
+      o.type='triangle'; o.frequency.value=bf*[1,1.25,1.5][i];
+      g.gain.setValueAtTime(.18,now+d); g.gain.exponentialRampToValueAtTime(.001,now+d+.3);
+      o.connect(g); g.connect(ctx.destination); o.start(now+d); o.stop(now+d+.32);
+    });
+  }catch(e){}
+}
+
+const MISS_V=['なしか！','なんしよっと！','ちゃんとせんか！','まけるな！','ちがうばい！','しっかりせんか！'];
+const OK_V  =['よかよか！','さすがばい！','うまかねー！','ばりうまい！','その調子たい！','ナイスたい！'];
+let lastMissT=0, missVI=0, okVI=0;
+function playMissVoice(){
+  if(!soundOn) return;
+  const now=Date.now(); if(now-lastMissT<1000) return; lastMissT=now;
+  try{
+    const u=new SpeechSynthesisUtterance(MISS_V[missVI++%MISS_V.length]);
+    u.lang='ja-JP'; u.rate=1.1; u.pitch=1.0; u.volume=.9;
+    const v=speechSynthesis.getVoices().find(v=>v.lang.startsWith('ja')); if(v) u.voice=v;
+    speechSynthesis.speak(u);
+  }catch(e){}
+}
+function playCorrectVoice(){
+  if(!soundOn) return;
+  if(okVI%3!==0){ okVI++; return; }
+  try{
+    const u=new SpeechSynthesisUtterance(OK_V[okVI++%OK_V.length]);
+    u.lang='ja-JP'; u.rate=1.15; u.pitch=1.2; u.volume=.85;
+    const v=speechSynthesis.getVoices().find(v=>v.lang.startsWith('ja')); if(v) u.voice=v;
+    speechSynthesis.speak(u);
+  }catch(e){ okVI++; }
+}
+function toggleSound(btn){
+  soundOn=!soundOn;
+  btn.textContent=soundOn?'🔊 音あり':'🔇 音なし';
+  btn.style.color=soundOn?'var(--gold)':'';
+  bgmAudio.volume = soundOn ? BGM_VOL : 0;
+}
+
+// ============================================================
+// BGM ENGINE — bgm.mp3
+// ============================================================
+const BGM_VOL = 0.20; // 通常音量 (0〜1)
+
+const bgmAudio = new Audio('bgm.mp3');
+bgmAudio.loop = true;
+bgmAudio.volume = 0;
+
+let bgmFadeTimer = null;
+
+function startBgm(){
+  if(!soundOn){ bgmAudio.volume = 0; }
+  else { bgmAudio.volume = BGM_VOL; }
+  bgmAudio.currentTime = 0;
+  bgmAudio.play().catch(()=>{});
+}
+
+function stopBgm(){
+  fadeBgm(0, 400);
+  setTimeout(()=>{ bgmAudio.pause(); bgmAudio.currentTime = 0; }, 450);
+}
+
+function fadeBgm(ratio, ms){
+  clearInterval(bgmFadeTimer);
+  if(!soundOn && ratio > 0) return;
+  const target = ratio * BGM_VOL;
+  const steps = 20;
+  const interval = (ms || 250) / steps;
+  const start = bgmAudio.volume;
+  const delta = (target - start) / steps;
+  let i = 0;
+  bgmFadeTimer = setInterval(()=>{
+    i++;
+    bgmAudio.volume = Math.min(1, Math.max(0, start + delta * i));
+    if(i >= steps){ clearInterval(bgmFadeTimer); bgmAudio.volume = target; }
+  }, interval);
+}
+
+// ============================================================
+// じーもSE
+// ============================================================
+
+// ① 全画面登場：ドラマチックな上昇アルペジオ＋シンバル
+function playJimoSpawnSound(){
+  if(!soundOn) return;
+  try{
+    const ctx=getCtx(), now=ctx.currentTime;
+    // 上昇アルペジオ (C→E→G→C5→E5)
+    [[261,0],[329,0.07],[392,0.14],[523,0.21],[659,0.28]].forEach(([f,d])=>{
+      const o=ctx.createOscillator(), g=ctx.createGain();
+      o.type='square'; o.frequency.value=f;
+      o.connect(g); g.connect(ctx.destination);
+      g.gain.setValueAtTime(0.18, now+d);
+      g.gain.exponentialRampToValueAtTime(0.001, now+d+0.35);
+      o.start(now+d); o.stop(now+d+0.35);
+    });
+    // シンバルクラッシュ
+    const len=Math.ceil(ctx.sampleRate*0.55);
+    const buf=ctx.createBuffer(1,len,ctx.sampleRate), nd=buf.getChannelData(0);
+    for(let i=0;i<len;i++) nd[i]=(Math.random()*2-1)*Math.pow(1-i/len,0.5);
+    const src=ctx.createBufferSource(), gn=ctx.createGain(), flt=ctx.createBiquadFilter();
+    flt.type='bandpass'; flt.frequency.value=2800; flt.Q.value=0.4;
+    src.buffer=buf; src.connect(flt); flt.connect(gn); gn.connect(ctx.destination);
+    gn.gain.setValueAtTime(0.38, now);
+    gn.gain.exponentialRampToValueAtTime(0.001, now+0.55);
+    src.start(now);
+  }catch(e){}
+}
+
+// ② 小じーも出現：キラキラ魔法音＋ポヨン
+function playJimoAppearSound(){
+  if(!soundOn) return;
+  try{
+    const ctx=getCtx(), now=ctx.currentTime;
+    // 上昇キラキラ
+    [784,1046,1318,1568,2093].forEach((f,i)=>{
+      const o=ctx.createOscillator(), g=ctx.createGain();
+      o.type='sine'; o.frequency.value=f;
+      o.connect(g); g.connect(ctx.destination);
+      const t=now+i*0.058;
+      g.gain.setValueAtTime(0.16, t);
+      g.gain.exponentialRampToValueAtTime(0.001, t+0.20);
+      o.start(t); o.stop(t+0.20);
+    });
+    // ポヨン
+    const o2=ctx.createOscillator(), g2=ctx.createGain();
+    o2.type='sine';
+    o2.frequency.setValueAtTime(180, now);
+    o2.frequency.exponentialRampToValueAtTime(760, now+0.06);
+    o2.connect(g2); g2.connect(ctx.destination);
+    g2.gain.setValueAtTime(0.28, now);
+    g2.gain.exponentialRampToValueAtTime(0.001, now+0.18);
+    o2.start(now); o2.stop(now+0.18);
+  }catch(e){}
+}
+
+// ③ 捕まえた：勝利ファンファーレ (タタタターン！)
+function playJimoCatchSound(){
+  if(!soundOn) return;
+  try{
+    const ctx=getCtx(), now=ctx.currentTime;
+    // メロディ：タタタターン
+    [[523,0,0.11],[523,0.12,0.09],[523,0.22,0.09],[659,0.33,0.55]].forEach(([f,d,dur])=>{
+      const o=ctx.createOscillator(), g=ctx.createGain();
+      o.type='square'; o.frequency.value=f;
+      o.connect(g); g.connect(ctx.destination);
+      g.gain.setValueAtTime(0.20, now+d);
+      g.gain.exponentialRampToValueAtTime(0.001, now+d+dur);
+      o.start(now+d); o.stop(now+d+dur);
+    });
+    // ハーモニー
+    [[659,0,0.11],[659,0.12,0.09],[659,0.22,0.09],[784,0.33,0.55]].forEach(([f,d,dur])=>{
+      const o=ctx.createOscillator(), g=ctx.createGain();
+      o.type='square'; o.frequency.value=f;
+      o.connect(g); g.connect(ctx.destination);
+      g.gain.setValueAtTime(0.13, now+d);
+      g.gain.exponentialRampToValueAtTime(0.001, now+d+dur);
+      o.start(now+d); o.stop(now+d+dur);
+    });
+    // ベル持続音
+    const ob=ctx.createOscillator(), gb=ctx.createGain();
+    ob.type='sine'; ob.frequency.value=1318;
+    ob.connect(gb); gb.connect(ctx.destination);
+    gb.gain.setValueAtTime(0.22, now+0.33);
+    gb.gain.exponentialRampToValueAtTime(0.001, now+1.3);
+    ob.start(now+0.33); ob.stop(now+1.3);
+    // クラッシュ
+    const len=Math.ceil(ctx.sampleRate*0.45);
+    const buf2=ctx.createBuffer(1,len,ctx.sampleRate), nd2=buf2.getChannelData(0);
+    for(let i=0;i<len;i++) nd2[i]=(Math.random()*2-1)*Math.pow(1-i/len,0.45);
+    const src2=ctx.createBufferSource(), gn2=ctx.createGain(), flt2=ctx.createBiquadFilter();
+    flt2.type='bandpass'; flt2.frequency.value=3200; flt2.Q.value=0.3;
+    src2.buffer=buf2; src2.connect(flt2); flt2.connect(gn2); gn2.connect(ctx.destination);
+    gn2.gain.setValueAtTime(0.42, now+0.33);
+    gn2.gain.exponentialRampToValueAtTime(0.001, now+0.33+0.45);
+    src2.start(now+0.33);
+  }catch(e){}
+}
+
+// ④ 逃げた：ワーワー下降（トロンボーン風）
+function playJimoDismissSound(){
+  if(!soundOn) return;
+  try{
+    const ctx=getCtx(), now=ctx.currentTime;
+    const o=ctx.createOscillator(), g=ctx.createGain();
+    o.type='sawtooth';
+    o.frequency.setValueAtTime(440, now);
+    o.frequency.exponentialRampToValueAtTime(196, now+0.28);
+    o.frequency.setValueAtTime(350, now+0.33);
+    o.frequency.exponentialRampToValueAtTime(155, now+0.62);
+    o.connect(g); g.connect(ctx.destination);
+    g.gain.setValueAtTime(0.20, now);
+    g.gain.setValueAtTime(0.18, now+0.28);
+    g.gain.setValueAtTime(0.16, now+0.33);
+    g.gain.exponentialRampToValueAtTime(0.001, now+0.68);
+    o.start(now); o.stop(now+0.68);
+    // 低音ドン
+    const o2=ctx.createOscillator(), g2=ctx.createGain();
+    o2.type='sine'; o2.frequency.value=75;
+    o2.connect(g2); g2.connect(ctx.destination);
+    g2.gain.setValueAtTime(0.32, now);
+    g2.gain.exponentialRampToValueAtTime(0.001, now+0.35);
+    o2.start(now); o2.stop(now+0.35);
+  }catch(e){}
+}
+
+// ============================================================
+// FX
+// ============================================================
+function flashStat(id){ const el=document.getElementById(id); el.classList.add('flash'); setTimeout(()=>el.classList.remove('flash'),400); }
+function showComboFx(n){ const el=document.getElementById('combo-fx'); el.textContent=n+' COMBO!'; el.classList.remove('show'); void el.offsetWidth; el.classList.add('show'); }
+
+// ============================================================
+// BADGES
+// ============================================================
+function getBD(){ if(!currentUser) return {earned:[],totalScore:0,bestWpm:0}; return JSON.parse(localStorage.getItem('ktd_badges_'+currentUser.id)||'{"earned":[],"totalScore":0,"bestWpm":0}'); }
+function saveBD(d){ if(!currentUser) return; localStorage.setItem('ktd_badges_'+currentUser.id,JSON.stringify(d)); }
+function checkBadges(s,wpm,acc,d,mc){
+  if(!currentUser) return [];
+  const data=getBD();
+  data.totalScore=(data.totalScore||0)+s;
+  data.bestWpm=Math.max(data.bestWpm||0,wpm);
+  const got=[];
+  BADGES.forEach(b=>{
+    if(data.earned.includes(b.id)) return;
+    let ok=false;
+    if(b.axis==='score') ok=data.totalScore>=b.th;
+    if(b.axis==='wpm')   ok=data.bestWpm>=b.th;
+    if(b.axis==='combo') ok=mc>=b.th;
+    if(b.axis==='acc')   ok=acc>=b.th;
+    if(b.axis==='diff')  ok=d==='hard';
+    if(b.axis==='all')   ok=data.earned.length>=BADGES.length-1;
+    if(ok){ data.earned.push(b.id); got.push(b); }
+  });
+  saveBD(data); return got;
+}
+function showBadgePopup(badges){
+  if(!badges.length) return;
+  const b=badges[0];
+  const p=document.createElement('div'); p.className='badge-popup';
+  p.innerHTML=`<div style="font-size:10px;color:var(--gold);letter-spacing:2px;margin-bottom:5px;">★ バッジ獲得！</div><div style="font-size:32px;margin-bottom:5px;">${b.e}</div><div style="font-size:14px;font-weight:700;">${b.name}</div><div style="font-size:10px;color:var(--muted);margin-top:2px;">${b.cond}</div>`;
+  document.body.appendChild(p);
+  setTimeout(()=>{ p.style.animation='bpOut .4s ease-in forwards'; setTimeout(()=>{ p.remove(); if(badges.length>1) showBadgePopup(badges.slice(1)); },400); },2200);
+}
+
+// ============================================================
+// USER / MYPAGE
+// ============================================================
+// SUPABASE
+// ============================================================
+const SUPABASE_URL = 'https://wfzosqiulaaknjaydywf.supabase.co';
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Indmem9zcWl1bGFha25qYXlkeXdmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzcxNDYzMDQsImV4cCI6MjA5MjcyMjMwNH0.4kVINp8j5ZiSj7Xvh_BpCG_rfefarMY9i96tLHxWh4A';
+const { createClient } = supabase;
+const sb = createClient(SUPABASE_URL, SUPABASE_KEY);
+
+// ============================================================
+// USER
+// ============================================================
+let currentUser=null;
+function loadUser(){ try{ currentUser=JSON.parse(localStorage.getItem('ktd_user')); }catch(e){} updateUserBtn(); }
+function updateUserBtn(){ const b=document.getElementById('user-btn'); if(!b) return; b.textContent=currentUser?'👤 '+currentUser.nickname:'登録/ログイン'; b.style.color=currentUser?'var(--gold)':''; }
+
+function selWard(btn,w){ document.querySelectorAll('.ward-btn').forEach(b=>b.classList.remove('sel')); btn.classList.add('sel'); document.getElementById('reg-ward').value=w; }
+
+async function submitReg(){
+  const nn=document.getElementById('reg-nn').value.trim();
+  const gr=document.getElementById('reg-grade').value;
+  const wd=document.getElementById('reg-ward').value;
+  if(!nn){ alert('ニックネームを入力してください'); return; }
+
+  // Supabaseに登録（ニックネームが重複していればそのまま取得）
+  let player;
+  const { data: existing } = await sb.from('players').select('*').eq('nickname', nn).single();
+  if(existing){
+    player = existing;
+  } else {
+    const { data, error } = await sb.from('players').insert({ nickname: nn }).select().single();
+    if(error){ alert('登録エラー: '+error.message); return; }
+    player = data;
+  }
+
+  const u = { id: player.id, nickname: nn, grade: gr, ward: wd, joinedAt: new Date().toLocaleDateString('ja-JP') };
+  currentUser = u;
+  localStorage.setItem('ktd_user', JSON.stringify(u));
+  updateUserBtn();
+  closeModal('modal-reg');
+  alert('登録完了！ようこそ、'+nn+'さん！');
+}
+
+async function saveScore(s,wpm,acc){
+  if(!currentUser) return;
+  // Supabaseに保存
+  await sb.from('scores').insert({ player_id: currentUser.id, score: s, wpm: wpm });
+  // ローカルにもキャッシュ
+  const key='ktd_scores_'+currentUser.id;
+  const sc=JSON.parse(localStorage.getItem(key)||'[]');
+  sc.unshift({score:s,wpm,acc,date:new Date().toLocaleDateString('ja-JP')});
+  if(sc.length>20) sc.splice(20);
+  localStorage.setItem(key,JSON.stringify(sc));
+}
+
+function getScores(){ if(!currentUser) return []; return JSON.parse(localStorage.getItem('ktd_scores_'+currentUser.id)||'[]'); }
+
+function showMypage(){
+  if(!currentUser){ showModal('modal-reg'); return; }
+  const sc=getScores();
+  const best=sc.length?Math.max(...sc.map(s=>s.score)):0;
+  const bwpm=sc.length?Math.max(...sc.map(s=>s.wpm)):0;
+  document.getElementById('my-name').textContent=currentUser.nickname;
+  document.getElementById('my-ward').textContent=currentUser.ward+' / '+currentUser.grade;
+  document.getElementById('my-score').textContent=best.toLocaleString();
+  document.getElementById('my-wpm').textContent=bwpm;
+  document.getElementById('my-plays').textContent=sc.length;
+  const bd=getBD();
+  document.getElementById('my-badge-ct').textContent=bd.earned.length+' / '+BADGES.length;
+  document.getElementById('my-badge-grid').innerHTML=BADGES.map(b=>{
+    const has=bd.earned.includes(b.id);
+    return `<div class="bg-item${has?' earned':''}" title="${b.name}｜${b.cond}"><div class="bg-item-e">${b.e}</div><div class="bg-item-n">${b.name}</div></div>`;
+  }).join('');
+  showModal('modal-my');
+}
+
+function logoutUser(){ localStorage.removeItem('ktd_user'); currentUser=null; updateUserBtn(); closeModal('modal-my'); }
+
+function showModal(id){ document.getElementById(id).classList.add('show'); }
+function closeModal(id){ document.getElementById(id).classList.remove('show'); }
+
+// ============================================================
+// LEADERBOARD / UI
+// ============================================================
+function renderLB(){
+  document.getElementById('lb-list').innerHTML=LB_DATA.slice(0,10).map((d,i)=>{
+    const rc=i===0?'g':i===1?'s':i===2?'b':'';
+    const ri=i===0?'🥇':i===1?'🥈':i===2?'🥉':(i+1);
+    return `<div class="lb-row"><div class="lb-rank ${rc}">${ri}</div><div class="lb-name">${d.name}</div><div class="lb-score">${d.score.toLocaleString()}</div><div class="lb-wpm">${d.wpm}</div><div class="lb-acc">${d.acc}</div></div>`;
+  }).join('');
+}
+function switchView(v,btn){ document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('act')); btn.classList.add('act'); if(v==='rank') showRanking(); }
+async function showRanking(){
+  document.getElementById('lb-section').scrollIntoView({behavior:'smooth'});
+  // Supabaseから上位10件取得
+  const { data, error } = await sb
+    .from('scores')
+    .select('score, wpm, created_at, players(nickname)')
+    .order('score', { ascending: false })
+    .limit(10);
+  if(error || !data) return;
+  document.getElementById('lb-list').innerHTML = data.map((d,i)=>{
+    const rc=i===0?'g':i===1?'s':i===2?'b':'';
+    const ri=i===0?'🥇':i===1?'🥈':i===2?'🥉':(i+1);
+    const name = d.players?.nickname || '名無し';
+    const acc = '-';
+    return `<div class="lb-row"><div class="lb-rank ${rc}">${ri}</div><div class="lb-name">${name}</div><div class="lb-score">${d.score.toLocaleString()}</div><div class="lb-wpm">${d.wpm}</div><div class="lb-acc">${acc}</div></div>`;
+  }).join('');
+}
+function showTournament(){ alert('🎌 鮨撃 区対抗タイピング大会 2025\n\n日時: 2025年開催予定\n会場: 門司港レトロ会館\n参加費: ¥500\n\n各区・学年の1位が代表として出場！\n\nお問い合わせ: 門司港プログラミング道場'); }
+function shareResult(){
+  const txt=`🍣 鮨撃 KITAKYUSHU\nスコア: ${score.toLocaleString()}点 | WPM: ${document.getElementById('go-wpm').textContent} | 正確度: ${document.getElementById('go-acc').textContent}\n\n#鮨撃 #KITAKYUSHU #寿司の都 #北九州`;
+  navigator.clipboard?navigator.clipboard.writeText(txt).then(()=>alert('コピーしました！')):alert(txt);
+}
+
+// ============================================================
+// INIT
+// ============================================================
+loadUser();
+renderLB();
+buildLanes();
+
+// ============================================================
+// たまごモード チュートリアル
+// ============================================================
+const TUTORIAL_STAGES = [
+  {
+    id:1, name:'ホームポジション（左手）', desc:'A・S・D・F キーの練習',
+    type:'keys',
+    seq:['a','a','a','s','s','s','d','d','d','f','f','f','a','s','d','f','f','d','s','a'],
+  },
+  {
+    id:2, name:'ホームポジション（右手）', desc:'J・K・L・P キーの練習',
+    type:'keys',
+    seq:['j','j','j','k','k','k','l','l','l','p','p','p','j','k','l','p','p','l','k','j'],
+  },
+  {
+    id:3, name:'母音を覚えよう', desc:'A・I・U・E・O',
+    type:'keys',
+    seq:['a','i','u','e','o','a','i','u','e','o','o','e','u','i','a'],
+  },
+  {
+    id:4, name:'かんたんなネタを打とう', desc:'ika・ebi・uni・tai・aji・toro・kani',
+    type:'words',
+    words:['ika','ebi','uni','tai','aji','toro','kani','fugu','nori','buri'],
+  },
+];
+
+let tutIdx=0, tutStep=0, tutWordIdx=0, tutTyped='';
+let tutKeyHandlerFn=null;
+
+function openTutorial(){
+  document.getElementById('tutorial-overlay').classList.add('show');
+  tutIdx=0; tutStep=0; tutWordIdx=0; tutTyped='';
+  startTutStage(0);
+  if(tutKeyHandlerFn) document.removeEventListener('keydown', tutKeyHandlerFn);
+  tutKeyHandlerFn = function(e){
+    if(!document.getElementById('tutorial-overlay').classList.contains('show')) return;
+    if(e.key==='Escape'){ closeTutorial(); return; }
+    const k=e.key.toLowerCase();
+    if(k.length!==1||!/[a-z]/.test(k)) return;
+    e.preventDefault();
+    const stage=TUTORIAL_STAGES[tutIdx];
+    if(stage.type==='words') handleTutWordKey(k);
+    else handleTutKey(k);
+  };
+  document.addEventListener('keydown', tutKeyHandlerFn);
+}
+
+function closeTutorial(){
+  document.getElementById('tutorial-overlay').classList.remove('show');
+  if(tutKeyHandlerFn){ document.removeEventListener('keydown', tutKeyHandlerFn); tutKeyHandlerFn=null; }
+}
+
+function startTutStage(idx){
+  tutIdx=idx; tutStep=0; tutWordIdx=0; tutTyped='';
+  const st=TUTORIAL_STAGES[idx];
+  document.getElementById('tut-stage-name').textContent=`ステージ ${idx+1} / ${TUTORIAL_STAGES.length} — ${st.name}`;
+  document.getElementById('tut-stage-clear-msg').style.display='none';
+  document.getElementById('tut-stage-clear-msg').className='';
+  document.getElementById('tut-next-btn').style.display='none';
+  updateTutProgress();
+  if(st.type==='words') showTutWord(); else showTutKey();
+}
+
+function updateTutProgress(){
+  const st=TUTORIAL_STAGES[tutIdx];
+  const total=st.type==='words'?st.words.length:st.seq.length;
+  const cur=st.type==='words'?tutWordIdx:tutStep;
+  document.getElementById('tut-progress-fill').style.width=(cur/total*100)+'%';
+  document.getElementById('tut-progress-nums').textContent=cur+' / '+total;
+}
+
+function showTutKey(){
+  const st=TUTORIAL_STAGES[tutIdx];
+  if(tutStep>=st.seq.length){ tutStageClear(); return; }
+  const k=st.seq[tutStep];
+  const info=FINGER_MAP[k];
+  const color=info?info[2]:'#aaa';
+  const lbl=document.getElementById('tut-key-label');
+  lbl.textContent=k.toUpperCase();
+  lbl.style.color=color; lbl.style.borderColor=color;
+  lbl.style.background=color+'18'; lbl.style.boxShadow='0 0 24px '+color+'44';
+  document.getElementById('tut-key-sub').textContent=k.toUpperCase()+' を押してください';
+  document.getElementById('tut-char-row').innerHTML='';
+  highlightFinger(info?info[0]:-1);
+  renderTutMiniKb(k);
+}
+
+function showTutWord(){
+  const st=TUTORIAL_STAGES[tutIdx];
+  if(tutWordIdx>=st.words.length){ tutStageClear(); return; }
+  const word=st.words[tutWordIdx]; tutTyped='';
+  const firstInfo=FINGER_MAP[word[0]];
+  const color=firstInfo?firstInfo[2]:'#aaa';
+  const lbl=document.getElementById('tut-key-label');
+  lbl.textContent=word.toUpperCase();
+  lbl.style.color=color; lbl.style.borderColor=color;
+  lbl.style.background=color+'18'; lbl.style.boxShadow='0 0 24px '+color+'44';
+  lbl.style.fontSize=word.length>4?'38px':'50px';
+  document.getElementById('tut-key-sub').textContent='タイプしてください';
+  renderTutChars('',word);
+  highlightFinger(firstInfo?firstInfo[0]:-1);
+  renderTutMiniKb(word[0]);
+}
+
+function renderTutChars(typed,word){
+  const row=document.getElementById('tut-char-row');
+  row.innerHTML='';
+  for(let i=0;i<word.length;i++){
+    const b=document.createElement('div');
+    b.className='ch'; b.style.position='relative'; b.textContent=word[i].toUpperCase();
+    if(i<typed.length) b.classList.add('ok');
+    else if(i===typed.length) b.classList.add('cur');
+    row.appendChild(b);
+  }
+}
+
+function highlightFinger(fingerIdx){
+  document.querySelectorAll('.hand-finger').forEach(f=>f.classList.remove('lit'));
+  if(fingerIdx<0) return;
+  const id=fingerIdx<=3?'lf-'+fingerIdx:'rf-'+fingerIdx;
+  const el=document.getElementById(id);
+  if(el) el.classList.add('lit');
+}
+
+function renderTutMiniKb(nextKey){
+  const kb=document.getElementById('tut-mini-kb');
+  kb.innerHTML='';
+  KB_ROWS.forEach(row=>{
+    const rd=document.createElement('div'); rd.className='tut-kb-row';
+    row.forEach(k=>{
+      const kd=document.createElement('div');
+      const kinfo=FINGER_MAP[k];
+      const isNext=k===nextKey;
+      kd.className='tut-kb-key'+(isNext?' tut-next-key':'');
+      kd.textContent=k.toUpperCase();
+      if(kinfo){
+        kd.style.color=isNext?'#fff':kinfo[2]+'77';
+        kd.style.borderColor=isNext?kinfo[2]:kinfo[2]+'33';
+        kd.style.background=isNext?kinfo[2]+'33':'transparent';
+        if(isNext) kd.style.setProperty('color',kinfo[2]);
+      }
+      rd.appendChild(kd);
+    });
+    kb.appendChild(rd);
+  });
+}
+
+function handleTutKey(k){
+  const st=TUTORIAL_STAGES[tutIdx];
+  const expected=st.seq[tutStep];
+  if(k===expected){
+    const lbl=document.getElementById('tut-key-label');
+    lbl.classList.add('tut-hit'); setTimeout(()=>lbl.classList.remove('tut-hit'),150);
+    playKeySound();
+    tutStep++;
+    updateTutProgress();
+    if(tutStep>=st.seq.length){ tutStageClear(); return; }
+    showTutKey();
+  } else {
+    const lbl=document.getElementById('tut-key-label');
+    lbl.classList.remove('tut-miss'); void lbl.offsetWidth; lbl.classList.add('tut-miss');
+    setTimeout(()=>lbl.classList.remove('tut-miss'),300);
+    playMissVoice();
+  }
+}
+
+// Word key handler (stage 4) — keydown ベース、IME不使用
+function handleTutWordKey(k){
+  const st=TUTORIAL_STAGES[tutIdx];
+  const word=st.words[tutWordIdx];
+  const pos=tutTyped.length;
+  if(k!==word[pos]){
+    const lbl=document.getElementById('tut-key-label');
+    lbl.classList.remove('tut-miss'); void lbl.offsetWidth; lbl.classList.add('tut-miss');
+    setTimeout(()=>lbl.classList.remove('tut-miss'),300);
+    playMissVoice();
+    return;
+  }
+  playKeySound();
+  tutTyped+=k;
+  renderTutChars(tutTyped, word);
+  if(tutTyped.length<word.length){
+    const nk=word[tutTyped.length];
+    const ni=FINGER_MAP[nk];
+    highlightFinger(ni?ni[0]:-1);
+    renderTutMiniKb(nk);
+    const lbl=document.getElementById('tut-key-label');
+    const color=ni?ni[2]:'#aaa';
+    lbl.style.color=color; lbl.style.borderColor=color; lbl.style.boxShadow='0 0 24px '+color+'44';
+  }
+  if(tutTyped===word){
+    tutWordIdx++;
+    updateTutProgress();
+    setTimeout(()=>{ if(tutWordIdx>=st.words.length){tutStageClear();return;} showTutWord(); },200);
+  }
+}
+
+function tutStageClear(){
+  highlightFinger(-1);
+  const msg=document.getElementById('tut-stage-clear-msg');
+  msg.style.display='block';
+  if(tutIdx<TUTORIAL_STAGES.length-1){
+    msg.className=''; msg.textContent='🎉 ステージ '+(tutIdx+1)+' クリア！';
+    playCorrectSound();
+    setTimeout(()=>{ msg.style.display='none'; startTutStage(tutIdx+1); }, 1600);
+  } else {
+    msg.className='final';
+    msg.innerHTML='🏆 チュートリアル完了！<br><span style="font-size:16px;color:var(--muted);">見習いモードに挑戦しよう！</span>';
+    document.getElementById('tut-next-btn').style.display='';
+    playComboSound(5);
+  }
+}
+
+function tutGoToEasy(){
+  closeTutorial();
+  setDiff('easy', document.getElementById('diff-easy'));
+}
+</script>
+
+<!-- ===== たまごモード チュートリアル オーバーレイ ===== -->
+<div id="tutorial-overlay">
+  <div class="tut-header">
+    <button class="tut-back-btn" onclick="closeTutorial()">← メインへ戻る</button>
+    <div class="tut-title">鮨撃 <span>TAMAGO MODE</span></div>
+    <div class="tut-stage-name" id="tut-stage-name">ステージ 1 / 4</div>
+  </div>
+
+  <div class="tut-progress-wrap">
+    <div id="tut-progress-fill" style="width:0%"></div>
+  </div>
+
+  <div class="tut-body">
+    <!-- キー表示 -->
+    <div class="tut-key-area">
+      <div id="tut-key-label" style="color:var(--gold);border-color:var(--gold);">—</div>
+      <div class="tut-key-sub" id="tut-key-sub">キーを押してください</div>
+      <div class="tut-progress-nums" id="tut-progress-nums">0 / 0</div>
+    </div>
+
+    <!-- 手の絵 -->
+    <div class="tut-hands">
+      <div class="tut-hand-wrap">
+        <div class="tut-hand-label">LEFT　左手</div>
+        <svg viewBox="0 0 145 210" xmlns="http://www.w3.org/2000/svg">
+          <rect x="6" y="142" width="132" height="62" rx="16" fill="#1A2744"/>
+          <!-- 小指 -->
+          <rect id="lf-0" class="hand-finger" x="6"  y="80"  width="27" height="72" rx="13" fill="#9B59B6"/>
+          <!-- 薬指 -->
+          <rect id="lf-1" class="hand-finger" x="39" y="52"  width="27" height="100" rx="13" fill="#2980B9"/>
+          <!-- 中指 -->
+          <rect id="lf-2" class="hand-finger" x="72" y="36"  width="27" height="116" rx="13" fill="#16A085"/>
+          <!-- 人差し指 -->
+          <rect id="lf-3" class="hand-finger" x="105" y="52" width="27" height="100" rx="13" fill="#27AE60"/>
+          <text x="19"  y="205" text-anchor="middle" fill="rgba(255,255,255,.35)" font-size="10" font-family="sans-serif">小</text>
+          <text x="52"  y="205" text-anchor="middle" fill="rgba(255,255,255,.35)" font-size="10" font-family="sans-serif">薬</text>
+          <text x="85"  y="205" text-anchor="middle" fill="rgba(255,255,255,.35)" font-size="10" font-family="sans-serif">中</text>
+          <text x="118" y="205" text-anchor="middle" fill="rgba(255,255,255,.35)" font-size="10" font-family="sans-serif">人</text>
+        </svg>
+      </div>
+      <div class="tut-hand-wrap">
+        <div class="tut-hand-label">RIGHT　右手</div>
+        <svg viewBox="0 0 145 210" xmlns="http://www.w3.org/2000/svg">
+          <rect x="6" y="142" width="132" height="62" rx="16" fill="#1A2744"/>
+          <!-- 人差し指 -->
+          <rect id="rf-4" class="hand-finger" x="6"   y="52"  width="27" height="100" rx="13" fill="#F39C12"/>
+          <!-- 中指 -->
+          <rect id="rf-5" class="hand-finger" x="39"  y="36"  width="27" height="116" rx="13" fill="#E67E22"/>
+          <!-- 薬指 -->
+          <rect id="rf-6" class="hand-finger" x="72"  y="52"  width="27" height="100" rx="13" fill="#E74C3C"/>
+          <!-- 小指 -->
+          <rect id="rf-7" class="hand-finger" x="105" y="80"  width="27" height="72"  rx="13" fill="#C0392B"/>
+          <text x="19"  y="205" text-anchor="middle" fill="rgba(255,255,255,.35)" font-size="10" font-family="sans-serif">人</text>
+          <text x="52"  y="205" text-anchor="middle" fill="rgba(255,255,255,.35)" font-size="10" font-family="sans-serif">中</text>
+          <text x="85"  y="205" text-anchor="middle" fill="rgba(255,255,255,.35)" font-size="10" font-family="sans-serif">薬</text>
+          <text x="118" y="205" text-anchor="middle" fill="rgba(255,255,255,.35)" font-size="10" font-family="sans-serif">小</text>
+        </svg>
+      </div>
+    </div>
+
+    <!-- ミニキーボード -->
+    <div class="tut-mini-kb" id="tut-mini-kb"></div>
+
+    <!-- 文字ボックス（ネタ入力ステージ） -->
+    <div class="tut-char-row char-row" id="tut-char-row"></div>
+
+    <!-- ワード入力（ネタステージ） -->
+    <input type="text" id="tut-word-input" style="display:none;"
+      placeholder="— タイプしてください —"
+      autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+
+    <!-- ステージクリア -->
+    <div id="tut-stage-clear-msg"></div>
+    <button class="tut-next-btn" id="tut-next-btn" onclick="tutGoToEasy()">🔪 見習いモードへ進む</button>
+  </div>
+</div>
+
+</body>
+</html>
