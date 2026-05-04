@@ -1,0 +1,497 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7742559704304574"
+     crossorigin="anonymous"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ブログ | TripType トリップタイピング</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Noto+Sans+JP:wght@400;700;900&family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --navy:    #0A0F2E;
+  --navy2:   #0D1B3E;
+  --navy3:   #112250;
+  --teal:    #00C9B1;
+  --teal2:   #00E5CF;
+  --orange:  #FF7F3F;
+  --gold:    #C8A84B;
+  --text:    #E8F0FF;
+  --muted:   #6888AA;
+  --card-bg: rgba(13,27,62,0.85);
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  background: var(--navy);
+  color: var(--text);
+  font-family: 'Noto Sans JP', 'Outfit', sans-serif;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+#stars-canvas {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+}
+
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image:
+    repeating-linear-gradient(0deg, transparent, transparent 49px, rgba(0,201,177,0.04) 49px, rgba(0,201,177,0.04) 50px),
+    repeating-linear-gradient(90deg, transparent, transparent 49px, rgba(0,201,177,0.04) 49px, rgba(0,201,177,0.04) 50px);
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* ===== HEADER ===== */
+#hdr {
+  position: relative;
+  z-index: 10;
+  padding: 18px 32px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid rgba(0,201,177,0.15);
+  background: rgba(10,15,46,0.92);
+  backdrop-filter: blur(12px);
+}
+
+.logo {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  text-decoration: none;
+}
+.logo-main {
+  font-family: 'Bebas Neue', cursive;
+  font-size: 32px;
+  letter-spacing: 4px;
+  background: linear-gradient(135deg, var(--teal), var(--gold));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.logo-jp {
+  font-size: 11px;
+  color: var(--muted);
+  letter-spacing: 2px;
+}
+
+nav {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+.nav-btn {
+  background: transparent;
+  border: 1px solid rgba(255,255,255,0.1);
+  color: var(--muted);
+  font-family: 'Noto Sans JP', sans-serif;
+  font-size: 11px;
+  padding: 6px 14px;
+  border-radius: 20px;
+  cursor: pointer;
+  transition: all .2s;
+  text-decoration: none;
+  display: inline-block;
+}
+.nav-btn:hover { border-color: var(--teal); color: var(--teal); }
+.nav-btn.active { border-color: var(--teal); color: var(--teal); background: rgba(0,201,177,0.08); }
+.nav-btn.sponsor {
+  border-color: rgba(200,168,75,0.4);
+  color: var(--gold);
+}
+.nav-btn.sponsor:hover {
+  background: rgba(200,168,75,0.1);
+  border-color: var(--gold);
+}
+
+/* ===== PAGE HEADER ===== */
+#page-header {
+  position: relative;
+  z-index: 1;
+  text-align: center;
+  padding: 60px 24px 50px;
+}
+.page-badge {
+  display: inline-block;
+  background: rgba(0,201,177,0.1);
+  border: 1px solid rgba(0,201,177,0.3);
+  color: var(--teal);
+  font-size: 10px;
+  letter-spacing: 3px;
+  padding: 5px 16px;
+  border-radius: 20px;
+  margin-bottom: 16px;
+  text-transform: uppercase;
+}
+.page-title {
+  font-family: 'Bebas Neue', cursive;
+  font-size: clamp(40px, 8vw, 72px);
+  letter-spacing: 6px;
+  background: linear-gradient(135deg, #fff 0%, var(--teal) 60%, var(--gold) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 10px;
+}
+.page-sub {
+  font-size: 13px;
+  color: var(--muted);
+  letter-spacing: 2px;
+}
+
+/* ===== BLOG LIST ===== */
+#blog {
+  position: relative;
+  z-index: 1;
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 0 24px 80px;
+}
+
+.section-label {
+  font-size: 10px;
+  letter-spacing: 4px;
+  color: var(--teal);
+  text-transform: uppercase;
+  text-align: center;
+  margin-bottom: 32px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  justify-content: center;
+}
+.section-label::before,
+.section-label::after {
+  content: '';
+  flex: 1;
+  max-width: 120px;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(0,201,177,0.3));
+}
+.section-label::after {
+  background: linear-gradient(90deg, rgba(0,201,177,0.3), transparent);
+}
+
+.blog-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.blog-card {
+  background: var(--card-bg);
+  border: 1px solid rgba(0,201,177,0.12);
+  border-radius: 12px;
+  padding: 24px 28px;
+  text-decoration: none;
+  color: var(--text);
+  display: block;
+  position: relative;
+  overflow: hidden;
+  transition: all .3s;
+}
+.blog-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(0,201,177,0.04) 0%, transparent 60%);
+  opacity: 0;
+  transition: opacity .3s;
+}
+.blog-card:hover {
+  transform: translateY(-3px);
+  border-color: rgba(0,201,177,0.35);
+  box-shadow: 0 12px 40px rgba(0,0,0,0.3), 0 0 20px rgba(0,201,177,0.08);
+}
+.blog-card:hover::before { opacity: 1; }
+
+.blog-card-inner {
+  display: flex;
+  gap: 20px;
+  align-items: flex-start;
+}
+.blog-date {
+  flex-shrink: 0;
+  text-align: center;
+  background: rgba(0,201,177,0.08);
+  border: 1px solid rgba(0,201,177,0.2);
+  border-radius: 8px;
+  padding: 10px 14px;
+  min-width: 68px;
+}
+.blog-date-month {
+  font-size: 9px;
+  color: var(--teal);
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  display: block;
+  margin-bottom: 2px;
+}
+.blog-date-day {
+  font-family: 'Bebas Neue', cursive;
+  font-size: 28px;
+  color: var(--text);
+  line-height: 1;
+  display: block;
+}
+.blog-content { flex: 1; }
+.blog-tag {
+  display: inline-block;
+  font-size: 9px;
+  letter-spacing: 2px;
+  color: var(--orange);
+  border: 1px solid rgba(255,127,63,0.3);
+  border-radius: 10px;
+  padding: 2px 10px;
+  margin-bottom: 8px;
+  text-transform: uppercase;
+}
+.blog-title {
+  font-size: 17px;
+  font-weight: 700;
+  line-height: 1.5;
+  margin-bottom: 8px;
+  color: var(--text);
+}
+.blog-excerpt {
+  font-size: 13px;
+  color: rgba(255,255,255,0.5);
+  line-height: 1.7;
+}
+.blog-arrow {
+  position: absolute;
+  right: 24px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 18px;
+  color: rgba(0,201,177,0.25);
+  transition: all .3s;
+}
+.blog-card:hover .blog-arrow {
+  color: var(--teal);
+  transform: translateY(-50%) translateX(3px);
+}
+
+/* ===== AD ===== */
+#ad-bottom {
+  position: relative;
+  z-index: 1;
+  max-width: 728px;
+  margin: 0 auto 60px;
+  min-height: 90px;
+  background: rgba(255,255,255,0.02);
+  border: 1px dashed rgba(255,255,255,0.06);
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+  color: rgba(255,255,255,0.1);
+  letter-spacing: 2px;
+}
+
+/* ===== FOOTER ===== */
+#ftr {
+  position: relative;
+  z-index: 1;
+  border-top: 1px solid rgba(255,255,255,0.06);
+  padding: 28px 32px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+  background: rgba(10,15,46,0.8);
+}
+.ftr-left { font-size: 11px; color: var(--muted); }
+.ftr-left span { color: var(--teal); font-weight: 700; }
+.ftr-right { font-size: 10px; color: rgba(255,255,255,0.2); letter-spacing: 1px; }
+.ftr-links { display: flex; gap: 16px; }
+.ftr-link {
+  font-size: 10px;
+  color: var(--muted);
+  text-decoration: none;
+  letter-spacing: 1px;
+  transition: color .2s;
+}
+.ftr-link:hover { color: var(--teal); }
+
+@media (max-width: 600px) {
+  #hdr { padding: 14px 16px; }
+  .logo-main { font-size: 24px; }
+  nav { gap: 4px; }
+  .nav-btn { padding: 5px 10px; font-size: 10px; }
+  #page-header { padding: 40px 16px 32px; }
+  .blog-card-inner { flex-direction: column; gap: 12px; }
+  .blog-date { display: flex; gap: 8px; align-items: center; min-width: unset; padding: 8px 14px; }
+  .blog-arrow { display: none; }
+  #ftr { flex-direction: column; text-align: center; }
+  .ftr-links { justify-content: center; }
+}
+</style>
+</head>
+<body>
+
+<canvas id="stars-canvas"></canvas>
+
+<!-- HEADER -->
+<header id="hdr">
+  <a href="/" class="logo">
+    <span class="logo-main">TripType</span>
+    <span class="logo-jp">トリップタイピング</span>
+  </a>
+  <nav>
+    <a href="/" class="nav-btn">アプリ一覧</a>
+    <a href="/blog/" class="nav-btn active">ブログ</a>
+    <a href="/sponsor/" class="nav-btn sponsor">★ スポンサー募集</a>
+  </nav>
+</header>
+
+<!-- PAGE HEADER -->
+<div id="page-header">
+  <div class="page-badge">✦ BLOG</div>
+  <h1 class="page-title">BLOG</h1>
+  <p class="page-sub">開発の裏側・タイピング上達のコツ・旅の話</p>
+</div>
+
+<!-- BLOG LIST -->
+<section id="blog">
+  <div class="section-label">✦ 記事一覧 ✦</div>
+  <div class="blog-list">
+
+    <a href="/blog/posts/typing-is-the-key.html" class="blog-card">
+      <div class="blog-card-inner">
+        <div class="blog-date">
+          <span class="blog-date-month">MAY</span>
+          <span class="blog-date-day">04</span>
+        </div>
+        <div class="blog-content">
+          <span class="blog-tag">AI・タイピング</span>
+          <div class="blog-title">AIを使いこなせない人が見落としているたった一つのスキル</div>
+          <div class="blog-excerpt">音声入力が普及した今、なぜタイピングがAI活用の根本的な基礎なのか。そろばんと電卓の関係を例に解説します。</div>
+        </div>
+      </div>
+      <span class="blog-arrow">→</span>
+    </a>
+
+    <a href="/blog/posts/triptyping-devlog.html" class="blog-card">
+      <div class="blog-card-inner">
+        <div class="blog-date">
+          <span class="blog-date-month">MAY</span>
+          <span class="blog-date-day">01</span>
+        </div>
+        <div class="blog-content">
+          <span class="blog-tag">開発日記</span>
+          <div class="blog-title">TripTypeができるまで — 門司港から始まったタイピングゲーム</div>
+          <div class="blog-excerpt">「地元の子どもたちに楽しくタイピングを覚えてほしい」。そんな思いからトリップタイピングは生まれました。</div>
+        </div>
+      </div>
+      <span class="blog-arrow">→</span>
+    </a>
+
+    <a href="/blog/posts/japan-typing.html" class="blog-card">
+      <div class="blog-card-inner">
+        <div class="blog-date">
+          <span class="blog-date-month">APR</span>
+          <span class="blog-date-day">20</span>
+        </div>
+        <div class="blog-content">
+          <span class="blog-tag">アプリ紹介</span>
+          <div class="blog-title">47都道府県タイピングで地理を楽しく覚えよう</div>
+          <div class="blog-excerpt">勉強感ゼロで都道府県の読み方が身につく。招待コードで友達と2人対戦もできます。</div>
+        </div>
+      </div>
+      <span class="blog-arrow">→</span>
+    </a>
+
+  </div>
+</section>
+
+<!-- AD BOTTOM -->
+<div id="ad-bottom">AD</div>
+
+<!-- FOOTER -->
+<footer id="ftr">
+  <div class="ftr-left">
+    運営：<span>門司港BONGO</span> / 株式会社LAM COMPANY
+  </div>
+  <div class="ftr-links">
+    <a href="/privacy/" class="ftr-link">プライバシーポリシー</a>
+    <a href="/contact/" class="ftr-link">お問い合わせ</a>
+    <a href="/about/" class="ftr-link">運営者情報</a>
+    <a href="/sponsor/" class="ftr-link">スポンサー募集</a>
+  </div>
+  <div class="ftr-right">© 2026 TripType / トリップタイピング</div>
+</footer>
+
+<script>
+const canvas = document.getElementById('stars-canvas');
+const ctx = canvas.getContext('2d');
+let stars = [];
+
+function resize() {
+  canvas.width  = window.innerWidth;
+  canvas.height = window.innerHeight;
+}
+
+function initStars() {
+  stars = [];
+  const count = Math.floor((canvas.width * canvas.height) / 6000);
+  for (let i = 0; i < count; i++) {
+    stars.push({
+      x: Math.random() * canvas.width,
+      y: Math.random() * canvas.height,
+      r: Math.random() * 1.5 + 0.2,
+      alpha: Math.random(),
+      speed: Math.random() * 0.008 + 0.002,
+      phase: Math.random() * Math.PI * 2,
+    });
+  }
+}
+
+function drawStars(t) {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  stars.forEach(s => {
+    const a = 0.3 + 0.7 * (0.5 + 0.5 * Math.sin(t * s.speed + s.phase));
+    ctx.beginPath();
+    ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+    ctx.fillStyle = `rgba(200,220,255,${a * 0.85})`;
+    ctx.fill();
+  });
+  if (Math.random() < 0.003) {
+    const sx = Math.random() * canvas.width;
+    const sy = Math.random() * canvas.height * 0.5;
+    const len = 80 + Math.random() * 120;
+    const grad = ctx.createLinearGradient(sx, sy, sx + len, sy + len * 0.4);
+    grad.addColorStop(0, 'rgba(0,201,177,0.8)');
+    grad.addColorStop(1, 'rgba(0,201,177,0)');
+    ctx.beginPath();
+    ctx.moveTo(sx, sy);
+    ctx.lineTo(sx + len, sy + len * 0.4);
+    ctx.strokeStyle = grad;
+    ctx.lineWidth = 1.5;
+    ctx.stroke();
+  }
+}
+
+let t = 0;
+function animate() {
+  t++;
+  drawStars(t);
+  requestAnimationFrame(animate);
+}
+
+window.addEventListener('resize', () => { resize(); initStars(); });
+resize();
+initStars();
+animate();
+</script>
+</body>
+</html>
