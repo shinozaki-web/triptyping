@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <defs>
+    <radialGradient id="bg" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#0D1B3E"/>
+      <stop offset="100%" stop-color="#0A0F2E"/>
+    </radialGradient>
+  </defs>
+
+  <!-- 背景円 -->
+  <circle cx="32" cy="32" r="32" fill="url(#bg)"/>
+
+  <!-- コンパスの円 -->
+  <circle cx="32" cy="32" r="22" fill="none" stroke="#00C9B1" stroke-width="1.5" opacity="0.4"/>
+  <circle cx="32" cy="32" r="16" fill="none" stroke="#00C9B1" stroke-width="0.8" opacity="0.25"/>
+
+  <!-- コンパス十字線 -->
+  <line x1="32" y1="10" x2="32" y2="54" stroke="#00C9B1" stroke-width="0.6" opacity="0.2"/>
+  <line x1="10" y1="32" x2="54" y2="32" stroke="#00C9B1" stroke-width="0.6" opacity="0.2"/>
+
+  <!-- コンパス針（北：ターコイズ） -->
+  <polygon points="32,13 29,32 32,30 35,32" fill="#00C9B1"/>
+  <!-- コンパス針（南：オレンジ） -->
+  <polygon points="32,51 29,32 32,34 35,32" fill="#FF7F3F"/>
+
+  <!-- 中心点 -->
+  <circle cx="32" cy="32" r="2.5" fill="#E8F0FF"/>
+
+  <!-- "T" レター -->
+  <text x="32" y="30" font-family="Arial Black, sans-serif" font-size="11" font-weight="900" fill="#00C9B1" text-anchor="middle" opacity="0">T</text>
+</svg>
