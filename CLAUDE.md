@@ -282,13 +282,64 @@ const REGION_CONFIG = {
 
 ---
 
+## 📁 ファイル分割構造（必ず守る）
+
+1ファイルで作らない。以下の構造で必ず分割して作ること。
+
+```
+[アプリ名]/
+├── index.html        ← HTML骨格のみ（インラインJS・CSSなし）
+├── css/
+│   ├── theme.css     ← カラー変数・フォント・デザイントークン
+│   └── style.css     ← レイアウト・ゲームUI・アニメーション全般
+└── js/
+    ├── config.js     ← 難易度・タイマー・ゲーム設定値
+    ├── data.js       ← お題データ・スポンサーデータ
+    ├── sound.js      ← Web Audio APIサウンド
+    ├── ranking.js    ← Supabaseランキング
+    ├── ui.js         ← DOM操作・表示更新
+    └── game.js       ← ゲームロジック（startGame / endGame等）
+```
+
+### 各ファイルの責務
+
+| ファイル | 触るタイミング |
+|----------|--------------|
+| `css/theme.css` | 色・フォントを変えたい時 |
+| `css/style.css` | レイアウト・見た目を変えたい時 |
+| `js/config.js` | 難易度・時間・点数設定を変えたい時 |
+| `js/data.js` | お題・スポンサーを追加したい時 |
+| `js/sound.js` | サウンドを調整したい時 |
+| `js/ranking.js` | ランキング仕様を変えたい時 |
+| `js/ui.js` | 画面表示・アニメーションを変えたい時 |
+| `js/game.js` | ゲームルール・スコア計算を変えたい時 |
+
+### index.htmlの読み込み順（必ずこの順番）
+```html
+<head>
+  <link rel="stylesheet" href="css/theme.css">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  ...
+  <script src="js/config.js"></script>
+  <script src="js/data.js"></script>
+  <script src="js/sound.js"></script>
+  <script src="js/ranking.js"></script>
+  <script src="js/ui.js"></script>
+  <script src="js/game.js"></script>
+</body>
+```
+
+---
+
 ## 🛠️ 技術スタック方針
 
-### 今（フェーズ1〜2）: HTML + JS 一本
+### 今（フェーズ1〜2）: HTML + JS（分割構成）
 - GitHub Pagesで無料公開できる
 - 「作ってpushするだけ」で動く
 - Supabaseと組み合わせればランキング・ユーザー管理も可能
-- 鮨撃と同じ作り方で全アプリ統一
+- 全アプリ同じ分割構造で統一
 
 ### 将来（フェーズ3以降）: Next.js → Vercel
 以下の条件が揃ったら移行を検討する：
