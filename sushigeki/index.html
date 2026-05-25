@@ -311,33 +311,33 @@
 </div>
 
 <!-- HOWTO OVERLAY -->
-<div id="howto-overlay" style="display:none;position:fixed;inset:0;z-index:600;background:rgba(0,0,0,.92);backdrop-filter:blur(6px);align-items:center;justify-content:center;overflow-y:auto;padding:20px;">
-  <div style="background:linear-gradient(160deg,#0C1828,#0A1430);border:1px solid rgba(192,136,24,.25);border-radius:10px;max-width:560px;width:100%;padding:32px 28px;">
-    <div style="text-align:center;margin-bottom:24px;">
-      <div style="font-size:32px;">🍣</div>
-      <div style="font-family:'Shippori Mincho B1',serif;font-size:22px;font-weight:800;letter-spacing:4px;color:#f0e6c8;margin-top:6px;">鮨撃 KITAKYUSHU</div>
-      <div style="font-size:11px;color:#c08818;letter-spacing:3px;margin-top:4px;">HOW TO PLAY</div>
+<div id="howto-overlay" style="display:none;position:fixed;inset:0;z-index:600;background:rgba(0,0,0,.92);backdrop-filter:blur(6px);align-items:center;justify-content:center;padding:16px;">
+  <div style="background:linear-gradient(160deg,#0C1828,#0A1430);border:1px solid rgba(192,136,24,.25);border-radius:10px;max-width:860px;width:100%;padding:20px 28px;max-height:90vh;display:flex;flex-direction:column;gap:14px;">
+
+    <div style="display:flex;align-items:center;justify-content:center;gap:12px;">
+      <span style="font-size:24px;">🍣</span>
+      <span style="font-family:'Shippori Mincho B1',serif;font-size:20px;font-weight:800;letter-spacing:4px;color:#f0e6c8;">鮨撃 KITAKYUSHU</span>
+      <span style="font-size:10px;color:#c08818;letter-spacing:3px;border:1px solid rgba(192,136,24,.4);padding:2px 8px;border-radius:2px;">HOW TO PLAY</span>
     </div>
 
-    <div style="display:flex;flex-direction:column;gap:14px;font-size:13px;color:#c8b99a;line-height:1.7;">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;font-size:12px;color:#c8b99a;line-height:1.6;">
 
-      <div style="background:rgba(255,255,255,.04);border-left:3px solid #c08818;border-radius:0 6px 6px 0;padding:12px 14px;">
-        <div style="color:#f0e6c8;font-weight:700;margin-bottom:4px;">🎯 ゲームの目的</div>
+      <div style="background:rgba(255,255,255,.04);border-left:3px solid #c08818;border-radius:0 6px 6px 0;padding:10px 12px;">
+        <div style="color:#f0e6c8;font-weight:700;margin-bottom:3px;">🎯 ゲームの目的</div>
         ベルトコンベアで流れてくる寿司ネタをローマ字でタイピング！<br>
         制限時間60秒以内にできるだけ多くのネタを仕留めよう。
       </div>
 
-      <div style="background:rgba(255,255,255,.04);border-left:3px solid #3b82f6;border-radius:0 6px 6px 0;padding:12px 14px;">
-        <div style="color:#f0e6c8;font-weight:700;margin-bottom:4px;">🔥 コンボ</div>
+      <div style="background:rgba(255,255,255,.04);border-left:3px solid #3b82f6;border-radius:0 6px 6px 0;padding:10px 12px;">
+        <div style="color:#f0e6c8;font-weight:700;margin-bottom:3px;">🔥 コンボ</div>
         連続正解でコンボが積み重なり、スコア倍率がアップ！<br>
         ミスするとコンボはリセット。できるだけミスしないのが高得点への近道。
       </div>
 
-      <div style="background:rgba(255,255,255,.04);border-left:3px solid #F39C12;border-radius:0 6px 6px 0;padding:12px 14px;">
-        <div style="color:#f0e6c8;font-weight:700;margin-bottom:6px;">✨ 金色のネタ = レアパワーアップ</div>
-        ゲーム中に突然<span style="color:#F39C12;font-weight:700;">金色に光るネタ</span>が高速で流れてくる！<br>
-        仕留められればネタに応じたパワーアップが即発動。<br>
-        <div style="margin-top:6px;font-size:12px;display:grid;grid-template-columns:1fr 1fr;gap:4px;">
+      <div style="background:rgba(255,255,255,.04);border-left:3px solid #F39C12;border-radius:0 6px 6px 0;padding:10px 12px;">
+        <div style="color:#f0e6c8;font-weight:700;margin-bottom:3px;">✨ 金色のネタ = レアパワーアップ</div>
+        突然<span style="color:#F39C12;font-weight:700;">金色に光るネタ</span>が高速で流れてくる！仕留めるとパワーアップ発動。<br>
+        <div style="margin-top:5px;display:grid;grid-template-columns:1fr 1fr;gap:2px;font-size:11px;">
           <span>🐟 大トロ → ⏱ 時間延長 +20秒</span>
           <span>🦔 ウニ → 🔥 スコア3倍（20秒）</span>
           <span>🐚 アワビ → 🧊 ベルトスロー（30秒）</span>
@@ -346,11 +346,10 @@
         </div>
       </div>
 
-      <div style="background:rgba(255,255,255,.04);border-left:3px solid #e74c3c;border-radius:0 6px 6px 0;padding:12px 14px;">
-        <div style="color:#f0e6c8;font-weight:700;margin-bottom:6px;">⚠️ 罰ネタに注意！</div>
-        金ネタとまったく同じ見た目で<span style="color:#e74c3c;font-weight:700;">⚠️マーク</span>がついているものは罰ネタ！<br>
-        タイピングすると…<br>
-        <div style="margin-top:6px;font-size:12px;display:grid;grid-template-columns:1fr 1fr;gap:4px;">
+      <div style="background:rgba(255,255,255,.04);border-left:3px solid #e74c3c;border-radius:0 6px 6px 0;padding:10px 12px;">
+        <div style="color:#f0e6c8;font-weight:700;margin-bottom:3px;">⚠️ 罰ネタに注意！</div>
+        金ネタと同じ見た目で<span style="color:#e74c3c;font-weight:700;">⚠️マーク</span>がついたものは罰ネタ！タイピングすると…<br>
+        <div style="margin-top:5px;display:grid;grid-template-columns:1fr 1fr;gap:2px;font-size:11px;">
           <span>🐟 大トロ+⚠️ → 時間 -15秒</span>
           <span>🦔 ウニ+⚠️ → コンボリセット</span>
           <span>🐡 フグ+⚠️ → スコア半減</span>
@@ -358,22 +357,21 @@
         流れてきても無視して通り過ごすのが正解！
       </div>
 
-      <div style="background:rgba(255,255,255,.04);border-left:3px solid #f97316;border-radius:0 6px 6px 0;padding:12px 14px;">
-        <div style="color:#f0e6c8;font-weight:700;margin-bottom:4px;">📝 クイズ</div>
+      <div style="background:rgba(255,255,255,.04);border-left:3px solid #f97316;border-radius:0 6px 6px 0;padding:10px 12px;">
+        <div style="color:#f0e6c8;font-weight:700;margin-bottom:3px;">📝 クイズ</div>
         10ネタごとにクイズが出題される。正解するとパワーアップを選べる！<br>
-        <span style="color:#fbbf24;">⚠ クイズ中も時間は経過する。</span>さっさと答えるかスキップするかも戦略のうち。<br>
-        スキップしてもパワーアップなしでゲームに戻れる。
+        <span style="color:#fbbf24;">⚠ クイズ中も時間は経過する。</span>さっさと答えるかスキップするかも戦略。
       </div>
 
-      <div style="background:rgba(255,255,255,.04);border-left:3px solid #a78bfa;border-radius:0 6px 6px 0;padding:12px 14px;">
-        <div style="color:#f0e6c8;font-weight:700;margin-bottom:4px;">⌨️ 入力のルール</div>
-        ローマ字入力。「し」はsi・shi、「ち」はti・chi、「つ」はtu・tsu どちらでもOK。<br>
+      <div style="background:rgba(255,255,255,.04);border-left:3px solid #a78bfa;border-radius:0 6px 6px 0;padding:10px 12px;">
+        <div style="color:#f0e6c8;font-weight:700;margin-bottom:3px;">⌨️ 入力のルール</div>
+        ローマ字入力。「し」はsi・shi、「ち」はti・chi、「つ」はtu・tsuどちらでもOK。<br>
         「ん」は必ず <strong style="color:#facc15;">nn</strong> と入力すること。
       </div>
 
     </div>
 
-    <button onclick="closeHowtoAndStart()" style="margin-top:24px;width:100%;background:#9e2e1c;border:none;color:#fff;font-family:'Bebas Neue',cursive;font-size:22px;letter-spacing:4px;padding:14px;border-radius:6px;cursor:pointer;transition:all .2s;"
+    <button onclick="closeHowtoAndStart()" style="width:100%;background:#9e2e1c;border:none;color:#fff;font-family:'Bebas Neue',cursive;font-size:20px;letter-spacing:4px;padding:12px;border-radius:6px;cursor:pointer;transition:all .2s;"
       onmouseover="this.style.background='#c03a28'" onmouseout="this.style.background='#9e2e1c'">
       ▶ ゲーム開始！
     </button>

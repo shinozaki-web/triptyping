@@ -849,7 +849,7 @@ function togglePause(){
     btn.textContent = '▶ 再開';
     btn.style.borderColor = 'var(--gold)';
     btn.style.color = 'var(--gold)';
-    fadeBgm(0.12, 300);
+    bgmAudio.pause();
     showPauseOverlay();
   } else {
     gamePaused = false;
@@ -859,7 +859,7 @@ function togglePause(){
     btn.style.borderColor = '';
     btn.style.color = '';
     hidePauseOverlay();
-    fadeBgm(1.0, 300);
+    if(soundOn){ bgmAudio.volume = BGM_VOL; bgmAudio.play().catch(()=>{}); }
     // 二重起動を防ぐため既存のループを必ずクリアしてから再開
     clearInterval(timerInt);
     cancelAnimationFrame(animFrame);
