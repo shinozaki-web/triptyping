@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="門司港から小倉へ。北九州の地名・山・学校・企業の名前を打って、定時到着を目指す無料の鉄道タイピングゲーム。">
+  <title>鉄道タイピング 北九州線｜TripType</title>
+  <link rel="canonical" href="https://triptyping.jp/railway/">
+  <meta name="theme-color" content="#08101E">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&amp;family=Bebas+Neue&amp;family=IBM+Plex+Mono:wght@400;500;700&amp;family=Shippori+Mincho+B1:wght@700;800&amp;display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/theme.css">
+  <link rel="stylesheet" href="css/style.css">
+  <!-- Publisher code retained here; inert on this game so Auto ads cannot cover typing. -->
+  <script type="text/plain" async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7742559704304574" crossorigin="anonymous"></script>
+</head>
+<body data-ad-excluded="true">
+  <header class="site-header">
+    <a class="brand" href="/">TripType<span>旅するように、楽しく学ぶ。</span></a>
+    <div class="header-actions"><button id="sound" class="quiet" aria-pressed="false">音 OFF</button><a href="#guide">遊び方</a></div>
+  </header>
+  <main>
+    <section class="game-shell" aria-labelledby="game-title" data-ad-excluded="true">
+      <div class="title-row"><div><p class="eyebrow">KITAKYUSHU RAILWAY TYPING</p><h1 id="game-title">鉄道タイピング <span>北九州線</span></h1></div><p class="train-badge">813系 <span>普通｜小倉行き</span></p></div>
+      <ol class="route" aria-label="鹿児島本線の運転ルート">
+        <li class="current"><span class="station-dot"></span><span>門司港</span><small>MOJIKŌ</small></li>
+        <li><span class="station-dot"></span><span>小森江</span><small>KOMORIE</small></li>
+        <li><span class="station-dot"></span><span>門司</span><small>MOJI</small></li>
+        <li><span class="station-dot"></span><span>小倉</span><small>KOKURA</small></li>
+      </ol>
+      <div class="drive-frame">
+        <div class="drive-hud"><div><span class="live-dot"></span><span id="run-state">発車準備</span></div><div id="next-station">門司港 → 小森江</div><button id="pause" class="quiet" hidden>一時停止</button></div>
+        <canvas id="cab" aria-label="線路をまっすぐ見渡す813系をイメージした運転台の風景"></canvas>
+        <div id="welcome" class="welcome"><span class="ticket-label">本日の乗務 / 北九州</span><h2>その一打で、<br>街をつなごう。</h2><p>地元の名前をタイピング。<br>門司港から小倉へ、定時到着を目指そう。</p></div>
+        <div class="scene-caption">運転台・風景はイメージです</div>
+        <div class="track-progress" role="progressbar" aria-label="次の駅までの進み具合" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><div id="track-fill"></div></div>
+      </div>
+      <div class="dashboard" aria-label="運転成績"><div><span>運転時間</span><strong id="elapsed">0:00</strong></div><div><span id="schedule-label">到着目標</span><strong id="schedule">—</strong></div><div><span>スコア</span><strong id="score">0</strong></div><div><span>正確さ</span><strong id="accuracy">—</strong></div></div>
+      <section id="departure" class="departure" aria-labelledby="departure-title">
+        <div class="departure-copy"><span class="eyebrow">READY TO DEPART</span><h2 id="departure-title">今日の運転レベルは？</h2><p>学年に関係なく、自分のペースで選べます。</p></div>
+        <fieldset class="levels"><legend class="sr-only">難易度</legend><label><input type="radio" name="level" value="easy" checked><span><b>見習い</b><small>はじめて・ゆっくり</small></span></label><label><input type="radio" name="level" value="normal"><span><b>運転士</b><small>慣れてきたら</small></span></label><label><input type="radio" name="level" value="hard"><span><b>達人</b><small>スピードに挑戦</small></span></label></fieldset>
+        <p id="level-help" class="level-help">1分に60文字が目標。短いお題から、ゆっくり。</p>
+        <button id="start" class="primary">運転をはじめる <span>→</span></button><p class="keyboard-note">半角英字で入力。キーボードでのプレイがおすすめです。</p>
+      </section>
+      <section id="typing" class="typing" aria-labelledby="word" hidden>
+        <div class="prompt-top"><span id="word-tag" class="tag">地名</span><span id="word-count">1 / 5</span><label class="hint-switch"><input id="hints" type="checkbox" checked>ローマ字のヒント</label></div>
+        <h2 id="word">清滝</h2><p id="yomi" class="yomi">きよたき</p>
+        <div id="romaji" class="romaji" aria-label="入力するローマ字"><span id="typed"></span><mark id="next-key"></mark><span id="remaining"></span></div>
+        <label class="input-label" for="key-input">ここを選んで、半角英字で入力</label>
+        <input id="key-input" class="key-input" type="text" inputmode="url" autocomplete="off" autocapitalize="off" spellcheck="false" aria-describedby="feedback" placeholder="キーボードで入力する" maxlength="1">
+        <div class="typing-footer"><p id="feedback" role="status">一文字ずつ、正確に。</p><span id="combo">0 COMBO</span></div>
+        <p id="area" class="area"></p>
+      </section>
+    </section>
+    <div class="below-grid">
+      <section class="panel collection"><div class="section-heading"><h2>乗務のあしあと</h2><span id="collection-count">ことば 0 / 40</span></div><p>到着するたび、駅スタンプを集めよう。</p><div id="stamps" class="stamps"></div><details><summary>集めた地域のことば</summary><div id="word-collection" class="word-collection"></div></details></section>
+      <section class="panel records"><div class="section-heading"><h2>あなたの運転記録</h2><span>このブラウザ</span></div><label class="record-select">レベル <select id="record-level"><option value="easy">見習い</option><option value="normal">運転士</option><option value="hard">達人</option></select></label><ol id="records"></ol><p id="storage-note" class="fineprint">完走した記録を保存します。名前の登録は不要です。</p></section>
+    </div>
+    <section id="guide" class="guide panel"><p class="eyebrow">HOW TO PLAY</p><h2>タイピングで、定時運行。</h2><div class="guide-steps"><p><b>01 <span>地元の名前を打つ</span></b>駅名・地名・山・学校・企業。漢字には読みがなとローマ字のヒントがつきます。</p><p><b>02 <span>次の駅を目指す</span></b>正しく打つと列車が進みます。最後は到着駅のお題。ブレーキは自動です。</p><p><b>03 <span>到着結果をチェック</span></b>目標以内なら定時到着。遅れても次の区間で取り戻せます。小倉まで運転しよう。</p></div><p class="fineprint">到着目標は文字数とレベルから作る練習用ダイヤです。実際の時刻表とは異なります。停車中・一時停止中は時間が進みません。ミスした文字は入力されないので、そのまま正しいキーを打てば大丈夫です。shi / si、chi / ti、tsu / tu などに対応しています。</p><details><summary>お題と風景について・参照資料</summary><p>地域のお題は各駅周辺の町名、山、施設、企業、学校から選んでいます。車窓から見えることを意味しません。風景と運転台はゲーム用のイラストで、実景や実車の完全な再現ではありません。JR九州および掲載の企業・学校とは関係のない、個人制作の学習ゲームです。</p><ul id="sources"></ul></details></section>
+  </main>
+  <footer id="portal-footer"><a href="/">← トリップタイピングトップへ</a><span>他のアプリも遊ぼう！</span><a href="/japanmap/">日本地図タイピング</a><a href="/sushigeki/">鮨撃</a><small>© TripType</small></footer>
+  <dialog id="pause-dialog"><p class="eyebrow">PAUSED</p><h2>ひと休みしましょう。</h2><p>時計を止めています。準備ができたら運転を再開。</p><button id="resume" class="primary">運転を再開する →</button><button id="reset" class="text-button">最初からやり直す</button></dialog>
+  <dialog id="arrival-dialog"><p id="arrival-eyebrow" class="eyebrow">STATION ARRIVAL</p><div id="arrival-stamp" class="arrival-stamp">小森江</div><h2 id="arrival-title">定時到着！</h2><p id="arrival-detail"></p><div id="final-metrics" class="final-metrics" hidden></div><p id="arrival-tip" class="arrival-tip"></p><button id="continue" class="primary">次の駅へ →</button><button id="choose-level" class="text-button" hidden>レベルを選び直す</button><div id="next-app-cta" hidden><p>他のアプリも遊んでみよう</p><a href="/">TripTypeで探す →</a></div></dialog>
+  <script src="js/config.js"></script><script src="js/data.js"></script><script src="js/sound.js"></script><script src="js/ranking.js"></script><script src="js/romaji.js"></script><script src="js/core.js"></script><script src="js/ui.js"></script><script src="js/scene.js"></script><script src="js/game.js"></script>
+</body>
+</html>

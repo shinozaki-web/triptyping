@@ -1,0 +1,124 @@
+:root {
+  --dark:#08101E;
+  --dark2:#0E1A30;
+  --dark3:#142240;
+  --gold:#C89020;
+  --gold2:#DBA828;
+  --text:#EDE8DA;
+  --muted:#98aec2;
+  --line:#273a4d;
+  --green:#9cdbc2;
+  --red:#f9a997;
+  --body:'Noto Sans JP',sans-serif;
+  --display:'Shippori Mincho B1',serif;
+  --number:'Bebas Neue',sans-serif;
+  --mono:'IBM Plex Mono',monospace;
+  color-scheme:dark
+}
+*,*::before,*::after {
+  box-sizing:border-box
+}
+body {
+  margin:0;
+  color:var(--text);
+  font-family:var(--body);
+  font-size:14px;
+  line-height:1.7;
+  background:linear-gradient(160deg,#08101E,#0C1828 35%,#0A1430 65%,#060E20)
+}
+body::before {
+  content:'';
+  position:fixed;
+  inset:0;
+  background-image:repeating-linear-gradient(0deg,transparent,transparent 59px,#0e3c781b 59px,#0e3c781b 60px);
+  pointer-events:none;
+  z-index:-1
+}
+button,input,select {
+  font:inherit
+}
+button,a,input,select,summary {
+  -webkit-tap-highlight-color:transparent
+}
+button,a {
+  touch-action:manipulation
+}
+button {
+  cursor:pointer
+}
+a {
+  color:inherit;
+  text-underline-offset:4px
+}
+button:focus-visible,a:focus-visible,input:focus-visible,summary:focus-visible,select:focus-visible {
+  outline:3px solid var(--gold2);
+  outline-offset:4px
+}
+[hidden] {
+  display:none!important
+}
+.sr-only {
+  position:absolute;
+  width:1px;
+  height:1px;
+  overflow:hidden;
+  clip-path:inset(50%);
+  white-space:nowrap
+}
+h1,h2,p {
+  margin:0
+}
+button {
+  border:0
+}
+button:disabled {
+  cursor:default;
+  opacity:.55
+}
+.eyebrow {
+  font:500 10px var(--mono);
+  letter-spacing:.16em;
+  color:var(--gold2)
+}
+.fineprint {
+  font-size:12px;
+  color:var(--muted);
+  line-height:1.9
+}
+.primary {
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:24px;
+  width:100%;
+  min-height:52px;
+  padding:12px 24px;
+  border-radius:5px;
+  background:var(--gold2);
+  color:#141e28;
+  font-weight:900;
+  box-shadow:0 4px 20px #c8902020
+}
+.primary:hover {
+  background:#efbe46
+}
+.quiet {
+  background:#0e1a30b0;
+  color:var(--text);
+  border:1px solid #52677780;
+  border-radius:4px;
+  padding:7px 12px;
+  font-size:12px
+}
+.quiet:hover {
+  background:#243c48
+}
+.text-button {
+  display:block;
+  margin:14px auto 0;
+  padding:8px 18px;
+  background:none;
+  color:var(--muted);
+  text-decoration:underline;
+  text-underline-offset:4px
+}
