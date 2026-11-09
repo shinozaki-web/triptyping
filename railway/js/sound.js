@@ -31,10 +31,18 @@ Railway.sound = (()=>{
     });}catch(_){}
   }
 
-  // ---- Ambient layer: Kanmon-night BGM, rail rumble / joints, and wall-approach warning ----
-  const SCALE=[146.83,155.56,196,220,233.08,293.66,311.13,392,440,466.16,587.33]; // D Eb G A Bb (miyako-bushi), 3 octaves
+  // ---- Ambient layer: cheerful travel BGM, rail rumble / joints, and wall-approach warning ----
+  // Original upbeat march-style tune (C major, 8 bars x 8 eighth-notes). 0 = rest.
+  const midi=n=>440*Math.pow(2,(n-69)/12);
+  const MELODY=[
+    [72,76,79,76,79,81,79,0],[76,81,81,79,76,72,76,0],[77,81,84,81,79,77,76,0],[74,79,83,79,74,71,74,0],
+    [79,79,84,79,76,79,84,0],[83,83,79,74,79,74,71,0],[81,81,77,81,84,81,77,0],[74,76,77,79,83,0,79,0]
+  ];
+  const C=[48,[60,64,67]],AM=[45,[57,60,64]],F=[41,[60,65,69]],G=[43,[62,67,71]];
+  const CHORDS=[C,AM,F,G,C,G,F,G];
+  const STEP=.2273; // eighth note at about 132 bpm
   let wanted=false,graph=null,timer=0,vel=0,danger=0;
-  let nextBeat=0,beat=0,stepIndex=4,lastHorn=0,railNext=0,beepNext=0;
+  let nextBeat=0,beat=0,railNext=0,beepNext=0;
   function noiseBuffer(){
     const length=context.sampleRate*2,buffer=context.createBuffer(1,length,context.sampleRate),data=buffer.getChannelData(0);
     for(let i=0;i<length;i++)data[i]=Math.random()*2-1;return buffer;
@@ -44,12 +52,8 @@ Railway.sound = (()=>{
     const bgm=context.createGain(),rail=context.createGain(),alarm=context.createGain();bgm.gain.value=0;rail.gain.value=0;alarm.gain.value=0;
     bgm.connect(master);rail.connect(master);alarm.connect(master);
     const echo=context.createDelay(1),feedback=context.createGain(),tone=context.createBiquadFilter();
-    echo.delayTime.value=.46;feedback.gain.value=.42;tone.type='lowpass';tone.frequency.value=1800;
+    echo.delayTime.value=STEP*1.5;feedback.gain.value=.25;tone.type='lowpass';tone.frequency.value=2400;
     echo.connect(tone);tone.connect(feedback);feedback.connect(echo);tone.connect(bgm);
-    const pad=context.createBiquadFilter();pad.type='lowpass';pad.frequency.value=520;pad.connect(bgm);
-    for(const [frequency,level] of [[73.42,.07],[110,.045],[146.83,.03],[73.9,.05]]){
-      const osc=context.createOscillator(),gain=context.createGain();osc.type='triangle';osc.frequency.value=frequency;gain.gain.value=level;osc.connect(gain);gain.connect(pad);osc.start();
-    }
     const buffer=noiseBuffer();
     const rumble=context.createBufferSource(),rumbleFilter=context.createBiquadFilter(),rumbleGain=context.createGain();
     rumble.buffer=buffer;rumble.loop=true;rumbleFilter.type='lowpass';rumbleFilter.frequency.value=240;rumbleGain.gain.value=0;
@@ -59,18 +63,32 @@ Railway.sound = (()=>{
     drone.connect(droneFilter);droneFilter.connect(droneGain);droneGain.connect(alarm);drone.start();
     graph={bgm,rail,alarm,echo,rumbleGain,drone,droneGain,buffer};
   }
-  function pluck(t,frequency,level){
-    const osc=context.createOscillator(),gain=context.createGain();
-    osc.type='triangle';osc.frequency.value=frequency;
-    gain.gain.setValueAtTime(.0001,t);gain.gain.exponentialRampToValueAtTime(level,t+.012);gain.gain.exponentialRampToValueAtTime(.0001,t+1.5);
-    osc.connect(gain);gain.connect(graph.bgm);gain.connect(graph.echo);osc.start(t);osc.stop(t+1.6);
-  }
-  function horn(t){
+  function voice(t,type,frequency,length,level,cutoff,send){
     const osc=context.createOscillator(),filter=context.createBiquadFilter(),gain=context.createGain();
-    osc.type='sawtooth';osc.frequency.setValueAtTime(116,t);osc.frequency.linearRampToValueAtTime(110,t+2.4);
-    filter.type='lowpass';filter.frequency.value=420;
-    gain.gain.setValueAtTime(.0001,t);gain.gain.linearRampToValueAtTime(.05,t+.5);gain.gain.setValueAtTime(.05,t+1.5);gain.gain.linearRampToValueAtTime(.0001,t+2.6);
-    osc.connect(filter);filter.connect(gain);gain.connect(graph.bgm);gain.connect(graph.echo);osc.start(t);osc.stop(t+2.7);
+    osc.type=type;osc.frequency.value=frequency;filter.type='lowpass';filter.frequency.value=cutoff;
+    gain.gain.setValueAtTime(.0001,t);gain.gain.exponentialRampToValueAtTime(level,t+.006);gain.gain.exponentialRampToValueAtTime(.0001,t+length);
+    osc.connect(filter);filter.connect(gain);gain.connect(graph.bgm);if(send)gain.connect(graph.echo);osc.start(t);osc.stop(t+length+.02);
+  }
+  function drum(t,kind){
+    if(kind==='kick'){
+      const osc=context.createOscillator(),gain=context.createGain();
+      osc.type='sine';osc.frequency.setValueAtTime(150,t);osc.frequency.exponentialRampToValueAtTime(48,t+.12);
+      gain.gain.setValueAtTime(.26,t);gain.gain.exponentialRampToValueAtTime(.0001,t+.16);
+      osc.connect(gain);gain.connect(graph.bgm);osc.start(t);osc.stop(t+.18);return;
+    }
+    const src=context.createBufferSource(),filter=context.createBiquadFilter(),gain=context.createGain(),snare=kind==='snare';
+    src.buffer=graph.buffer;filter.type=snare?'bandpass':'highpass';filter.frequency.value=snare?1800:7000;
+    gain.gain.setValueAtTime(snare?.1:.035,t);gain.gain.exponentialRampToValueAtTime(.0001,t+(snare?.13:.04));
+    src.connect(filter);filter.connect(gain);gain.connect(graph.bgm);src.start(t,Math.random()*1.5,.15);
+  }
+  function playStep(t,index,length){
+    const bar=(index>>3)%8,step=index&7,note=MELODY[bar][step],[root,triad]=CHORDS[bar];
+    if(note)voice(t,'square',midi(note),length*.85,.042,2600,true);
+    if(step%2===0)voice(t,'triangle',midi(root+(step===2||step===6?7:0)),length*1.7,.13,700,false);
+    if(step===3||step===7)for(const n of triad)voice(t,'square',midi(n),length*.7,.016,1500,false);
+    if(step===0||step===4)drum(t,'kick');
+    if(step===2||step===6)drum(t,'snare');
+    if(step%2===1)drum(t,'hat');
   }
   function thump(t,level,pitch){
     const src=context.createBufferSource(),filter=context.createBiquadFilter(),gain=context.createGain();
@@ -92,7 +110,7 @@ Railway.sound = (()=>{
     if(!enabled||!context||context.state!=='running')return;
     if(!graph)build();
     const now=context.currentTime,on=wanted;
-    graph.bgm.gain.setTargetAtTime(on?1:0,now,on?.6:.25);
+    graph.bgm.gain.setTargetAtTime(on?.85:0,now,on?.4:.25);
     graph.rail.gain.setTargetAtTime(on?1:0,now,.2);
     graph.rumbleGain.gain.setTargetAtTime(on?Math.min(.14,vel/22*.14):0,now,.3);
     const alarmOn=on&&danger>.01;
@@ -100,16 +118,9 @@ Railway.sound = (()=>{
     graph.drone.frequency.setTargetAtTime(110*Math.pow(2,danger*3),now,.2);
     graph.droneGain.gain.setTargetAtTime(alarmOn?.03+.07*danger:0,now,.2);
     if(!on){nextBeat=0;railNext=0;beepNext=0;return;}
-    const beatLength=.8-.35*danger;
+    const stepLength=STEP*(1-.35*danger);
     if(!nextBeat||nextBeat<now-1)nextBeat=now+.05;
-    while(nextBeat<now+.3){
-      if(beat%2===0&&Math.random()<.65){
-        stepIndex=Math.max(0,Math.min(SCALE.length-1,stepIndex+Math.round((Math.random()*2-1)*2.2)));
-        pluck(nextBeat,SCALE[stepIndex],.09);
-      }
-      if(beat%8===0&&now-lastHorn>24&&Math.random()<.18&&danger<.01){lastHorn=now;horn(nextBeat);}
-      beat++;nextBeat+=beatLength;
-    }
+    while(nextBeat<now+.3){playStep(nextBeat,beat,stepLength);beat++;nextBeat+=stepLength;}
     if(vel>.6){
       const rate=(.4+vel*.15)*(1+danger*.6);
       if(!railNext||railNext<now-1)railNext=now+.02;
