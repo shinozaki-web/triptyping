@@ -40,7 +40,7 @@ Railway.sound = (()=>{
   ];
   const C=[48,[60,64,67]],AM=[45,[57,60,64]],F=[41,[60,65,69]],G=[43,[62,67,71]];
   const CHORDS=[C,AM,F,G,C,G,F,G];
-  const STEP=.2273; // eighth note at about 132 bpm
+  const STEP=.2; // eighth note at 150 bpm
   let wanted=false,graph=null,timer=0,vel=0,danger=0;
   let nextBeat=0,beat=0,railNext=0,beepNext=0;
   function noiseBuffer(){
