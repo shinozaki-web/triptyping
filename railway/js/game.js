@@ -92,6 +92,8 @@
       s.crashT+=delta;
       if(s.crashT>=1.8&&!s.crashShown){s.crashShown=true;ui.crash(s);}
     }
+    const active=['running','approach','station'].includes(s.mode);
+    sound.ambient(active);sound.update(active?s.velocity:0,s.mode==='running'?core.danger(s.progress):0);
     if(now-lastPaint>100){ui.stats(s);ui.progress(s.progress);lastPaint=now;}
     if(now-scenePaint>(reduced?180:32)){
       scene.render({leg:s.leg,progress:s.progress,motion:reduced?0:s.motion,velocity:s.mode==='paused'?0:s.velocity,finished:['station','finished'].includes(s.mode),active:s.mode==='running',crash:s.mode==='crashed'?s.crashT:0});scenePaint=now;

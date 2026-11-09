@@ -36,7 +36,9 @@
   const legProgress=(legTime,duration)=>duration>0?PACE*Math.max(0,legTime)/duration:0;
   const crashed=progress=>progress>=CRASH_PROGRESS;
   const crashTime=duration=>CRASH_PROGRESS/PACE*duration;
-  const api={plan,metrics,arrival,legProgress,crashed,crashTime,PACE,CRASH_PROGRESS};
+  // 0 until the braking point is missed, then rises to 1 at the wall.
+  const danger=progress=>Math.min(1,Math.max(0,(progress-PACE)/(CRASH_PROGRESS-PACE)));
+  const api={plan,metrics,arrival,legProgress,crashed,crashTime,danger,PACE,CRASH_PROGRESS};
   if(typeof module==='object' && module.exports) module.exports=api;
   else {root.Railway=root.Railway||{};root.Railway.core=api;}
 })(typeof window==='object'?window:globalThis);
