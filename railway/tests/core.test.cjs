@@ -41,7 +41,7 @@ test('spelling variants yield the same completed progress',()=>{
   assert.equal(matcher.match('shougakkou').progress,1);
 });
 test('each level has a varied route, correct destination order, and cumulative character-scaled timetable',()=>{
-  for(const level of [{cpm:60,words:4},{cpm:120,words:5},{cpm:180,words:6}]){
+  for(const level of [{cpm:60,words:4},{cpm:120,words:5},{cpm:240,words:7}]){
     const plan=core.plan(data.words,level,()=>.3);let target=0;
     plan.forEach((leg,i)=>{
       assert.equal(leg.words.at(-1).name,['小森江','門司','小倉'][i]);
