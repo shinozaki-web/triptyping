@@ -81,3 +81,10 @@ test('train runs on its own: braking point at the timetable, crash only after cl
   assert.equal(core.crashed(core.legProgress(core.crashTime(40),40)),true);
   assert.ok(core.crashTime(40)>40);
 });
+test('danger is 0 until the braking point and reaches 1 at the wall',()=>{
+  assert.equal(core.danger(0),0);
+  assert.equal(core.danger(core.PACE),0);
+  assert.ok(core.danger((core.PACE+core.CRASH_PROGRESS)/2)>.49&&core.danger((core.PACE+core.CRASH_PROGRESS)/2)<.51);
+  assert.equal(core.danger(core.CRASH_PROGRESS),1);
+  assert.equal(core.danger(2),1);
+});
