@@ -6,21 +6,21 @@
   let lastPaint=0,scenePaint=0;
   const reduced=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   const selectedLevel=()=>document.querySelector('input[name="level"]:checked').value;
-  function initial(){return {mode:'idle',level:selectedLevel(),leg:0,wordIndex:0,elapsed:0,score:0,total:0,correct:0,combo:0,maxCombo:0,plan:null,completed:0,velocity:0,motion:0,progress:0,learned:[],arrivals:[]};}
+  function initial(){return {mode:'idle',level:selectedLevel(),leg:0,wordIndex:0,elapsed:0,legElapsed:0,brakeFrom:0,brakeTo:1,brakeDuration:1.8,crashT:0,crashShown:false,warned:false,score:0,total:0,correct:0,combo:0,maxCombo:0,plan:null,completed:0,velocity:0,motion:0,progress:0,learned:[],arrivals:[]};}
   function setMode(mode){s.mode=mode;ui.screen(mode);}
   function showWord(){
     typed='';const leg=s.plan[s.leg],word=leg.words[s.wordIndex];matcher=romaji.create(word.yomi);
-    ui.prompt(word,s.wordIndex,leg.words.length,matcher,typed);ui.feedback(s.wordIndex===leg.words.length-1?'最後は到着駅。打ち終えると自動で停車します。':'一文字ずつ、正確に。');ui.focus();
+    ui.prompt(word,s.wordIndex,leg.words.length,matcher,typed);ui.feedback(s.wordIndex===leg.words.length-1?'最後は到着駅。打ち終えると自動で停車します。':'電車は自動で走っています。止まれるうちに打ち切ろう。');ui.focus();
   }
-  function syncClock(now){const delta=Math.max(0,(now-last)/1000);last=now;if(s.mode==='running')s.elapsed+=delta;return delta;}
+  function syncClock(now){const delta=Math.max(0,(now-last)/1000);last=now;if(s.mode==='running'){s.elapsed+=delta;s.legElapsed+=delta;}return delta;}
   function start(){
     $('arrival-dialog').close();$('pause-dialog').close();sound.unlock();s=initial();s.plan=core.plan(Railway.data.words,config.levels[s.level]);
     ranking.visit(0,[]);ui.collection();$('record-level').value=s.level;ui.records();
     $('hints').checked=true;$('romaji').classList.remove('no-hints');
-    setMode('running');last=performance.now();ui.route(0);ui.text('run-state','運転中');showWord();ui.stats(s);document.querySelector('.game-shell').scrollIntoView({block:'start'});
+    setMode('running');last=performance.now();ui.danger(false);ui.route(0);ui.text('run-state','運転中');showWord();ui.stats(s);document.querySelector('.game-shell').scrollIntoView({block:'start'});
   }
   function reset(){
-    $('arrival-dialog').close();$('pause-dialog').close();s=initial();setMode('idle');ui.route(0);ui.stats(s);ui.progress(0);ui.text('run-state','発車準備');
+    $('arrival-dialog').close();$('pause-dialog').close();s=initial();setMode('idle');ui.danger(false);ui.route(0);ui.stats(s);ui.progress(0);ui.text('run-state','発車準備');
     $('start').focus({preventScroll:true});
   }
   function pause(){
@@ -42,15 +42,17 @@
       s.score+=Math.round((word.romaji.length*12+Math.min(s.combo,30)*5)*config.levels[s.level].multiplier);
       s.completed++;s.wordIndex++;sound.play('word');
       if(s.wordIndex===s.plan[s.leg].words.length){
-        s.progress=.9;arrivalTimer=0;setMode('approach');ui.text('run-state','自動停車中');ui.feedback('入力完了。ブレーキをかけています。到着まで少しお待ちください。');
+        const duration=s.plan[s.leg].duration;
+        s.brakeFrom=s.progress;s.brakeTo=Math.max(1,s.progress+.03);s.brakeDuration=Math.min(4,Math.max(1.8,(s.brakeTo-s.progress)*duration/core.PACE*.5));
+        arrivalTimer=0;setMode('approach');ui.danger(false);ui.text('run-state','自動停車中');ui.feedback('入力完了。ブレーキをかけています。到着まで少しお待ちください。');
       }else showWord();
     }
     ui.stats(s);
   }
   function arrive(){
-    s.progress=1;s.velocity=0;const final=s.leg===2;setMode(final?'finished':'station');
+    s.progress=s.brakeTo;s.velocity=0;const final=s.leg===2;setMode(final?'finished':'station');
     ui.text('run-state',final?'小倉に到着':'駅に到着');ui.route(s.leg,true);
-    const arrival=core.arrival(s.plan[s.leg].target,s.elapsed);s.arrivals.push(arrival);
+    const arrival=core.arrival(s.plan[s.leg].duration,s.legElapsed);s.arrivals.push(arrival);
     ranking.visit(s.leg+1,s.learned);s.learned=[];
     let record=null,tip=arrival.ontime?'駅スタンプを獲得！この調子で走ろう。':'あわてず正確に。ミスを減らすのも、上達への近道。';
     if(final){
@@ -63,28 +65,36 @@
     ui.collection();sound.play('station');ui.arrival(s,final,record,tip);ui.stats(s);
   }
   function next(){
-    if(s.mode==='finished'){start();return;}
+    if(s.mode==='finished'||s.mode==='crashed'){start();return;}
     if(s.mode!=='station')return;
-    $('arrival-dialog').close();s.leg++;s.wordIndex=0;s.progress=0;s.velocity=0;s.motion=0;
+    $('arrival-dialog').close();s.leg++;s.wordIndex=0;s.progress=0;s.velocity=0;s.motion=0;s.legElapsed=0;s.warned=false;
     setMode('running');last=performance.now();ui.route(s.leg);ui.text('run-state','運転中');showWord();ui.stats(s);
+  }
+  function crash(){
+    s.progress=core.CRASH_PROGRESS;s.velocity=0;s.crashT=0;setMode('crashed');
+    ui.danger(false);ui.text('run-state','衝突！');ui.feedback('ブレーキが間に合わなかった…');sound.play('crash');ui.stats(s);
   }
   function frame(now){
     const delta=syncClock(now);
     if(s.mode==='running'){
-      const words=s.plan[s.leg].words;
-      const done=words.slice(0,s.wordIndex).reduce((sum,w)=>sum+w.romaji.length,0);
-      const current=words[s.wordIndex].romaji.length*matcher.match(typed).progress;
-      const goal=(done+current)/s.plan[s.leg].characters*.9;
-      const before=s.progress;s.progress+=(goal-s.progress)*Math.min(1,delta*6);
-      const desired=Math.min(22,Math.max(0,(s.progress-before)*450/Math.max(delta,.001)));
-      s.velocity+=(desired-s.velocity)*Math.min(1,delta*4);s.motion+=s.velocity*delta;
+      const duration=s.plan[s.leg].duration;
+      s.progress=core.legProgress(s.legElapsed,duration);
+      const cruise=Math.min(22,core.PACE/duration*450);
+      s.velocity+=(cruise-s.velocity)*Math.min(1,delta*4);s.motion+=s.velocity*delta;
+      if(s.progress>=core.PACE&&!s.warned){s.warned=true;ui.danger(true);ui.text('run-state','オーバーラン注意！');ui.feedback('間に合わない！壁が近づいています。急いで打ち切ろう！',true);}
+      if(core.crashed(s.progress))crash();
     }else if(s.mode==='approach'){
-      arrivalTimer+=delta;s.progress=.9+.1*Math.min(1,arrivalTimer/1.8);s.velocity=10*Math.max(0,1-arrivalTimer/1.8);s.motion+=s.velocity*delta;
-      if(arrivalTimer>=1.8)arrive();
+      arrivalTimer+=delta;const t=Math.min(1,arrivalTimer/s.brakeDuration);
+      s.progress=s.brakeFrom+(s.brakeTo-s.brakeFrom)*(1-(1-t)*(1-t));
+      s.velocity=Math.min(22,(s.brakeTo-s.brakeFrom)*2*(1-t)/s.brakeDuration*450);s.motion+=s.velocity*delta;
+      if(t>=1)arrive();
+    }else if(s.mode==='crashed'){
+      s.crashT+=delta;
+      if(s.crashT>=1.8&&!s.crashShown){s.crashShown=true;ui.crash(s);}
     }
     if(now-lastPaint>100){ui.stats(s);ui.progress(s.progress);lastPaint=now;}
     if(now-scenePaint>(reduced?180:32)){
-      scene.render({leg:s.leg,progress:s.progress,motion:reduced?0:s.motion,velocity:s.mode==='paused'?0:s.velocity,finished:['station','finished'].includes(s.mode),active:s.mode==='running'});scenePaint=now;
+      scene.render({leg:s.leg,progress:s.progress,motion:reduced?0:s.motion,velocity:s.mode==='paused'?0:s.velocity,finished:['station','finished'].includes(s.mode),active:s.mode==='running',crash:s.mode==='crashed'?s.crashT:0});scenePaint=now;
     }
     requestAnimationFrame(frame);
   }

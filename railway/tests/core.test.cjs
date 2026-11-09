@@ -73,3 +73,11 @@ test('corrupt or unavailable local storage is safe, and text-like score payloads
     assert.equal(c.Railway.ranking.save({level:'easy',score:100,cpm:60,accuracy:100,delay:0,date:'2026-10-27'}),c.Railway.ranking.get().available);
   }
 });
+test('train runs on its own: braking point at the timetable, crash only after clear overrun',()=>{
+  assert.equal(core.legProgress(0,40),0);
+  assert.equal(core.legProgress(40,40),core.PACE);
+  assert.equal(core.crashed(core.legProgress(40,40)),false);
+  assert.equal(core.crashed(core.legProgress(core.crashTime(40)-.01,40)),false);
+  assert.equal(core.crashed(core.legProgress(core.crashTime(40),40)),true);
+  assert.ok(core.crashTime(40)>40);
+});

@@ -9,7 +9,9 @@ node --test railway/tests/core.test.cjs
 
 Route: 門司港 → 小森江 → 門司 → 小倉 (鹿児島本線). The forward-facing canvas cab is an original illustration inspired by the 813 series, not a precise reconstruction of the train or scenery. No third-party train photos, logos, or recordings are used.
 
-The three levels target 60 / 120 / 180 correct keystrokes per minute. Each leg draws local words and ends with its destination. Its practice timetable is `ceil(canonical character count × 60 / target CPM)`. Targets are cumulative: early time and lateness carry across legs. Only active typing time counts; automatic stopping, station dwell, and pauses do not. No manual brake action. Late trains continue to the terminus.
+The three levels target 60 / 120 / 180 correct keystrokes per minute. Each leg draws local words and ends with its destination. Its practice timetable is `ceil(canonical character count × 60 / target CPM)`, counted per leg from departure. Only active typing time counts; station dwell and pauses do not.
+
+The train runs automatically and typing does not move it. It reaches the braking point exactly when the leg's timetable runs out (`core.PACE` = 0.9). Finishing the leg's words before then stops the train at the station automatically; finishing slightly late is reported as a late arrival. If the words are still unfinished when the train overruns to `core.CRASH_PROGRESS` (1.14, about 1.27× the timetable), it hits the buffer wall and the run ends (no record is saved). A warning shows once the timetable is exceeded. No manual brake action.
 
 Kana-position graphs accept common romaji variants, including decomposed small kana, doubled consonants, and context-sensitive ん. Mistakes do not modify the accepted text. Paste/drop/repeated held keys do not advance the game. Per-word score uses canonical length, a capped combo bonus, and a level multiplier. Results show actual accepted keystrokes / active minute, accuracy, and score. The records and collection are local to this browser (no global leaderboard).
 
