@@ -930,3 +930,9 @@ body.playing .dashboard {
     transition:none!important
   }
 }
+
+.track-progress.danger>div{background:#e0553d}
+.track-progress.danger{animation:dangerblink .5s steps(2) infinite}
+@keyframes dangerblink{50%{background:#5a1d17}}
+@media (prefers-reduced-motion:reduce){.track-progress.danger{animation:none}}
+.arrival-stamp.crash{border-color:#d9503a;color:#e8745f}

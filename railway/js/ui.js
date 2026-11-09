@@ -49,22 +49,33 @@ Railway.ui = (()=>{
   function stats(s){
     text('elapsed',time(s.elapsed));text('score',s.score.toLocaleString());text('accuracy',s.total?Math.round(s.correct/s.total*100)+'%':'—');text('combo',s.combo+' COMBO');
     if(s.plan){
-      const diff=s.plan[s.leg].target-s.elapsed;
-      text('schedule-label',diff>=0?'目標まで':'目標を超過');text('schedule',(diff<0?'+':'')+time(Math.abs(diff)));
+      const diff=s.plan[s.leg].duration-s.legElapsed;
+      text('schedule-label',diff>=0?'停車まで':'オーバーラン');text('schedule',(diff<0?'+':'')+time(Math.abs(diff)));
       $('schedule').className=diff<0?'late':'early';
     } else {text('schedule','—');text('schedule-label','到着目標');$('schedule').className='';}
   }
   function progress(value){$('track-fill').style.width=(value*100)+'%';$('track-fill').parentElement.setAttribute('aria-valuenow',Math.round(value*100));}
   function focus(){if(!$('key-input').disabled)$('key-input').focus({preventScroll:true});}
   function arrival(s,final,record,tip){
-    const result=Railway.core.arrival(s.plan[s.leg].target,s.elapsed);
+    const result=Railway.core.arrival(s.plan[s.leg].duration,s.legElapsed);
+    $('arrival-stamp').classList.remove('crash');
     text('arrival-eyebrow',final?'ALL STATIONS COMPLETE':'STATION ARRIVAL');text('arrival-stamp',Railway.config.stations[s.leg+1]);
     text('arrival-title',result.ontime?'定時到着！':Math.abs(result.seconds)+'秒遅れで到着');
-    text('arrival-detail',result.ontime?result.seconds+'秒の余裕をもって到着しました。':'最後までよく走りきりました。'+(final?'次の運転で、もう一度挑戦しよう。':'次の区間で、遅れを取り戻そう。'));
+    text('arrival-detail',result.ontime?result.seconds+'秒の余裕をもって到着しました。':'壁にぶつかる前に停まれました！'+(final?'次は定時を目指そう。':'次の区間は定時で停まろう。'));
     text('arrival-tip',tip);$('final-metrics').hidden=!final;
     if(final){$('final-metrics').replaceChildren(...[['スコア',record.score.toLocaleString()],['文字 / 分',record.cpm],['正確さ',record.accuracy+'%']].map(([label,value])=>{const div=document.createElement('div'),span=document.createElement('span'),strong=document.createElement('strong');span.textContent=label;strong.textContent=value;div.append(span,strong);return div;}));}
     text('continue',final?'もう一度運転する →':'次の駅へ →');$('choose-level').hidden=!final;$('next-app-cta').hidden=!final;
     $('arrival-dialog').showModal();$('continue').focus();
   }
-  return {$,text,time,setup,screen,route,prompt,spelling,feedback,stats,progress,focus,arrival,collection,records};
+  function danger(on){$('track-progress').classList.toggle('danger',on);}
+  function crash(s){
+    const name=Railway.config.stations[s.leg+1];
+    text('arrival-eyebrow','ACCIDENT');text('arrival-stamp','大破');$('arrival-stamp').classList.add('crash');
+    text('arrival-title','壁に衝突！');
+    text('arrival-detail',name+'で停まれず、車止めの壁にぶつかってしまいました。');
+    text('arrival-tip',(s.leg+1)+'区間目まで走りました（スコア '+s.score.toLocaleString()+'点）。時間内に打ち切れば、定時で停車できます。');
+    $('final-metrics').hidden=true;text('continue','もう一度運転する →');$('choose-level').hidden=false;$('next-app-cta').hidden=false;
+    $('arrival-dialog').showModal();$('continue').focus();
+  }
+  return {$,text,danger,crash,time,setup,screen,route,prompt,spelling,feedback,stats,progress,focus,arrival,collection,records};
 })();

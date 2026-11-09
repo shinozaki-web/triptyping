@@ -30,7 +30,13 @@
     return {cpm:elapsed>0?Math.round(correct*60/elapsed):0,accuracy:total?Math.round(correct/total*100):100,score};
   }
   function arrival(target,elapsed){const diff=target-elapsed;const seconds=diff>=0?Math.floor(diff):-Math.ceil(-diff);return {seconds,ontime:diff>=0};}
-  const api={plan,metrics,arrival};
+  // The train runs on its own. It reaches the braking point (0.9) exactly when the leg's practice
+  // timetable runs out, and hits the buffer wall at CRASH_PROGRESS if the words are still unfinished.
+  const PACE=.9, CRASH_PROGRESS=1.14;
+  const legProgress=(legTime,duration)=>duration>0?PACE*Math.max(0,legTime)/duration:0;
+  const crashed=progress=>progress>=CRASH_PROGRESS;
+  const crashTime=duration=>CRASH_PROGRESS/PACE*duration;
+  const api={plan,metrics,arrival,legProgress,crashed,crashTime,PACE,CRASH_PROGRESS};
   if(typeof module==='object' && module.exports) module.exports=api;
   else {root.Railway=root.Railway||{};root.Railway.core=api;}
 })(typeof window==='object'?window:globalThis);

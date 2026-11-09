@@ -2,7 +2,7 @@
 Railway.scene = (()=>{
   const canvas=document.getElementById('cab'), ctx=canvas.getContext('2d');
   let width=0,height=0,leg=0,motion=0;
-  let state={zoom:1,velocity:0,finished:false,active:false};
+  let state={zoom:1,velocity:0,finished:false,active:false,crash:0};
   let fraction=0;
   const stationNames=Railway.config.stations.slice(1);
   const progress=()=>fraction;
@@ -19,11 +19,14 @@ Railway.scene = (()=>{
   function draw() {
     if(!ctx || !width || !height) return;
     ctx.clearRect(0,0,width,height);
+    const hit=state.crash>0, shake=hit?Math.max(0,1-state.crash/1.2)*(state.crash<.25?0:9):0;
+    ctx.save();
+    if(shake)ctx.translate(Math.sin(state.crash*83)*shake,Math.cos(state.crash*71)*shake);
     const narrow=width<520;
     const horizon=height*.38, center=width*.5, deck=height-110;
     const focal=Math.min(width*.92,height*1.36)*state.zoom;
     const traveled=motion;
-    const stationZ=Math.max(7,155-progress()*148);
+    const stationZ=155-progress()*148;
     const project=(x,y,z)=>[center+x*focal/Math.max(2,z),horizon+(2.8-y)*focal/Math.max(2,z)];
     const worldQuad=(a,b,c,d,fill)=>poly([project(...a),project(...b),project(...c),project(...d)],fill);
     const sky=ctx.createLinearGradient(0,0,0,horizon+40);sky.addColorStop(0,'#93bdce');sky.addColorStop(.7,'#d6e2da');sky.addColorStop(1,'#edf0dd');ctx.fillStyle=sky;ctx.fillRect(0,0,width,height);
@@ -55,7 +58,16 @@ Railway.scene = (()=>{
         line([project(track+rail-.035,.12,4),project(track+rail-.035,.12,350)],'#566c6a',1);
       }
     }
-    const platformNear=Math.max(3,stationZ-77), platformFar=stationZ+16;
+    const wallBase=stationZ+20, wallZ=hit?wallBase-Math.min(1,state.crash/.25)*(wallBase-2.4):wallBase;
+    if(wallZ<340){
+      const wallDark='#6d6f66', topY=4.2;
+      worldQuad([-1.9,0,wallZ],[5.7,0,wallZ],[5.7,topY,wallZ],[-1.9,topY,wallZ],'#8a8c82');
+      worldQuad([-1.9,3.2,wallZ],[5.7,3.2,wallZ],[5.7,topY,wallZ],[-1.9,topY,wallZ],'#c9a43a');
+      for(let i=0;i<8;i++){const x0=-1.9+i*.95;worldQuad([x0,3.2,wallZ-.02],[x0+.475,3.2,wallZ-.02],[x0+.475,topY,wallZ-.02],[x0,topY,wallZ-.02],'#2e2f2c');}
+      worldQuad([-1.9,0,wallZ],[5.7,0,wallZ],[5.7,.5,wallZ],[-1.9,.5,wallZ],wallDark);
+      for(const track of [0,3.8]){const a=project(track-.7,.9,wallZ-.05),b=project(track+.7,1.3,wallZ-.05);rounded(a[0],b[1],b[0]-a[0],a[1]-b[1],2,'#a5342a');}
+    }
+    const platformNear=Math.max(3,stationZ-77), platformFar=Math.max(platformNear+.1,stationZ+16);
     worldQuad([-5.8,1,platformNear],[-1.75,1,platformNear],[-1.75,1,platformFar],[-5.8,1,platformFar],'#c4c4b0');
     worldQuad([-1.75,0,platformNear],[-1.75,1,platformNear],[-1.75,1,platformFar],[-1.75,0,platformFar],'#929f92');
     worldQuad([-2.13,1.015,platformNear],[-1.85,1.015,platformNear],[-1.85,1.015,platformFar],[-2.13,1.015,platformFar],'#e9c96d');
@@ -94,7 +106,7 @@ Railway.scene = (()=>{
     const speedX=width*.065,speedY=deck+21,speedW=narrow?80:119;
     rounded(speedX,speedY,speedW,51,4,'#101f28','#758d83');
     ctx.fillStyle='#8aa5a6';ctx.font='10px sans-serif';ctx.fillText('速度',speedX+9,speedY+12);
-    ctx.fillStyle='#b2efda';ctx.font=`500 ${narrow?23:27}px monospace`;ctx.fillText(String(state.finished?0:Math.round(state.velocity*3.6)).padStart(2,'0'),speedX+9,speedY+38);
+    ctx.fillStyle='#b2efda';ctx.font=`500 ${narrow?23:27}px monospace`;ctx.fillText(String(state.finished||hit?0:Math.round(state.velocity*3.6)).padStart(2,'0'),speedX+9,speedY+38);
     ctx.fillStyle='#97afb0';ctx.font='10px sans-serif';ctx.fillText('km/h',speedX+speedW-34,speedY+37);
     const screenX=narrow?width*.39:width*.4,screenW=narrow?width*.36:width*.26;
     rounded(screenX,speedY,screenW,51,3,'#12282d','#728a7d');ctx.fillStyle='#8eaca5';ctx.font='10px sans-serif';ctx.fillText(state.finished?'ただいま':'次の停車駅',screenX+9,speedY+13);
@@ -115,6 +127,23 @@ Railway.scene = (()=>{
     const lamps=narrow?[]:[{x:width*.7,label:'電源',on:true},{x:width*.75,label:'戸閉',on:!state.finished}];
     for(const lamp of lamps){rounded(lamp.x,speedY+8,22,12,2,lamp.on?'#9bba82':'#344e44','#6a8470');ctx.fillStyle='#aac1ad';ctx.textAlign='center';ctx.font='9px sans-serif';ctx.fillText(lamp.label,lamp.x+11,speedY+36);ctx.textAlign='left';}
     ctx.fillStyle='#263b3c';ctx.fillRect(0,height-14,width,14);
+    if(hit&&state.crash>=.2){
+      const t=state.crash-.2;
+      const cx=width*.5,cy=height*.4;
+      ctx.strokeStyle='#eef4f0cc';
+      [[-1.9,-1.2],[-.6,-1.6],[.5,-1.7],[1.8,-1.1],[-2.2,.5],[-1.2,1.4],[.4,1.7],[1.6,1.2],[2.3,.2]].forEach(([dx,dy],i)=>{
+        const reach=Math.min(1,t*5)*(.45+(i%3)*.12)*Math.min(width,height*1.6);
+        ctx.lineWidth=i%2?1.2:2;ctx.beginPath();ctx.moveTo(cx,cy);
+        ctx.lineTo(cx+dx*reach*.5,cy+dy*reach*.5);ctx.lineTo(cx+dx*reach*.62+(i%2?14:-12),cy+dy*reach*.6+(i%2?-9:11));ctx.stroke();
+      });
+      for(let i=0;i<14;i++){
+        const a=i*2.399, speed=70+(i*37%90), px=cx+Math.cos(a)*speed*t*1.8, py=cy+Math.sin(a)*speed*t*1.8+t*t*260;
+        ctx.fillStyle=i%3?'#9a9d92':'#c9a43a';ctx.globalAlpha=Math.max(0,1-t/1.4);ctx.fillRect(px,py,5+i%4,4+i%3);ctx.globalAlpha=1;
+      }
+      const dim=ctx.createRadialGradient(cx,cy,height*.2,cx,cy,Math.max(width,height)*.7);dim.addColorStop(0,'#3a000000');dim.addColorStop(1,'#3a0b08cc');ctx.fillStyle=dim;ctx.fillRect(0,0,width,height);
+    }
+    if(hit&&state.crash<.5){ctx.fillStyle='rgba(255,246,225,'+(Math.sin(Math.min(1,state.crash/.5)*Math.PI)*.8)+')';ctx.fillRect(0,0,width,height);}
+    ctx.restore();
   }
 
   new ResizeObserver(resize).observe(canvas);
